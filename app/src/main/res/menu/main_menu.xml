@@ -4,17 +4,22 @@
     <item
         android:id="@+id/homeFragment"
         android:icon="@drawable/home"
+        android:orderInCategory="1"
         android:title="@string/home" />
     <item
         android:icon="@drawable/conversation"
+        android:orderInCategory="2"
         android:title="@string/discuss_area" />
     <item
         android:icon="@drawable/add"
+        android:orderInCategory="3"
         android:title="@string/Publish" />
     <item
         android:icon="@drawable/chat"
+        android:orderInCategory="4"
         android:title="@string/message" />
     <item
         android:icon="@drawable/male_user_shadow"
+        android:orderInCategory="5"
         android:title="@string/member_center" />
 </menu>
