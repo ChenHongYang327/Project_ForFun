@@ -19,6 +19,7 @@
         android:orderInCategory="4"
         android:title="@string/message" />
     <item
+        android:id="@+id/memberCenterFragment"
         android:icon="@drawable/ic_account_black_48dp"
         android:orderInCategory="5"
         android:title="@string/member_center" />

@@ -9,4 +9,9 @@
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/memberCenterFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.memberCenterFragment"
+        android:label="fragment_member_center"
+        tools:layout="@layout/fragment_member_center" />
 </navigation>

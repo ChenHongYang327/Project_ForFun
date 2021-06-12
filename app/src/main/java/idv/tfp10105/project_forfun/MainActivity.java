@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         handleView();
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         ImageView imgBell;//actionbar 中的ImageView
         TextView tvTitle;//actionbar 中的TextView
         navController = Navigation.findNavController(this, R.id.fragmentContainerView);
-        NavigationUI.setupWithNavController(bottomNavigationView, navController);
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);  //客製化actionbar主題
@@ -80,25 +80,21 @@ public class MainActivity extends AppCompatActivity {
             //設定Title
             bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
                 if (item.getOrder() == 1) {
-                    tvTitle.setText(R.string.home);
-                    return true;
-                } else if (item.getOrder() == 2) {
-                    tvTitle.setText(R.string.discuss_area);
-                    return true;
-                } else if (item.getOrder() == 3) {
-                    tvTitle.setText(R.string.publish);
-                    return true;
-                } else if (item.getOrder() == 4) {
-                    tvTitle.setText(R.string.message);
-                    return true;
-                } else if (item.getOrder() == 5) {
-                    tvTitle.setText(R.string.member_center);
-                    return true;
-                }
-                return true;
+                        tvTitle.setText(R.string.home);
+                    } else if (item.getOrder() == 2) {
+                        tvTitle.setText(R.string.discuss_area);
+                    } else if (item.getOrder() == 3) {
+                        tvTitle.setText(R.string.publish);
+                    } else if (item.getOrder() == 4) {
+                        tvTitle.setText(R.string.message);
+                    } else if (item.getOrder() == 5) {
+                        tvTitle.setText(R.string.member_center);
+                    }
+                    return NavigationUI.onNavDestinationSelected(item, navController);
             });
         }
     }
+
 
     private void handleAccess() {
         //需使用者允許的權限
