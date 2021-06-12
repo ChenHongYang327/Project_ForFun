@@ -10,7 +10,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,6 +47,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleView() {
+        //判斷第一次開啟
+        SharedPreferences sharedPreferences;
+        sharedPreferences = this.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
+        if (sharedPreferences.getBoolean("firstOpen",true)) {
+//            Toast.makeText(this, "首次啟動", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(this, 導覽.class);
+//            startActivity(intent);
+        }
+        sharedPreferences.edit()
+                .putBoolean("firstOpen",false)
+            .apply();
+        //介面
         NavController navController;
         ActionBar actionBar;
         View view;
@@ -71,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     tvTitle.setText(R.string.discuss_area);
                     return true;
                 } else if (item.getOrder() == 3) {
-                    tvTitle.setText(R.string.Publish);
+                    tvTitle.setText(R.string.publish);
                     return true;
                 } else if (item.getOrder() == 4) {
                     tvTitle.setText(R.string.message);
