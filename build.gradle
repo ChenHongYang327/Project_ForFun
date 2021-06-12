@@ -19,6 +19,13 @@ allprojects {
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
+//導入的uCrop
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+}
 
 task clean(type: Delete) {
     delete rootProject.buildDir

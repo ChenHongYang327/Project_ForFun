@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="idv.tfp10105.project_forfun">
-
+    <!--網路權限-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--定位網路權限-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--相機權限-->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!--錄音權限-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!--跳轉全螢幕-->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!--使用硬體功能相機-->
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <!--描述跳轉相機意圖-->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+    <!--描述跳轉相簿意圖-->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.PICK" />
+        </intent>
+    </queries>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,6 +41,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--註冊FileProvider-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>
