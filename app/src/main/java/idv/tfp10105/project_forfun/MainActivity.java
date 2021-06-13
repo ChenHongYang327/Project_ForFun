@@ -1,5 +1,18 @@
 package idv.tfp10105.project_forfun;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,23 +22,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 

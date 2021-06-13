@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/orderconfirm_mainfragment">
+    app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/homeFragment"
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
@@ -19,4 +19,9 @@
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment"
         android:label="fragment_orderconfirm_mainfragment"
         tools:layout="@layout/fragment_orderconfirm_mainfragment" />
+    <fragment
+        android:id="@+id/meberCenterPersonalInformationFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.meberCenterPersonalInformationFragment"
+        android:label="fragment_meber_center_personal_information"
+        tools:layout="@layout/fragment_meber_center_personal_information" />
 </navigation>
