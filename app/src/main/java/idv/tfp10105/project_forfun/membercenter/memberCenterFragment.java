@@ -2,6 +2,7 @@ package idv.tfp10105.project_forfun.membercenter;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment;
 
 public class memberCenterFragment extends Fragment {
     private Activity activity;
@@ -114,6 +116,7 @@ public class memberCenterFragment extends Fragment {
             logOutDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
                 Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
             });
+            //設定對話框顏色
             Window window=logOutDialog.show().getWindow();
             Button btSure=window.findViewById(android.R.id.button1);
             Button btCancel=window.findViewById(android.R.id.button2);
