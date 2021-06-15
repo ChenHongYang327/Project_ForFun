@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO};
-        //不同意的權限
+        //未同意的權限
         Set<String> permissionsRequest = new HashSet<>();
         //過濾權限狀態
         for (String permission : permissions) {
