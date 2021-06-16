@@ -13,7 +13,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -25,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_KnowledgeFragment;
-import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentHouseFragment;
-import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeekingFragment;
 
 
 public class discussionBoardFragment extends Fragment {
@@ -75,8 +71,8 @@ public class discussionBoardFragment extends Fragment {
     }
 
     private void findViews(View view) {
-        viewPager = view.findViewById(R.id.disPage);
-        disTab = view.findViewById(R.id.distab);
+        viewPager = view.findViewById(R.id.dis_viewPage2);
+        disTab = view.findViewById(R.id.dis_tabview);
     }
 
     public class MyAdapter extends FragmentStateAdapter {

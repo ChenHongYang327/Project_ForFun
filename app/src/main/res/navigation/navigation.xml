@@ -24,4 +24,9 @@
         android:name="idv.tfp10105.project_forfun.membercenter.meberCenterPersonalInformationFragment"
         android:label="fragment_meber_center_personal_information"
         tools:layout="@layout/fragment_meber_center_personal_information" />
+    <fragment
+        android:id="@+id/discussionBoardFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
+        android:label="fragment_discussion_board"
+        tools:layout="@layout/fragment_discussion_board" />
 </navigation>

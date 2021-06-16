@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".discussionboard.controller.discussionDetailFragment">
+
+    <ImageView
+        android:id="@+id/detail_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="247dp"
+        android:foreground="@drawable/post_houseimg_test"
+        android:src="@drawable/post_houseimg_test"
+        app:layout_constraintBottom_toTopOf="@+id/detail_recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/detail_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="176dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="483dp"
+        tools:ignore="MissingConstraints">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageButton
+        android:id="@+id/detail_bt_memberhead"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/post_memberhead"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.024" />
+
+    <TextView
+        android:id="@+id/detail_memberName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="name"
+        app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.197"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.132" />
+
+    <TextView
+        android:id="@+id/detail_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="time"
+        app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.297" />
+
+    <TextView
+        android:id="@+id/detail_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="title"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_time_text"
+        app:layout_constraintVertical_bias="0.132" />
+
+    <TextView
+        android:id="@+id/detail_context_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="context"
+        app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_title_text"
+        app:layout_constraintVertical_bias="0.315" />
+
+    <ImageButton
+        android:id="@+id/detail_bt_more"
+        android:layout_width="20dp"
+        android:layout_height="23dp"
+        android:background="@drawable/shap"
+        android:src="@drawable/bt_more"
+        app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.887"
+        app:layout_constraintStart_toEndOf="@+id/detail_memberName_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.071" />
+
+    <EditText
+        android:id="@+id/detail_et_comment"
+        android:layout_width="309dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/et_comment"
+        android:ems="10"
+        android:foreground="@drawable/shap"
+        android:hint="留言"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
