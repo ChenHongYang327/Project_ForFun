@@ -2,12 +2,13 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="336dp"
+    android:layout_height="350dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/post_background"
         android:orientation="vertical">
 
         <LinearLayout
@@ -15,50 +16,60 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/memberHead_pic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/memberhead" />
+            <ImageButton
+                android:id="@+id/post_item_bt_memberhead"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/post_memberhead" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="247dp"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/memberName_text"
+                    android:id="@+id/post_item_memberName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="name" />
 
                 <TextView
-                    android:id="@+id/postTime_text"
+                    android:id="@+id/post_item_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="time" />
+
             </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/post_item_bt_more"
+                android:layout_width="20dp"
+                android:layout_height="23dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                app:srcCompat="@drawable/bt_more" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/postTitle_text"
+            android:id="@+id/post_item_title"
             android:layout_width="match_parent"
             android:layout_height="38dp"
-            android:hint="Title" />
+            android:hint="Title"
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/postContext"
+            android:id="@+id/post_item_context"
             android:layout_width="match_parent"
             android:layout_height="84dp"
             android:hint="context" />
 
         <ImageView
-            android:id="@+id/postImage"
-            android:layout_width="match_parent"
-            android:layout_height="176dp"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:id="@+id/post_item_house_img"
+            android:layout_width="336dp"
+            android:layout_height="166dp"
+            tools:srcCompat="@drawable/post_houseimg_test" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
