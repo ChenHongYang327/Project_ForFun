@@ -7,11 +7,28 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.concurrent.FutureTask;
 
 public class RemoteAccess {
+
+    //取得JSON格式的資料
+    public static String getJsonData(String url, String clientInStr) {
+        JsonFromCallable callable = new JsonFromCallable(url, clientInStr);
+        FutureTask<String> task = new FutureTask<>(callable);
+        Thread thread = new Thread(task);
+        thread.start();
+        try {
+            return task.get();
+        } catch (Exception e) {
+            Log.d("顯示getJsonData的錯誤:",e.toString());
+            task.cancel(true);
+
+            return "";
+        }
+    }
 
     // 檢查是否有網路連線
     public static boolean networkCheck(Activity activity) {
