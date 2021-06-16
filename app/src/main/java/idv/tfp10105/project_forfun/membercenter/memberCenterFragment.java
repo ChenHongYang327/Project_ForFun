@@ -1,9 +1,6 @@
 package idv.tfp10105.project_forfun.membercenter;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,22 +16,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment;
 
 public class memberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
             tvPublishList,tvFunctionTour,tvMyRating,tvLogOut;
-    private ActionBar actionBar;
-    private View actionBarView;
-    private TextView tvTitle;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,14 +44,6 @@ public class memberCenterFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //Actionbar title
-        if(getActivity()!=null) {
-            actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            if (actionBar != null) {
-                actionBarView = actionBar.getCustomView();
-                tvTitle=actionBarView.findViewById(R.id.tvTitle);
-            }
-        }
         handleClick();
     }
 
@@ -75,33 +59,30 @@ public class memberCenterFragment extends Fragment {
 
     private void handleClick() {
         tvPersonalInformation.setOnClickListener(v->{
-            tvTitle.setText(R.string.personal_information);
             Navigation.findNavController(v)
                     .navigate(R.id.meberCenterPersonalInformationFragment);
         });
 
         tvFavoriteList.setOnClickListener(v->{
-            tvTitle.setText(R.string.favorite_list);
+
         });
 
         tvOrderList.setOnClickListener(v->{
-            tvTitle.setText(R.string.order_list);
             Navigation.findNavController(v)
                     .navigate(R.id.orderconfirm_mainfragment);
         });
 
         tvPublishList.setOnClickListener(v->{
-            tvTitle.setText(R.string.publish_list);
 
         });
 
         tvFunctionTour.setOnClickListener(v->{
-            tvTitle.setText(R.string.function_tour);
+
 
         });
 
         tvMyRating.setOnClickListener(v->{
-            tvTitle.setText(R.string.my_rating);
+
 
         });
 

@@ -14,21 +14,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +64,12 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("firstOpen",false)
             .apply();
         //介面
-        NavController navController;
         ActionBar actionBar;
         View view;
         ImageView imgBell;//actionbar 中的ImageView
         TextView tvTitle;//actionbar 中的TextView
         navController = Navigation.findNavController(this, R.id.fragmentContainerView);
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);  //客製化actionbar主題
@@ -71,25 +77,12 @@ public class MainActivity extends AppCompatActivity {
             view = actionBar.getCustomView();                             //取得view
             imgBell = view.findViewById(R.id.imgBell);              //取得元件
             tvTitle = view.findViewById(R.id.tvTitle);
-            tvTitle.setText("首頁");
             imgBell.setOnClickListener(v -> {
                 Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
             });
-            //設定Title
-            bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-                if (item.getOrder() == 1) {
-                        tvTitle.setText(R.string.home);
-                    } else if (item.getOrder() == 2) {
-                        tvTitle.setText(R.string.discuss_area);
-                    } else if (item.getOrder() == 3) {
-                        tvTitle.setText(R.string.publish);
-                    } else if (item.getOrder() == 4) {
-                        tvTitle.setText(R.string.message);
-                    } else if (item.getOrder() == 5) {
-                        tvTitle.setText(R.string.member_center);
-                    }
-                    return NavigationUI.onNavDestinationSelected(item, navController);
-            });
+            //設置actionbar title
+            navController.addOnDestinationChangedListener((controller, destination, arguments) ->
+                    tvTitle.setText(Objects.requireNonNull(navController.getCurrentDestination()).getLabel()));
         }
     }
 

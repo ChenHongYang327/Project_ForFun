@@ -24,14 +24,18 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -103,6 +107,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         file = new File(file, "picture.jpg");
         contentUri = FileProvider.getUriForFile(
                 activity, activity.getPackageName() + ".fileProvider", file);
+
     }
 
     @Override
@@ -193,7 +198,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     }
     //下載Firebase storage的照片
     public void getImage(final ImageView imageView, final String path) {
-        final int ONE_MEGABYTE = 1024 * 1024 * 3; //設定上限
+        final int ONE_MEGABYTE = 1024 * 1024 * 6; //設定上限
         StorageReference imageRef = storage.getReference().child(path);
         imageRef.getBytes(ONE_MEGABYTE)
                 .addOnCompleteListener(task -> {
