@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -43,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.commend.Commend;
@@ -60,14 +64,20 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private ImageButton btPIEdit, btPIApply,btPTakePic,btPPickPic,btGTakePic,btGPickPic;
     private EditText etNameL,etNameF, etId, etBirthday, etPhone, etMail,etAddress;
     private ImageView ivHeadshot, ivIdPic1, ivIdPic2, ivGoodPeople;
+    private TextView tvGoodPeopleNote;
     private RadioButton rbMan, rbWoman;
+    private ScrollView scrollView;
     private int btPIEditClick = 0;
     private int btPIApplyClick = 0;
     private SimpleDateFormat sdf;
     private Bitmap bitmap = null;
     private boolean HSisClick=false;
     private boolean GPisClick=false;
+    private boolean upNewHS=false;
+    private boolean upNewGP=false;
     private FirebaseStorage storage;
+    private String picUri; //上傳用
+    private ByteArrayOutputStream baos; //上傳用
     private String url = Commend.URL + "meberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -100,8 +110,6 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_meber_center_personal_information, container, false);
         findView(view);
-        handleData();
-        handleClick();
         return view;
     }
 
@@ -109,6 +117,8 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        handleData();
+        handleClick();
     }
 
     private void findView(View view) {
@@ -131,35 +141,42 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         ivGoodPeople = view.findViewById(R.id.ivGoodPeople);
         rbMan = view.findViewById(R.id.rbMan);
         rbWoman = view.findViewById(R.id.rbWoman);
+        scrollView=view.findViewById(R.id.scrollView);
+        tvGoodPeopleNote=view.findViewById(R.id.tvGoodPeopleNote);
     }
 
     private void handleData() {
         if (RemoteAccess.networkCheck(activity)) {
-            //避免閃退
+            //防沒連到伺服器閃退
             if (RemoteAccess.getJsonData(url, null).equals("error")) {
                 Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
                 btPIEdit.setEnabled(false);
                 btPIApply.setEnabled(false);
                 return;
             }
-            JsonObject clientreq = new JsonObject();
             //跟後端提出請求
+            JsonObject clientreq = new JsonObject();
             clientreq.addProperty("action", "getMember");
             clientreq.addProperty("member_id", 3);  //要改
             String serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
             member = new Gson().fromJson(serverresp, Member.class);
-            //整理資訊
-            String name = member.getNAME_L() + member.getNAME_F();
-            int gender = member.getGENDER();
-            String id = member.getID();
-            String phone = member.getPHONE() + "";
-            String address=member.getADDRESS();
+            //整理回傳的資訊
+            String name = member.getNameL() + member.getNameF();
+            int gender = member.getGender();
+            String id = member.getId();
+            String phone = member.getPhone() + "";
+            String address=member.getAddress();
             sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN);
-            String birthday = sdf.format(member.getBIRTHDAY());
-            String mail = member.getMAIL();
+            String birthday = sdf.format(member.getBirthady());
+            String mail = member.getMail();
             //設定欄位資料
-            if (member.getHEADSHOT() != null) {
-                getImage(ivHeadshot, member.getHEADSHOT());
+            //設定大頭貼
+            if (member.getHeadshot() != null) {
+                getImage(ivHeadshot, member.getHeadshot());
+            }
+            //設定良民證
+            if(member.getCitizen() != null) {
+                getImage(ivGoodPeople, member.getCitizen());
             }
             etNameL.setText(name);
             if (gender == 0) {
@@ -174,9 +191,9 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             etAddress.setText(address);
         }
     }
-
+    //下載Firebase storage的照片
     public void getImage(final ImageView imageView, final String path) {
-        final int ONE_MEGABYTE = 1024 * 1024;
+        final int ONE_MEGABYTE = 1024 * 1024 * 3; //設定上限
         StorageReference imageRef = storage.getReference().child(path);
         imageRef.getBytes(ONE_MEGABYTE)
                 .addOnCompleteListener(task -> {
@@ -192,17 +209,45 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 });
 
     }
+    //上傳Firebase storage的照片
+    private String uploadImage(byte[] imageByte) {
+        // 取得storage根目錄位置
+        StorageReference rootRef = storage.getReference();
+        //  回傳資料庫的路徑
+        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getMemberId()+"/"+ System.currentTimeMillis();
+        // 建立當下目錄的子路徑
+        final StorageReference imageRef = rootRef.child(imagePath);
+        // 將儲存在imageVIew的照片上傳
+        imageRef.putBytes(imageByte)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("顯示Firebase上傳圖片的狀態","上傳成功");
+                    } else {
+                        String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
+                        Log.d("顯示Firebase上傳圖片的錯誤", errorMessage);
+                        Toast.makeText(activity,"圖片上傳失敗", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        return imagePath;
+    }
 
 
     private void handleClick() {
+        //圖片用
+
         btPIEdit.setOnClickListener(v -> {
-            //編輯模式
+            //編輯個人資料
             if (btPIEditClick == 0) {
+                //變更按鈕
+                btPIEditClick = 1;
+                btPIApplyClick = 1;
+                btPIEdit.setImageResource(R.drawable.bt_sure);
+                btPIApply.setImageResource(R.drawable.bt_cancel);
                 etNameL.setEnabled(true); //改姓
-                etNameL.setText(member.getNAME_L());
-                etNameF.setVisibility(View.VISIBLE); //改名
-                etNameF.setEnabled(true); //改名
-                etNameF.setText(member.getNAME_F());
+                etNameL.setText(member.getNameL());
+                etNameF.setVisibility(View.VISIBLE); //顯示名的欄位
+                etNameF.setEnabled(true);
+                etNameF.setText(member.getNameF());
 //                etId.setEnabled(true);
 //                etBirthday.setEnabled(true);
 //                etBirthday.setInputType(InputType.TYPE_NULL);
@@ -212,50 +257,69 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 //修改照片按鈕
                 btPPickPic.setVisibility(View.VISIBLE);
                 btPTakePic.setVisibility(View.VISIBLE);
-                btGPickPic.setVisibility(View.VISIBLE);
-                btGTakePic.setVisibility(View.VISIBLE);
-                //變更按鈕
-                btPIEditClick = 1;
-                btPIEdit.setImageResource(R.drawable.bt_sure);
-                btPIApplyClick = 1;
-                btPIApply.setImageResource(R.drawable.bt_cancel);
 
             }
             //點擊完成
             else if (btPIEditClick == 1) {
-                if(etNameL.getText().toString().isEmpty())
-                {
-                    etNameL.setError("姓不可為空");
-                    return;
+                //判斷是否為編輯個人資料
+                if(etNameF.getVisibility()==View.VISIBLE) {
+                    if (etNameL.getText().toString().isEmpty()) {
+                        etNameL.setError("姓不可為空");
+                        return;
 
-                }
-                else if(etNameF.getText().toString().isEmpty())
-                {
-                    etNameF.setError("名字不可為空");
-                    return;
+                    } else if (etNameF.getText().toString().isEmpty()) {
+                        etNameF.setError("名字不可為空");
+                        return;
 
-                }
-                else if(etPhone.getText().toString().isEmpty()){
-                    etPhone.setError("電話不可為空");
-                    return;
+                    } else if (etPhone.getText().toString().isEmpty()) {
+                        etPhone.setError("電話不可為空");
+                        return;
 
+                    } else if (etAddress.getText().toString().isEmpty()) {
+                        etAddress.setError("地址不可為空");
+                        return;
+                    } else if (etMail.getText().toString().isEmpty()) {
+                        etMail.setError("地址不可為空");
+                        return;
+                    }
+                    member.setNameL(etNameL.getText().toString());
+                    member.setNameF(etNameF.getText().toString());
+                    member.setPhone(Integer.parseInt(etPhone.getText().toString()));
+                    member.setAddress(etAddress.getText().toString());
+                    //上傳大頭貼圖片
+                    if(upNewHS) {
+                        baos = new ByteArrayOutputStream();
+                        ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        picUri = uploadImage(baos.toByteArray());
+                        member.setHeadshot(picUri);
+                        upNewHS=false;
+                    }
                 }
-                else if(etAddress.getText().toString().isEmpty()){
-                    etAddress.setError("地址不可為空");
-                    return;
+                //申請成為房東
+               else {
+                    //上傳良民證圖片
+                    if (upNewGP) {
+                        baos = new ByteArrayOutputStream();
+                        ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        picUri = uploadImage(baos.toByteArray());
+                        member.setCitizen(picUri);
+                        upNewGP = false;
+                    } else {
+                        Toast.makeText(activity, "未更新良民證照片", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
-                else if(etMail.getText().toString().isEmpty()){
-                    etMail.setError("地址不可為空");
-                    return;
-                }
-                member.setNAME_L(etNameL.getText().toString());
-                member.setPHONE(Integer.parseInt(etPhone.getText().toString()));
-                member.setADDRESS(etAddress.getText().toString());
-//                String serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
-//                if(回傳修改成功) {
+                //轉成member物件
+                String updateMember = new Gson().toJson(member);
+                JsonObject clientreq=new JsonObject();
+                clientreq.addProperty("action","updateMember");
+                clientreq.addProperty("member",updateMember);
+                String serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
+                if(serverresp.equals("true")){
 //                btPIEditClick = 0;
 //                btPIEdit.setImageResource(R.drawable.bt_edit);
-//                etName.setEnabled(false);
+//                etNameL.setEnabled(false);
+//                etNameF.setVisibility(View.GONE);
 //                etId.setEnabled(false);
 //                etBirthday.setEnabled(false);
 //                etPhone.setEnabled(false);
@@ -266,18 +330,26 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 //                btGTakePic.setVisibility(View.GONE);
 //                btPIApplyClick=0;
 //                btPIApply.setImageResource(R.drawable.bt_apply);
-//                }
+                    Toast.makeText(activity, "更新成功", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(v)
+                            .navigate(R.id.meberCenterPersonalInformationFragment);
+                }
+                else{
+                    Toast.makeText(activity, "更新失敗", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
         btPIApply.setOnClickListener(v -> {
             //點選申請房東
             if (btPIApplyClick == 0) {
                 btPIEditClick = 1;
                 btPIApplyClick = 1;
-                btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消
-                btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定
-
+                btGPickPic.setVisibility(View.VISIBLE);
+                btGTakePic.setVisibility(View.VISIBLE);
+                btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消圖片
+                btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定圖片
+                scrollView.fullScroll(View.FOCUS_DOWN);
+                tvGoodPeopleNote.setVisibility(View.VISIBLE);
             }
             //點選取消
             else if (btPIApplyClick == 1) {
@@ -402,10 +474,12 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 if(HSisClick){
                     ivHeadshot.setImageBitmap(bitmap);
+                    upNewHS=true;
                     HSisClick=false;
                 }
                 else if(GPisClick){
                     ivGoodPeople.setImageBitmap(bitmap);
+                    upNewGP=true;
                     GPisClick=false;
                 }
 

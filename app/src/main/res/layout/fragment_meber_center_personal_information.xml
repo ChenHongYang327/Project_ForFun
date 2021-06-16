@@ -30,6 +30,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp">
@@ -350,6 +351,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
@@ -359,17 +361,23 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:layout_weight="1"
                     android:text="良民證"
                     android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tvGoodPeopleNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(若欲申請成房東請補齊良民證)"
+                    android:textColor="#FF0606"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/ivGoodPeople"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                app:srcCompat="@android:color/holo_blue_bright"
-                tools:src="@tools:sample/avatars" />
+                android:src="@android:drawable/ic_menu_report_image" />
 
             <LinearLayout
                 android:layout_width="match_parent"
