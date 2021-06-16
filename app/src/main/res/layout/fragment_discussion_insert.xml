@@ -8,7 +8,7 @@
     tools:context=".discussionboard.controller.discussionInsertFragment">
 
     <ImageButton
-        android:id="@+id/insert_memberHeadImg"
+        android:id="@+id/insert_bt_memberHead"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="16dp"
@@ -32,13 +32,13 @@
         app:layout_constraintBottom_toTopOf="@+id/insert_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.883"
-        app:layout_constraintStart_toEndOf="@+id/insert_memberName"
+        app:layout_constraintStart_toEndOf="@+id/insert_memberName_text"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/insert_memberName"
+        android:id="@+id/insert_memberName_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="name"

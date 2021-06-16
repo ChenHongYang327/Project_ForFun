@@ -7,6 +7,7 @@
         android:orderInCategory="1"
         android:title="@string/home" />
     <item
+        android:id="@+id/discussionBoardFragment"
         android:icon="@drawable/ic_comment_text_multiple_black_48dp"
         android:orderInCategory="2"
         android:title="@string/discuss_area" />

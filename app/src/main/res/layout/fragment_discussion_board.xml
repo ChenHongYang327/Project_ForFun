@@ -10,33 +10,44 @@
     <!-- TODO: Update blank fragment layout -->
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/distab"
+        android:id="@+id/dis_tabview"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:tabTextColor="?attr/colorControlNormal">
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/dis_tab_renthouse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="租屋交流" />
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/dis_tab_knownledage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="知識問答" />
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/dis_tab_seeking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="需求單" />
     </com.google.android.material.tabs.TabLayout>
 
+    <ImageButton
+        android:id="@+id/dis_bt_needHistory"
+        android:layout_width="116dp"
+        android:layout_height="32dp"
+        android:layout_gravity="right"
+        android:src="@drawable/bt_needhistory" />
+
     <SearchView
+        android:id="@+id/dis_searchview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/disPage"
+        android:id="@+id/dis_viewPage2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="0dp">
