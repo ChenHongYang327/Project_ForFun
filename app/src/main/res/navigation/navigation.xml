@@ -18,7 +18,11 @@
         android:id="@+id/orderconfirm_mainfragment"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment"
         android:label="訂單管理"
-        tools:layout="@layout/fragment_orderconfirm_mainfragment" />
+        tools:layout="@layout/fragment_orderconfirm_mainfragment" >
+        <action
+            android:id="@+id/action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot"
+            app:destination="@id/orderconfirm_houseSnapshot" />
+    </fragment>
     <fragment
         android:id="@+id/meberCenterPersonalInformationFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.meberCenterPersonalInformationFragment"
@@ -29,6 +33,11 @@
         android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
         android:label="討論區"
         tools:layout="@layout/fragment_discussion_board" />
+    <fragment
+        android:id="@+id/orderconfirm_houseSnapshot"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_houseSnapshot"
+        android:label="fragment_orderconfirm_house_snapshot"
+        tools:layout="@layout/fragment_orderconfirm_house_snapshot" />
 </navigation>
 
 

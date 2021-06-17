@@ -1,5 +1,6 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -41,6 +42,7 @@ public class Orderconfirm_mainfragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         TabLayout tabLayout = view.findViewById(R.id.orderconfirm_main_tabs);
         ViewPager2 viewPager2 = view.findViewById(R.id.orderconfirm_main_viewpage2);
