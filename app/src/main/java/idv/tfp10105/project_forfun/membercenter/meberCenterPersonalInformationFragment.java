@@ -19,23 +19,20 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -50,7 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.commend.Commend;
@@ -67,8 +63,8 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private Member member;
     private ImageButton btPIEdit, btPIApply,btPTakePic,btPPickPic,btGTakePic,btGPickPic;
     private EditText etNameL,etNameF, etId, etBirthday, etPhone, etMail,etAddress;
-    private ImageView ivHeadshot, ivIdPic1, ivIdPic2, ivGoodPeople;
-    private TextView tvGoodPeopleNote;
+    private ImageView ivHeadshot, ivIdPicF, ivIdPicB, ivGoodPeople;
+    private TextView tvGoodPeople,tvGoodPeopleNote,tvRole;
     private RadioButton rbMan, rbWoman;
     private ScrollView scrollView;
     private int btPIEditClick = 0;
@@ -82,6 +78,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private FirebaseStorage storage;
     private String picUri; //上傳用
     private ByteArrayOutputStream baos; //上傳用
+    private String serverresp;
     private String url = Commend.URL + "meberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -107,7 +104,6 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         file = new File(file, "picture.jpg");
         contentUri = FileProvider.getUriForFile(
                 activity, activity.getPackageName() + ".fileProvider", file);
-
     }
 
     @Override
@@ -115,6 +111,11 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_meber_center_personal_information, container, false);
         findView(view);
+        //跟後端提出請求
+        JsonObject clientreq = new JsonObject();
+        clientreq.addProperty("action", "getMember");
+        clientreq.addProperty("member_id", 3);  //要改
+        serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
         return view;
     }
 
@@ -124,6 +125,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         handleData();
         handleClick();
+
     }
 
     private void findView(View view) {
@@ -141,49 +143,74 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         etMail = view.findViewById(R.id.etMail);
         etAddress=view.findViewById(R.id.etAddress);
         ivHeadshot = view.findViewById(R.id.ivHeadshot);
-        ivIdPic1 = view.findViewById(R.id.ivIdPic1);
-        ivIdPic2 = view.findViewById(R.id.ivIdPic2);
+        ivIdPicF = view.findViewById(R.id.ivIdPicF);
+        ivIdPicB = view.findViewById(R.id.ivIdPicB);
         ivGoodPeople = view.findViewById(R.id.ivGoodPeople);
         rbMan = view.findViewById(R.id.rbMan);
         rbWoman = view.findViewById(R.id.rbWoman);
-        scrollView=view.findViewById(R.id.scrollView);
+        tvGoodPeople=view.findViewById(R.id.tvGoodPeople);
         tvGoodPeopleNote=view.findViewById(R.id.tvGoodPeopleNote);
+        tvRole=view.findViewById(R.id.tvRole);
+        scrollView=view.findViewById(R.id.scrollView);
     }
 
     private void handleData() {
         if (RemoteAccess.networkCheck(activity)) {
-            //防沒連到伺服器閃退
+            //防沒連到伺服器閃退(會有空指標例外)
             if (RemoteAccess.getJsonData(url, null).equals("error")) {
                 Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
                 btPIEdit.setEnabled(false);
                 btPIApply.setEnabled(false);
                 return;
             }
-            //跟後端提出請求
-            JsonObject clientreq = new JsonObject();
-            clientreq.addProperty("action", "getMember");
-            clientreq.addProperty("member_id", 3);  //要改
-            String serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
             member = new Gson().fromJson(serverresp, Member.class);
             //整理回傳的資訊
             String name = member.getNameL() + member.getNameF();
             int gender = member.getGender();
             String id = member.getId();
-            String phone = member.getPhone() + "";
+            String phone = "0"+member.getPhone();
             String address=member.getAddress();
             sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN);
             String birthday = sdf.format(member.getBirthady());
-            String mail = member.getMail();
-            //設定欄位資料
-            //設定大頭貼
+            String role;
+            if(member.getRole()==1){
+                role="帳號權限:房客";
+                if(member.getCitizen()!=null){
+                    role +="\t(申請房東資料審核中)";
+                }
+            }
+            else if(member.getRole()==2){
+                role="帳號權限:房客及房東";
+                btPIApply.setVisibility(View.GONE);
+                tvGoodPeople.setVisibility(View.VISIBLE);
+                ivGoodPeople.setVisibility(View.VISIBLE);
+
+            }
+            else{
+                role="";
+            }
+            //設定當前的欄位資料
+            tvRole.setText(role);
+            //信箱
+            if(member.getMail()!=null) {
+                etMail.setText(member.getMail());
+            }
+            //大頭貼
             if (member.getHeadshot() != null) {
                 getImage(ivHeadshot, member.getHeadshot());
             }
-            //設定良民證
+            //良民證
             if(member.getCitizen() != null) {
                 getImage(ivGoodPeople, member.getCitizen());
             }
+            //身分證
+            if(member.getIdImgb()!=null&&member.getIdImgf()!=null){
+                getImage(ivIdPicF, member.getIdImgf());
+                getImage(ivIdPicB, member.getIdImgb());
+            }
+            //姓名合併一起
             etNameL.setText(name);
+            //性別
             if (gender == 0) {
                 rbMan.setChecked(true);
             } else if (gender == 1) {
@@ -192,7 +219,6 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             etId.setText(id);
             etPhone.setText(phone);
             etBirthday.setText(birthday);
-            etMail.setText(mail);
             etAddress.setText(address);
         }
     }
@@ -238,8 +264,6 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 
 
     private void handleClick() {
-        //圖片用
-
         btPIEdit.setOnClickListener(v -> {
             //編輯個人資料
             if (btPIEditClick == 0) {
@@ -247,6 +271,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 btPIEditClick = 1;
                 btPIApplyClick = 1;
                 btPIEdit.setImageResource(R.drawable.bt_sure);
+                btPIApply.setVisibility(View.VISIBLE);
                 btPIApply.setImageResource(R.drawable.bt_cancel);
                 etNameL.setEnabled(true); //改姓
                 etNameL.setText(member.getNameL());
@@ -256,7 +281,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 //                etId.setEnabled(true);
 //                etBirthday.setEnabled(true);
 //                etBirthday.setInputType(InputType.TYPE_NULL);
-                etPhone.setEnabled(true); //改電話
+//                etPhone.setEnabled(true); //改電話
                 etMail.setEnabled(true); //改email
                 etAddress.setEnabled(true); //改address
                 //修改照片按鈕
@@ -268,30 +293,36 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             else if (btPIEditClick == 1) {
                 //判斷是否為編輯個人資料
                 if(etNameF.getVisibility()==View.VISIBLE) {
-                    if (etNameL.getText().toString().isEmpty()) {
+                    if (etNameL.getText().toString().trim().isEmpty()) {
                         etNameL.setError("姓不可為空");
                         return;
 
-                    } else if (etNameF.getText().toString().isEmpty()) {
+                    } else if (etNameF.getText().toString().trim().isEmpty()) {
                         etNameF.setError("名字不可為空");
                         return;
 
-                    } else if (etPhone.getText().toString().isEmpty()) {
+                    } else if (etPhone.getText().toString().trim().isEmpty()) {
                         etPhone.setError("電話不可為空");
                         return;
 
-                    } else if (etAddress.getText().toString().isEmpty()) {
+                    } else if (etAddress.getText().toString().trim().isEmpty()) {
                         etAddress.setError("地址不可為空");
                         return;
-                    } else if (etMail.getText().toString().isEmpty()) {
-                        etMail.setError("地址不可為空");
+                    }
+                     else if (!etMail.getText().toString().trim().isEmpty()&&!android.util.Patterns.EMAIL_ADDRESS.matcher(etMail.getText().toString().trim()).matches()) {
+                        etMail.setError("電子郵件格式不正確");
                         return;
                     }
-                    member.setNameL(etNameL.getText().toString());
-                    member.setNameF(etNameF.getText().toString());
-                    member.setPhone(Integer.parseInt(etPhone.getText().toString()));
-                    member.setAddress(etAddress.getText().toString());
-                    //上傳大頭貼圖片
+                    else if (etPhone.getText().toString().trim().length()!=10) {
+                        etPhone.setError("手機號碼格式不正確");
+                        return;
+                    }
+                    member.setNameL(etNameL.getText().toString().trim());
+                    member.setNameF(etNameF.getText().toString().trim());
+                    member.setPhone(Integer.parseInt(etPhone.getText().toString().trim()));
+                    member.setAddress(etAddress.getText().toString().trim());
+                    member.setMail(etMail.getText().toString().trim());
+                    //如果有更改上傳大頭貼圖片
                     if(upNewHS) {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -300,7 +331,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                         upNewHS=false;
                     }
                 }
-                //申請成為房東
+                //若點擊完成為申請成為房東
                else {
                     //上傳良民證圖片
                     if (upNewGP) {
@@ -319,25 +350,15 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 JsonObject clientreq=new JsonObject();
                 clientreq.addProperty("action","updateMember");
                 clientreq.addProperty("member",updateMember);
-                String serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
+                serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
                 if(serverresp.equals("true")){
-//                btPIEditClick = 0;
-//                btPIEdit.setImageResource(R.drawable.bt_edit);
-//                etNameL.setEnabled(false);
-//                etNameF.setVisibility(View.GONE);
-//                etId.setEnabled(false);
-//                etBirthday.setEnabled(false);
-//                etPhone.setEnabled(false);
-//                etMail.setEnabled(false);
-//                btPPickPic.setVisibility(View.GONE);
-//                btPTakePic.setVisibility(View.GONE);
-//                btGPickPic.setVisibility(View.GONE);
-//                btGTakePic.setVisibility(View.GONE);
-//                btPIApplyClick=0;
-//                btPIApply.setImageResource(R.drawable.bt_apply);
-                    Toast.makeText(activity, "更新成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "更新成功,請重新進入", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
+//                    Navigation.findNavController(v)
+//                            .navigate(R.id.meberCenterPersonalInformationFragment);
                     Navigation.findNavController(v)
-                            .navigate(R.id.meberCenterPersonalInformationFragment);
+                            .navigate(R.id.memberCenterFragment);
+
                 }
                 else{
                     Toast.makeText(activity, "更新失敗", Toast.LENGTH_SHORT).show();
@@ -353,13 +374,17 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 btGTakePic.setVisibility(View.VISIBLE);
                 btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消圖片
                 btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定圖片
-                scrollView.fullScroll(View.FOCUS_DOWN);
+                tvGoodPeople.setVisibility(View.VISIBLE);
+                ivGoodPeople.setVisibility(View.VISIBLE);
                 tvGoodPeopleNote.setVisibility(View.VISIBLE);
+                scrollView.fullScroll(View.FOCUS_DOWN);
             }
             //點選取消
             else if (btPIApplyClick == 1) {
+                Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
                 Navigation.findNavController(v)
                         .navigate(R.id.meberCenterPersonalInformationFragment);
+
             }
 
         });
