@@ -11,8 +11,12 @@
         android:id="@+id/orderconfirm_main_HO_tabs"
         android:layout_width="wrap_content"
         android:layout_height="55dp"
+        android:background="@color/main_color"
+        app:tabIndicatorColor="@color/bottom_choose"
         app:tabMode="scrollable"
-        >
+        app:tabRippleColor="@color/main_color"
+        app:tabSelectedTextColor="@color/bottom_choose"
+        app:tabTextColor="@color/black">
 
     </com.google.android.material.tabs.TabLayout>
 
@@ -28,15 +32,15 @@
             android:layout_weight="1">
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/bt_orderconfirm_mainHO_Publishing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:layout_marginRight="32dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_weight="1"
                 android:src="@drawable/bt_9044blank"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/bt_orderconfirm_mainHO_customer"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -48,17 +52,39 @@
                 android:text="刊登中物件"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView"
-                app:layout_constraintEnd_toEndOf="@+id/imageView"
-                app:layout_constraintStart_toStartOf="@+id/imageView"
-                app:layout_constraintTop_toTopOf="@+id/imageView" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/bt_orderconfirm_mainHO_Publishing"
+                app:layout_constraintStart_toStartOf="@+id/bt_orderconfirm_mainHO_Publishing"
+                app:layout_constraintTop_toTopOf="@+id/bt_orderconfirm_mainHO_Publishing" />
+
+            <ImageView
+                android:id="@+id/bt_orderconfirm_mainHO_customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:src="@drawable/bt_9044blank"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我是房客"
+                android:textColor="#000000"
+                app:layout_constraintBottom_toBottomOf="@+id/bt_orderconfirm_mainHO_customer"
+                app:layout_constraintEnd_toEndOf="@+id/bt_orderconfirm_mainHO_customer"
+                app:layout_constraintStart_toStartOf="@+id/bt_orderconfirm_mainHO_customer"
+                app:layout_constraintTop_toTopOf="@+id/bt_orderconfirm_mainHO_customer" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Switch
-            android:id="@+id/orderconfirm_main_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
 

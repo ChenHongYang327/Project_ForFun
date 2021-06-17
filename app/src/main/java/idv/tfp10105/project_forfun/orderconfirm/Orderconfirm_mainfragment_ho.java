@@ -5,8 +5,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
@@ -42,6 +44,15 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //跳轉至刊登物件
+        view.findViewById(R.id.bt_orderconfirm_mainHO_Publishing).setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_ho_to_ocrHO_Publishing);
+        });
+        view.findViewById(R.id.bt_orderconfirm_mainHO_customer).setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_ho_to_orderconfirm_mainfragment);
+        });
+
 
         TabLayout tabLayout = view.findViewById(R.id.orderconfirm_main_HO_tabs);
         ViewPager2 viewPager2 = view.findViewById(R.id.orderconfirm_main_HO_viewpage2);

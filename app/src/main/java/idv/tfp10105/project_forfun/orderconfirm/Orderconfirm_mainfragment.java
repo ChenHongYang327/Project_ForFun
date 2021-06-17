@@ -1,18 +1,22 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -22,14 +26,15 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.orderconfirm.ocf.OcrAdapter;
 
 public class Orderconfirm_mainfragment extends Fragment {
-    private Activity activity;
+    private AppCompatActivity activity;
     private View view;
+    private SwitchCompat switchCompat;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = getActivity();
+        activity = (AppCompatActivity) getActivity();
     }
 
     @Override
@@ -42,6 +47,22 @@ public class Orderconfirm_mainfragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+//        switchCompat = view.findViewById(R.id.orderconfirm_mainHO_switch);
+//        switchCompat.setChecked(true);
+//        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//
+//                Toast.makeText(activity,"switch",Toast.LENGTH_SHORT).show();
+//                Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot);
+//            }
+//        });
+
+        view.findViewById(R.id.bt_orderconfirm_mainfragment_HouseOwner).setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho);
+
+        });
 
 
         TabLayout tabLayout = view.findViewById(R.id.orderconfirm_main_tabs);
