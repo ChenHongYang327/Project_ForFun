@@ -17,11 +17,14 @@
     <fragment
         android:id="@+id/orderconfirm_mainfragment"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment"
-        android:label="訂單管理"
-        tools:layout="@layout/fragment_orderconfirm_mainfragment" >
+        android:label="房客訂單管理"
+        tools:layout="@layout/fragment_orderconfirm_mainfragment">
         <action
             android:id="@+id/action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot"
             app:destination="@id/orderconfirm_houseSnapshot" />
+        <action
+            android:id="@+id/action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho"
+            app:destination="@id/orderconfirm_mainfragment_ho" />
     </fragment>
     <fragment
         android:id="@+id/meberCenterPersonalInformationFragment"
@@ -36,8 +39,28 @@
     <fragment
         android:id="@+id/orderconfirm_houseSnapshot"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_houseSnapshot"
-        android:label="fragment_orderconfirm_house_snapshot"
+        android:label="房屋快照"
         tools:layout="@layout/fragment_orderconfirm_house_snapshot" />
+    <fragment
+        android:id="@+id/orderconfirm_mainfragment_ho"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment_ho"
+        android:label="房東訂單管理"
+        tools:layout="@layout/fragment_orderconfirm_mainho">
+        <action
+            android:id="@+id/action_orderconfirm_mainfragment_ho_to_orderconfirm_houseSnapshot"
+            app:destination="@id/orderconfirm_houseSnapshot" />
+        <action
+            android:id="@+id/action_orderconfirm_mainfragment_ho_to_orderconfirm_mainfragment"
+            app:destination="@id/orderconfirm_mainfragment" />
+        <action
+            android:id="@+id/action_orderconfirm_mainfragment_ho_to_ocrHO_Publishing"
+            app:destination="@id/ocrHO_Publishing" />
+    </fragment>
+    <fragment
+        android:id="@+id/ocrHO_Publishing"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner.OcrHO_Publishing"
+        android:label="刊登中物件"
+        tools:layout="@layout/fragment_ocr_h_o__publishing" />
 </navigation>
 
 

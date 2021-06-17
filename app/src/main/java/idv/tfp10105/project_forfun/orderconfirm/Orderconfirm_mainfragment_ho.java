@@ -1,6 +1,5 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -20,8 +19,9 @@ import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.orderconfirm.ocf.OcrAdapter;
+import idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner.OcrHOAdapter;
 
-public class Orderconfirm_mainfragment extends Fragment {
+public class Orderconfirm_mainfragment_ho extends Fragment {
     private Activity activity;
     private View view;
 
@@ -35,7 +35,7 @@ public class Orderconfirm_mainfragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_orderconfirm_mainfragment, container, false);
+        view = inflater.inflate(R.layout.fragment_orderconfirm_mainho, container, false);
         return view;
     }
 
@@ -43,12 +43,11 @@ public class Orderconfirm_mainfragment extends Fragment {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        TabLayout tabLayout = view.findViewById(R.id.orderconfirm_main_tabs);
-        ViewPager2 viewPager2 = view.findViewById(R.id.orderconfirm_main_viewpage2);
+        TabLayout tabLayout = view.findViewById(R.id.orderconfirm_main_HO_tabs);
+        ViewPager2 viewPager2 = view.findViewById(R.id.orderconfirm_main_HO_viewpage2);
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        OcrAdapter adapter = new OcrAdapter(fm,getLifecycle());
+        OcrHOAdapter adapter = new OcrHOAdapter(fm,getLifecycle());
         viewPager2.setAdapter(adapter);
 
         tabLayout.addTab(tabLayout.newTab().setText("待預約"));
@@ -57,7 +56,7 @@ public class Orderconfirm_mainfragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("待付款"));
         tabLayout.addTab(tabLayout.newTab().setText("已完成"));
         tabLayout.addTab(tabLayout.newTab().setText("已取消"));
-        tabLayout.addTab(tabLayout.newTab().setText("已繳費"));
+        tabLayout.addTab(tabLayout.newTab().setText("已收款"));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
