@@ -10,4 +10,5 @@
     <color name="main_color">#E8F5E9</color>
     <color name="statusbar_color">#B6C2B7</color>
     <color name="bottom_choose">#B6C2B7</color>
+    <color name="ratingStar">#FAFA23</color>
 </resources>

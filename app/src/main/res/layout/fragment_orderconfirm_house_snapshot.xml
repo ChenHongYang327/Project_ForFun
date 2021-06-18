@@ -20,8 +20,7 @@
             android:id="@+id/img_HSShot_pic1"
             android:layout_width="match_parent"
             android:layout_height="190dp"
-            android:src="@drawable/ic_launcher_background"
-            tools:src="@tools:sample/backgrounds/scenic[5]" />
+            android:src="@drawable/ic_launcher_background" />
 
         <LinearLayout
             android:layout_width="match_parent"

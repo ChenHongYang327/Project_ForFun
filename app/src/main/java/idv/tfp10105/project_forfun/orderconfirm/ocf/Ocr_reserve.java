@@ -102,9 +102,9 @@ public class Ocr_reserve extends Fragment {
 
             final Book book = booksList.get(position);
             if(book.getImageId() == null){
-                holder.imgPic.setImageResource(R.drawable.bt_9044blank);
+                holder.imgPic.setImageResource(R.drawable.post_houseimg_test);
             }else {
-                holder.imgPic.setImageResource(R.drawable.bt_9044blank);
+                holder.imgPic.setImageResource(R.drawable.post_houseimg_test);
             }
 
             holder.tvTitle.setText(book.getTitle());
