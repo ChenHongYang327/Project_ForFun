@@ -40,7 +40,11 @@
         android:id="@+id/orderconfirm_houseSnapshot"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_houseSnapshot"
         android:label="房屋快照"
-        tools:layout="@layout/fragment_orderconfirm_house_snapshot" />
+        tools:layout="@layout/fragment_orderconfirm_house_snapshot" >
+        <action
+            android:id="@+id/action_orderconfirm_houseSnapshot_to_orderconfirm_agreement"
+            app:destination="@id/orderconfirm_agreement" />
+    </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment_ho"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment_ho"
@@ -61,6 +65,11 @@
         android:name="idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner.OcrHO_Publishing"
         android:label="刊登中物件"
         tools:layout="@layout/fragment_ocr_h_o__publishing" />
+    <fragment
+        android:id="@+id/orderconfirm_agreement"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_agreement"
+        android:label="合約"
+        tools:layout="@layout/fragment_orderconfirm_agreement" />
 </navigation>
 
 
