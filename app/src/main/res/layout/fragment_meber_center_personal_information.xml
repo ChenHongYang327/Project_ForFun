@@ -54,7 +54,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:text="帳號權限:"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

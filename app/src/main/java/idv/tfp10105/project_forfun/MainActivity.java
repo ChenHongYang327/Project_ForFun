@@ -80,10 +80,30 @@ public class MainActivity extends AppCompatActivity {
             imgBell.setOnClickListener(v -> {
                 Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
             });
-            //設置actionbar title
-            navController.addOnDestinationChangedListener((controller, destination, arguments) ->
-                    tvTitle.setText(Objects.requireNonNull(navController.getCurrentDestination()).getLabel()));
+            //設置actionbar title及顯示狀態
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                tvTitle.setText(Objects.requireNonNull(navController.getCurrentDestination()).getLabel());
+                //隱藏bottomNav的頁面(未完成五個主頁面)
+                if(navController.getCurrentDestination().getId()==R.id.homeFragment||
+                     navController.getCurrentDestination().getId()==R.id.memberCenterFragment||
+                        navController.getCurrentDestination().getId()==R.id.discussionBoardFragment
+                ){
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    bottomNavigationView.setVisibility(View.GONE);
+                }
+                //隱藏actionbar的頁面
+                if(navController.getCurrentDestination().getId()==R.id.registIntroductionFragment||
+                        navController.getCurrentDestination().getId()==R.id.registFragment){
+                    actionBar.hide();
+                }
+                else{
+                    actionBar.show();
+                }
+            });
         }
+
     }
 
 

@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -69,12 +68,12 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private ScrollView scrollView;
     private int btPIEditClick = 0;
     private int btPIApplyClick = 0;
-    private SimpleDateFormat sdf;
-    private Bitmap bitmap = null;
     private boolean HSisClick=false;
     private boolean GPisClick=false;
     private boolean upNewHS=false;
     private boolean upNewGP=false;
+    private SimpleDateFormat sdf;
+    private Bitmap bitmap = null;
     private FirebaseStorage storage;
     private String picUri; //上傳用
     private ByteArrayOutputStream baos; //上傳用
@@ -175,8 +174,10 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             String role;
             if(member.getRole()==1){
                 role="帳號權限:房客";
-                if(member.getCitizen()!=null){
+                if(member.getCitizen()!=null&&!member.getCitizen().isEmpty()){
                     role +="\t(申請房東資料審核中)";
+                    tvGoodPeople.setVisibility(View.VISIBLE);
+                    ivGoodPeople.setVisibility(View.VISIBLE);
                 }
             }
             else if(member.getRole()==2){
@@ -187,7 +188,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 
             }
             else{
-                role="";
+                role="帳號權限:";
             }
             //設定當前的欄位資料
             tvRole.setText(role);
@@ -196,15 +197,15 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 etMail.setText(member.getMail());
             }
             //大頭貼
-            if (member.getHeadshot() != null) {
+            if (member.getHeadshot() != null&&!member.getHeadshot().isEmpty()) {
                 getImage(ivHeadshot, member.getHeadshot());
             }
             //良民證
-            if(member.getCitizen() != null) {
+            if(member.getCitizen() != null &&!member.getCitizen().isEmpty()) {
                 getImage(ivGoodPeople, member.getCitizen());
             }
             //身分證
-            if(member.getIdImgb()!=null&&member.getIdImgf()!=null){
+            if(member.getIdImgb()!=null&&member.getIdImgf()!=null&&!member.getIdImgb().isEmpty()&&!member.getIdImgf().isEmpty()){
                 getImage(ivIdPicF, member.getIdImgf());
                 getImage(ivIdPicB, member.getIdImgb());
             }
@@ -234,6 +235,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                         imageView.setImageBitmap(bitmap);
                     } else {
                         String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
+                        Toast.makeText(activity, "圖片取得錯誤", Toast.LENGTH_SHORT).show();
                         Log.d("顯示Firebase取得圖片的錯誤", errorMessage);
 
                     }
@@ -339,7 +341,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                         ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
                         member.setCitizen(picUri);
-                        upNewGP = false;
+//                        upNewGP = false;
                     } else {
                         Toast.makeText(activity, "未更新良民證照片", Toast.LENGTH_SHORT).show();
                         return;
@@ -352,12 +354,46 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 clientreq.addProperty("member",updateMember);
                 serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
                 if(serverresp.equals("true")){
-                    Toast.makeText(activity, "更新成功,請重新進入", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
+                    Toast.makeText(activity, "更新成功", Toast.LENGTH_SHORT).show();
+                    //------------------
+                    //將頁面恢復參數變回預設
+                    //如果是房客且有上傳良民證
+                    if(member.getRole()==1) {
+                        if (upNewGP) {
+                                tvRole.setText("帳號權限:房客\t(申請房東資料審核中)");
+                        }
+                    }
+                    //如果是房東
+                    if(member.getRole()==2) {
+                        btPIApply.setVisibility(View.GONE);
+                    }
+                    //恢復參數
+                    btPIEditClick = 0;
+                    btPIApplyClick = 0;
+                    HSisClick=false;
+                    GPisClick=false;
+                    upNewHS=false;
+                    upNewGP=false;
+                    btPIEdit.setImageResource(R.drawable.bt_edit);
+                    btPIApply.setImageResource(R.drawable.bt_apply);
+                    etNameL.setEnabled(false); //改姓
+                    String name=member.getNameL()+member.getNameF();
+                    etNameL.setText(name);
+                    etNameF.setVisibility(View.GONE); //顯示名的欄位
+                    etMail.setEnabled(false); //改email
+                    etAddress.setEnabled(false); //改address
+                    tvGoodPeopleNote.setVisibility(View.GONE);
+                    //修改照片按鈕關閉
+                    btPPickPic.setVisibility(View.GONE);
+                    btPTakePic.setVisibility(View.GONE);
+                    btGPickPic.setVisibility(View.GONE);
+                    btGTakePic.setVisibility(View.GONE);
+                    //------------------
+                    //遇到bug的又不想解的解法
+//                    Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
 //                    Navigation.findNavController(v)
 //                            .navigate(R.id.meberCenterPersonalInformationFragment);
-                    Navigation.findNavController(v)
-                            .navigate(R.id.memberCenterFragment);
+
 
                 }
                 else{

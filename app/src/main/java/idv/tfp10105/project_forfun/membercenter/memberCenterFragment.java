@@ -26,7 +26,7 @@ import idv.tfp10105.project_forfun.R;
 public class memberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
-            tvPublishList,tvFunctionTour,tvMyRating,tvLogOut;
+            tvFunctionTour,tvMyRating,tvLogOut;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +51,6 @@ public class memberCenterFragment extends Fragment {
         tvPersonalInformation=view.findViewById(R.id.tvPersonalInformation);
         tvFavoriteList=view.findViewById(R.id.tvFavoriteList);
         tvOrderList=view.findViewById(R.id.tvOrderList);
-        tvPublishList=view.findViewById(R.id.tvPublishList);
         tvFunctionTour=view.findViewById(R.id. tvFunctionTour);
         tvMyRating=view.findViewById(R.id.tvMyRating);
         tvLogOut=view.findViewById(R.id.tvLogOut);
@@ -72,9 +71,6 @@ public class memberCenterFragment extends Fragment {
                     .navigate(R.id.orderconfirm_mainfragment);
         });
 
-        tvPublishList.setOnClickListener(v->{
-
-        });
 
         tvFunctionTour.setOnClickListener(v->{
 

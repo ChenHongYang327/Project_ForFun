@@ -58,22 +58,6 @@
         app:layout_constraintTop_toBottomOf="@+id/tvFavoriteList" />
 
     <TextView
-        android:id="@+id/tvPublishList"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:text="@string/publish_list"
-        android:textSize="21sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvOrderList" />
-
-    <TextView
         android:id="@+id/tvFunctionTour"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -87,7 +71,7 @@
         android:text="@string/function_tour"
         android:textSize="21sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPublishList" />
+        app:layout_constraintTop_toBottomOf="@+id/tvOrderList" />
 
     <TextView
         android:id="@+id/tvMyRating"
