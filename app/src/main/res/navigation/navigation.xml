@@ -107,11 +107,11 @@
         android:label="fragment_discussion_board_rent_seeking"
         tools:layout="@layout/fragment_discussion_board_rent_seeking" >
         <action
-            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionInsertFragment"
-            app:destination="@id/discussionInsertFragment" />
-        <action
             android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionDetailFragment"
             app:destination="@id/discussionDetailFragment" />
+        <action
+            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionInsertFragment"
+            app:destination="@id/discussionInsertFragment" />
     </fragment>
     <fragment
         android:id="@+id/discussionInsertFragment"
