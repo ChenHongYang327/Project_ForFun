@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
 
-public class memberCenterFragment extends Fragment {
+public class MemberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
             tvFunctionTour,tvMyRating,tvLogOut;

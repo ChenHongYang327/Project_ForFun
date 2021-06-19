@@ -11,7 +11,7 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/memberCenterFragment"
-        android:name="idv.tfp10105.project_forfun.membercenter.memberCenterFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterFragment"
         android:label="會員中心"
         tools:layout="@layout/fragment_member_center"/>
     <fragment
@@ -28,9 +28,9 @@
     </fragment>
     <fragment
         android:id="@+id/meberCenterPersonalInformationFragment"
-        android:name="idv.tfp10105.project_forfun.membercenter.meberCenterPersonalInformationFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterPersonalInformationFragment"
         android:label="個人資料"
-        tools:layout="@layout/fragment_meber_center_personal_information" />
+        tools:layout="@layout/fragment_member_center_personal_information" />
     <fragment
         android:id="@+id/discussionBoardFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
@@ -88,12 +88,12 @@
         tools:layout="@layout/fragment_signin_in" />
     <fragment
         android:id="@+id/registerFragment"
-        android:name="idv.tfp10105.project_forfun.signin.registerFragment"
+        android:name="idv.tfp10105.project_forfun.signin.RegisterFragment"
         android:label="註冊"
         tools:layout="@layout/fragment_regist" />
     <fragment
         android:id="@+id/registIntroductionFragment"
-        android:name="idv.tfp10105.project_forfun.signin.registIntroductionFragment"
+        android:name="idv.tfp10105.project_forfun.signin.RegistIntroductionFragment"
         android:label="fragment_regist_introduction"
         tools:layout="@layout/fragment_regist_introduction" />
     <fragment

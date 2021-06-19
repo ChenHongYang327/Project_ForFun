@@ -65,7 +65,7 @@ import idv.tfp10105.project_forfun.commend.RemoteAccess;
 import static android.app.Activity.RESULT_OK;
 
 
-public class registerFragment extends Fragment {
+public class RegisterFragment extends Fragment {
     private Activity activity;
     private String sBundle=""; //存傳過來的值
     private  Member member;//註冊的會員資料

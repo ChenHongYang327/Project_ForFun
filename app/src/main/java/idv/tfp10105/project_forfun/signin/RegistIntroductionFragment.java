@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
 
-public class registIntroductionFragment extends Fragment {
+public class RegistIntroductionFragment extends Fragment {
     private Activity activity;
     private ImageButton btTenant,btLandlord;
     private TextView temp;

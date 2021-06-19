@@ -57,7 +57,7 @@ import idv.tfp10105.project_forfun.commend.RemoteAccess;
 import static android.app.Activity.RESULT_OK;
 
 
-public class meberCenterPersonalInformationFragment extends Fragment {
+public class MemberCenterPersonalInformationFragment extends Fragment {
     private Activity activity;
     private File file;
     private Uri contentUri;
@@ -88,7 +88,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private String picUri; //上傳用
     private ByteArrayOutputStream baos; //上傳用
     private String serverresp;
-    private String url = Commend.URL + "meberCenterPersonalInformation";
+    private String url = Commend.URL + "memberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -118,7 +118,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_meber_center_personal_information, container, false);
+        View view = inflater.inflate(R.layout.fragment_member_center_personal_information, container, false);
         //bottomeSheet
         bottomSheetDialog = new BottomSheetDialog(activity);
         bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet,null);
@@ -405,9 +405,9 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                     HSNote.setVisibility(View.GONE);
                     //------------------
                     //遇到bug的又不想解的解法
-//                    Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
+//                    Navigation.findNavController(v).popBackStack(R.id.MemberCenterPersonalInformationFragment,true);
 //                    Navigation.findNavController(v)
-//                            .navigate(R.id.meberCenterPersonalInformationFragment);
+//                            .navigate(R.id.MemberCenterPersonalInformationFragment);
 
 
                 }
