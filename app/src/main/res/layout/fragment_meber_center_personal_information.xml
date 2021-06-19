@@ -119,12 +119,25 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivHeadshot"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
-                />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivHeadshot"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:id="@+id/HSNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:text="請點選變更圖片"
+                    android:visibility="gone" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -391,12 +404,26 @@
                     android:visibility="invisible" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivGoodPeople"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/ic_plus_black_48dp" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivGoodPeople"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:visibility="invisible"
+                    app:srcCompat="@drawable/ic_plus_black_48dp" />
+
+                <TextView
+                    android:id="@+id/GPNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:text="請點選新增圖片"
+                    android:visibility="gone" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

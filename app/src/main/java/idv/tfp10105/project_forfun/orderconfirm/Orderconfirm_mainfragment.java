@@ -48,17 +48,6 @@ public class Orderconfirm_mainfragment extends Fragment {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        switchCompat = view.findViewById(R.id.orderconfirm_mainHO_switch);
-//        switchCompat.setChecked(true);
-//        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//
-//                Toast.makeText(activity,"switch",Toast.LENGTH_SHORT).show();
-//                Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot);
-//            }
-//        });
-
         view.findViewById(R.id.bt_orderconfirm_mainfragment_HouseOwner).setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho);
 

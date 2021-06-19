@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,6 +34,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
@@ -60,19 +62,27 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private File file;
     private Uri contentUri;
     private Member member;
-    private ImageButton btPIEdit, btPIApply,btPTakePic,btPPickPic,btGTakePic,btGPickPic;
+    //BottomSheet的元件
+    private BottomSheetDialog bottomSheetDialog;
+    private View bottomSheetView;
+    private Button btPickpic,btTakepic,btCancel;
+    private ImageButton btPIEdit, btPIApply;
     private EditText etNameL,etNameF, etId, etBirthday, etPhone, etMail,etAddress;
     private ImageView ivHeadshot, ivIdPicF, ivIdPicB, ivGoodPeople;
-    private TextView tvGoodPeople,tvGoodPeopleNote,tvRole;
+    private TextView tvGoodPeople,tvGoodPeopleNote,tvRole,GPNote,HSNote;
     private RadioButton rbMan, rbWoman;
     private ScrollView scrollView;
-    private int btPIEditClick = 0;
-    private int btPIApplyClick = 0;
+    //判斷點擊哪個按鈕
+    private int btPIEditClick = 0; // 0->編輯個人資料 1->完成
+    private int btPIApplyClick = 0;  // 0->申請成房東 1->取消
+    //判斷上傳點擊哪個按鈕
     private boolean HSisClick=false;
     private boolean GPisClick=false;
+    //判斷是否有成功上傳
     private boolean upNewHS=false;
     private boolean upNewGP=false;
     private SimpleDateFormat sdf;
+    //設定圖片用
     private Bitmap bitmap = null;
     private FirebaseStorage storage;
     private String picUri; //上傳用
@@ -98,7 +108,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
-        // 指定照片存檔路徑
+        // 指定拍照存檔路徑
         file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         file = new File(file, "picture.jpg");
         contentUri = FileProvider.getUriForFile(
@@ -109,6 +119,13 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_meber_center_personal_information, container, false);
+        //bottomeSheet
+        bottomSheetDialog = new BottomSheetDialog(activity);
+        bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet,null);
+        bottomSheetDialog.setContentView(bottomSheetView);
+        ViewGroup parent = (ViewGroup) bottomSheetView.getParent();
+        parent.setBackgroundResource(android.R.color.transparent);
+        //------
         findView(view);
         //跟後端提出請求
         JsonObject clientreq = new JsonObject();
@@ -130,10 +147,6 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private void findView(View view) {
         btPIEdit = view.findViewById(R.id.btPIEdit);
         btPIApply = view.findViewById(R.id.btPIApply);
-        btPTakePic = view.findViewById(R.id.btPTakePic);
-        btPPickPic = view.findViewById(R.id.btPPickPic);
-        btGTakePic = view.findViewById(R.id.btGTakePic);
-        btGPickPic = view.findViewById(R.id.btGPickPic);
         etNameL = view.findViewById(R.id.etNameL);
         etNameF = view.findViewById(R.id.etNameF);
         etId = view.findViewById(R.id.etId);
@@ -151,6 +164,12 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         tvGoodPeopleNote=view.findViewById(R.id.tvGoodPeopleNote);
         tvRole=view.findViewById(R.id.tvRole);
         scrollView=view.findViewById(R.id.scrollView);
+        GPNote=view.findViewById(R.id.GPNote);
+        HSNote=view.findViewById(R.id.HSNote);
+        //bottomsheet
+        btTakepic=bottomSheetView.findViewById(R.id. btTakepic);
+        btPickpic=bottomSheetView.findViewById(R.id.btPickpic);
+        btCancel=bottomSheetView.findViewById(R.id.btCancel);
     }
 
     private void handleData() {
@@ -212,9 +231,9 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             //姓名合併一起
             etNameL.setText(name);
             //性別
-            if (gender == 0) {
+            if (gender == 1) {
                 rbMan.setChecked(true);
-            } else if (gender == 1) {
+            } else if (gender == 2) {
                 rbWoman.setChecked(true);
             }
             etId.setText(id);
@@ -247,7 +266,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getMemberId()+"/"+ System.currentTimeMillis();
+        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -270,11 +289,12 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             //編輯個人資料
             if (btPIEditClick == 0) {
                 //變更按鈕
-                btPIEditClick = 1;
-                btPIApplyClick = 1;
+                btPIEditClick = 1;//完成時的代碼
+                btPIApplyClick = 1;//取消時的代碼
                 btPIEdit.setImageResource(R.drawable.bt_sure);
                 btPIApply.setVisibility(View.VISIBLE);
                 btPIApply.setImageResource(R.drawable.bt_cancel);
+                HSNote.setVisibility(View.VISIBLE);
                 etNameL.setEnabled(true); //改姓
                 etNameL.setText(member.getNameL());
                 etNameF.setVisibility(View.VISIBLE); //顯示名的欄位
@@ -286,9 +306,6 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 //                etPhone.setEnabled(true); //改電話
                 etMail.setEnabled(true); //改email
                 etAddress.setEnabled(true); //改address
-                //修改照片按鈕
-                btPPickPic.setVisibility(View.VISIBLE);
-                btPTakePic.setVisibility(View.VISIBLE);
 
             }
             //點擊完成
@@ -383,11 +400,8 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                     etMail.setEnabled(false); //改email
                     etAddress.setEnabled(false); //改address
                     tvGoodPeopleNote.setVisibility(View.GONE);
-                    //修改照片按鈕關閉
-                    btPPickPic.setVisibility(View.GONE);
-                    btPTakePic.setVisibility(View.GONE);
-                    btGPickPic.setVisibility(View.GONE);
-                    btGTakePic.setVisibility(View.GONE);
+                    GPNote.setVisibility(View.GONE);
+                    HSNote.setVisibility(View.GONE);
                     //------------------
                     //遇到bug的又不想解的解法
 //                    Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
@@ -406,14 +420,13 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             if (btPIApplyClick == 0) {
                 btPIEditClick = 1;
                 btPIApplyClick = 1;
-                btGPickPic.setVisibility(View.VISIBLE);
-                btGTakePic.setVisibility(View.VISIBLE);
                 btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消圖片
                 btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定圖片
                 tvGoodPeople.setVisibility(View.VISIBLE);
                 ivGoodPeople.setVisibility(View.VISIBLE);
                 tvGoodPeopleNote.setVisibility(View.VISIBLE);
                 scrollView.fullScroll(View.FOCUS_DOWN);
+                GPNote.setVisibility(View.VISIBLE);
             }
             //點選取消
             else if (btPIApplyClick == 1) {
@@ -424,67 +437,44 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             }
 
         });
+            ivHeadshot.setOnClickListener(v->{
+                //編輯模式時
+                if(btPIEditClick==1) {
+                    HSisClick = true;
+                    bottomSheetDialog.show();
+                }
+            });
+            ivGoodPeople.setOnClickListener(v->{
+                //編輯模式時
+                if(btPIEditClick==1) {
+                    GPisClick = true;
+                    bottomSheetDialog.show();
+                }
+            });
+            btPickpic.setOnClickListener(v->{
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                pickPictureLauncher.launch(intent);
+            });
+            btTakepic.setOnClickListener(v->{
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+                try {
+                    takePictureLauncher.launch(intent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(activity,"找不到相機應用程式", Toast.LENGTH_SHORT).show();
+                }
+            });
+            btCancel.setOnClickListener(v->{
+                bottomSheetDialog.dismiss();
+                HSisClick=false;
+                GPisClick=false;
+            });
+            bottomSheetDialog.setOnCancelListener(dialog -> {
+                HSisClick=false;
+                GPisClick=false;
+            });
 
-        //改生日用
-//        etBirthday.setOnClickListener(v -> {
-//            Calendar m_Calendar = Calendar.getInstance();
-//            DatePickerDialog.OnDateSetListener datepicker = (view, year, month, dayOfMonth) -> {
-//                m_Calendar.set(Calendar.YEAR, year);
-//                m_Calendar.set(Calendar.MONTH, month);
-//                m_Calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//                etBirthday.setText(sdf.format(m_Calendar.getTime()));
-//            };
-//            DatePickerDialog dialog = new DatePickerDialog(activity,
-//                    datepicker,
-//                    m_Calendar.get(Calendar.YEAR),
-//                    m_Calendar.get(Calendar.MONTH),
-//                    m_Calendar.get(Calendar.DAY_OF_MONTH));
-//            dialog.show();
-//
-//        });
-
-
-        //編輯照片
-        btPTakePic.setOnClickListener(v->{
-            HSisClick=true;
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-            try {
-                takePictureLauncher.launch(intent);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(activity,"找不到相機應用程式", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        btPPickPic.setOnClickListener(v->{
-            HSisClick=true;
-            Intent intent = new Intent(Intent.ACTION_PICK,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            pickPictureLauncher.launch(intent);
-
-        });
-
-        btGTakePic.setOnClickListener(v->{
-            GPisClick=true;
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-            try {
-                takePictureLauncher.launch(intent);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(activity,"找不到相機應用程式", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        btGPickPic.setOnClickListener(v->{
-            GPisClick=true;
-            Intent intent = new Intent(Intent.ACTION_PICK,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            pickPictureLauncher.launch(intent);
-
-
-        });
 
 
     }
@@ -506,6 +496,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 crop(result.getData().getData());
             }
         }
+        //都沒選照片
         else{
             HSisClick=false;
             GPisClick=false;
@@ -538,15 +529,21 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 }
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                //點擊更新頭貼
                 if(HSisClick){
                     ivHeadshot.setImageBitmap(bitmap);
+                    //上傳大頭貼成功
                     upNewHS=true;
                     HSisClick=false;
+                    bottomSheetDialog.dismiss();
                 }
+                //點擊更新良民證
                 else if(GPisClick){
                     ivGoodPeople.setImageBitmap(bitmap);
+                    //上傳良民證成功
                     upNewGP=true;
                     GPisClick=false;
+                    bottomSheetDialog.dismiss();
                 }
 
             } catch (IOException e) {
@@ -555,6 +552,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             }
 
         }
+        //使用者取消
         else{
             HSisClick=false;
             GPisClick=false;
