@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_KnowledgeFragment;
+import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentHouseFragment;
+import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeekingFragment;
 
 
 public class discussionBoardFragment extends Fragment {
@@ -37,7 +40,7 @@ public class discussionBoardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,15 +87,24 @@ public class discussionBoardFragment extends Fragment {
         @Override
         public Fragment createFragment(int position) {
 
-           switch (position)
-           {
-               case 0:
-                   return new Fragment(R.layout.fragment_discussion_board_rent_house);
-               case 1:
-                   return new Fragment(R.layout.fragment_discussion_board_knowledge);
-               default:
-                   return new Fragment(R.layout.fragment_discussion_board_rent_seeking);
-           }
+            switch (position)
+            {
+                case 0:
+                    return new discussionBoard_RentHouseFragment();
+                case 1:
+                    return new discussionBoard_KnowledgeFragment();
+                default:
+                    return new discussionBoard_RentSeekingFragment();
+
+                //下方寫法會報錯 RecyclerView 提示No adapter attached;skipping
+
+//                case 0:
+//                    return new Fragment(R.layout.fragment_discussion_board_rent_house);
+//                case 1:
+//                    return new Fragment(R.layout.fragment_discussion_board_knowledge);
+//                default:
+//                    return new Fragment(R.layout.fragment_discussion_board_rent_seeking);
+            }
         }
 
         @Override

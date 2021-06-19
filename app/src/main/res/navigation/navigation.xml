@@ -101,6 +101,28 @@
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_otherpay"
         android:label="其他款項"
         tools:layout="@layout/fragment_orderconfirm_otherpay" />
+    <fragment
+        android:id="@+id/discussionBoard_RentSeekingFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeekingFragment"
+        android:label="fragment_discussion_board_rent_seeking"
+        tools:layout="@layout/fragment_discussion_board_rent_seeking" >
+        <action
+            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionInsertFragment"
+            app:destination="@id/discussionInsertFragment" />
+        <action
+            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionDetailFragment"
+            app:destination="@id/discussionDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/discussionInsertFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionInsertFragment"
+        android:label="fragment_discussion_insert"
+        tools:layout="@layout/fragment_discussion_insert" />
+    <fragment
+        android:id="@+id/discussionDetailFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionDetailFragment"
+        android:label="fragment_discussion_detail"
+        tools:layout="@layout/fragment_discussion_detail" />
 </navigation>
 
 
