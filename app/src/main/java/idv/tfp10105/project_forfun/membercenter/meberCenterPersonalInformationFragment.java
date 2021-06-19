@@ -73,7 +73,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private RadioButton rbMan, rbWoman;
     private ScrollView scrollView;
     //判斷點擊哪個按鈕
-    private int btPIEditClick = 0; // 0->編輯個人資料 1->完成
+    private int btPIEditClick = 0; // 0->編輯個人資料 1->完成(編輯資料) 2->完成(申請房東)
     private int btPIApplyClick = 0;  // 0->申請成房東 1->取消
     //判斷上傳點擊哪個按鈕
     private boolean HSisClick=false;
@@ -175,12 +175,13 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private void handleData() {
         if (RemoteAccess.networkCheck(activity)) {
             //防沒連到伺服器閃退(會有空指標例外)
-            if (RemoteAccess.getJsonData(url, null).equals("error")) {
+            if (serverresp.equals("error")) {
                 Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
                 btPIEdit.setEnabled(false);
                 btPIApply.setEnabled(false);
                 return;
             }
+
             member = new Gson().fromJson(serverresp, Member.class);
             //整理回傳的資訊
             String name = member.getNameL() + member.getNameF();
@@ -289,7 +290,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             //編輯個人資料
             if (btPIEditClick == 0) {
                 //變更按鈕
-                btPIEditClick = 1;//完成時的代碼
+                btPIEditClick = 1;//完成編輯時的代碼
                 btPIApplyClick = 1;//取消時的代碼
                 btPIEdit.setImageResource(R.drawable.bt_sure);
                 btPIApply.setVisibility(View.VISIBLE);
@@ -308,8 +309,8 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 etAddress.setEnabled(true); //改address
 
             }
-            //點擊完成
-            else if (btPIEditClick == 1) {
+            //點擊完成(編輯的及申請房東)
+            else if (btPIEditClick == 1||btPIEditClick == 2) {
                 //判斷是否為編輯個人資料
                 if(etNameF.getVisibility()==View.VISIBLE) {
                     if (etNameL.getText().toString().trim().isEmpty()) {
@@ -351,7 +352,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                     }
                 }
                 //若點擊完成為申請成為房東
-               else {
+               if(btPIEditClick == 2){
                     //上傳良民證圖片
                     if (upNewGP) {
                         baos = new ByteArrayOutputStream();
@@ -418,7 +419,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         btPIApply.setOnClickListener(v -> {
             //點選申請房東
             if (btPIApplyClick == 0) {
-                btPIEditClick = 1;
+                btPIEditClick = 2;//申請房東的完成
                 btPIApplyClick = 1;
                 btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消圖片
                 btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定圖片
@@ -438,15 +439,15 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 
         });
             ivHeadshot.setOnClickListener(v->{
-                //編輯模式時
+                //編輯模式時及點選編輯時
                 if(btPIEditClick==1) {
                     HSisClick = true;
                     bottomSheetDialog.show();
                 }
             });
             ivGoodPeople.setOnClickListener(v->{
-                //編輯模式時
-                if(btPIEditClick==1) {
+                //編輯模式
+                if(btPIEditClick==2) {
                     GPisClick = true;
                     bottomSheetDialog.show();
                 }

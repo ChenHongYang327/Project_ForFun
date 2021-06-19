@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/registIntroductionFragment">
     <fragment
         android:id="@+id/homeFragment"
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
@@ -83,6 +83,16 @@
         android:name="idv.tfp10105.project_forfun.signin.signin_in"
         android:label="fragment_signin_in"
         tools:layout="@layout/fragment_signin_in" />
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="idv.tfp10105.project_forfun.signin.registerFragment"
+        android:label="fragment_regist"
+        tools:layout="@layout/fragment_regist" />
+    <fragment
+        android:id="@+id/registIntroductionFragment"
+        android:name="idv.tfp10105.project_forfun.signin.registIntroductionFragment"
+        android:label="fragment_regist_introduction"
+        tools:layout="@layout/fragment_regist_introduction" />
 </navigation>
 
 
