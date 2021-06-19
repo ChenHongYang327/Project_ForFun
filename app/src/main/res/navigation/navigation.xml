@@ -78,6 +78,11 @@
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_score"
         android:label="評價"
         tools:layout="@layout/fragment_orderconfirm_score" />
+    <fragment
+        android:id="@+id/signin_in"
+        android:name="idv.tfp10105.project_forfun.signin.signin_in"
+        android:label="fragment_signin_in"
+        tools:layout="@layout/fragment_signin_in" />
 </navigation>
 
 

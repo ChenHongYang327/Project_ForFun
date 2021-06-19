@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     bottomNavigationView.setVisibility(View.GONE);
                 }
                 //隱藏actionbar的頁面
-                if(navController.getCurrentDestination().getId()==R.id.signin_in2){
+                if(navController.getCurrentDestination().getId()==R.id.signin_in){
                     actionBar.hide();
                 }
                 else{
