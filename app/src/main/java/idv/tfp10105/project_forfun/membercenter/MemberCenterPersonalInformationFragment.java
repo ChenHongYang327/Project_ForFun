@@ -50,9 +50,9 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.commend.Commend;
-import idv.tfp10105.project_forfun.commend.Member;
-import idv.tfp10105.project_forfun.commend.RemoteAccess;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.bean.Member;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -85,10 +85,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
     //設定圖片用
     private Bitmap bitmap = null;
     private FirebaseStorage storage;
-    private String picUri; //上傳用
+    private String picUri; //回傳路徑用
     private ByteArrayOutputStream baos; //上傳用
+    private String imagePath; //上傳的路徑
     private String serverresp;
-    private String url = Commend.URL + "memberCenterPersonalInformation";
+    private String url = Common.URL + "memberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -267,7 +268,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -277,8 +278,8 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         Log.d("顯示Firebase上傳圖片的狀態","上傳成功");
                     } else {
                         String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
+                        imagePath=null;
                         Log.d("顯示Firebase上傳圖片的錯誤", errorMessage);
-                        Toast.makeText(activity,"圖片上傳失敗", Toast.LENGTH_SHORT).show();
                     }
                 });
         return imagePath;
@@ -347,6 +348,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
+                        if(picUri==null){
+                            Toast.makeText(activity, "大頭貼上傳異常,請重新選擇圖片", Toast.LENGTH_SHORT).show();
+                            upNewHS=false;
+                            return;
+                        }
                         member.setHeadshot(picUri);
                         upNewHS=false;
                     }
@@ -358,8 +364,13 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
+                        if(picUri==null){
+                            Toast.makeText(activity, "良民證上傳異常,請重新選擇圖片", Toast.LENGTH_SHORT).show();
+                            upNewGP=false;
+                            return;
+                        }
                         member.setCitizen(picUri);
-//                        upNewGP = false;
+                        upNewGP = false;
                     } else {
                         Toast.makeText(activity, "未更新良民證照片", Toast.LENGTH_SHORT).show();
                         return;

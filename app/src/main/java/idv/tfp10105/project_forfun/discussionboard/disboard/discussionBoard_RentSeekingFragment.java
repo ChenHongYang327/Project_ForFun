@@ -43,8 +43,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.commend.Commend;
-import idv.tfp10105.project_forfun.commend.RemoteAccess;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 import idv.tfp10105.project_forfun.discussionboard.bean.Post;
 import idv.tfp10105.project_forfun.orderconfirm.ocf.Book;
@@ -198,7 +198,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     private List<Post> getPosts() {
         List<Post> posts = null;
         if (RemoteAccess.networkCheck(activity)) {
-            String url = Commend.URL + "";
+            String url = Common.URL + "";
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("action", "getAll");
             String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());

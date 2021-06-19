@@ -1,7 +1,6 @@
 package idv.tfp10105.project_forfun.signin;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.ActivityNotFoundException;
@@ -15,20 +14,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,7 +29,13 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -50,17 +46,15 @@ import com.yalantis.ucrop.UCrop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.commend.Commend;
-import idv.tfp10105.project_forfun.commend.Member;
-import idv.tfp10105.project_forfun.commend.RemoteAccess;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.bean.Member;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -73,7 +67,7 @@ public class RegisterFragment extends Fragment {
     private EditText etRgNameL,etRgNameF,etRgId,etRgBirthday,etRgPhone,etRgMail,etRgAddress;
     private ImageView ivRgHeadshot,ivRgIdPicF,ivRgIdPicB,ivRgGoodPeople;
     private RadioButton rbRgMan,rbRgWoman;
-    private TextView tvRgGoodPeople,rgTitle,rgGoodPeopleNote,rgHSNote,rgIDFNote,rgIDBNote;
+    private TextView tvRgGoodPeople,rgTitle,rgGoodPeopleNote;
     //BottomSheet的元件
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheetView;
@@ -81,8 +75,9 @@ public class RegisterFragment extends Fragment {
     //圖片處理
     private Bitmap bitmap = null; //設定圖片顯示用
     private FirebaseStorage storage;
-    private String picUri; //上傳用
+    private String picUri; //回傳路徑用
     private ByteArrayOutputStream baos; //上傳用
+    private String imagePath;//上傳路徑
     //拍照
     private File file;
     private Uri contentUri;
@@ -96,7 +91,7 @@ public class RegisterFragment extends Fragment {
     private boolean clickIdPicF=false;
     private boolean clickIdPicB=false;
     private boolean clickGoodPeople=false;
-    private String url = Commend.URL + "/register";
+    private String url = Common.URL + "/register";
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             this::takePictureResult);
@@ -159,9 +154,6 @@ public class RegisterFragment extends Fragment {
         tvRgGoodPeople=view.findViewById(R.id.tvRgGoodPeople);
         ivRgGoodPeople=view.findViewById(R.id.ivRgGoodPeople);
         rgGoodPeopleNote=view.findViewById(R.id.rgGoodPeopleNote);
-        rgHSNote=view.findViewById(R.id.rgHSNote);
-        rgIDFNote=view.findViewById(R.id.rgIDFNote);
-        rgIDBNote=view.findViewById(R.id.rgIDBNote);
         //bottomsheet
         btTakepic=bottomSheetView.findViewById(R.id. btTakepic);
         btPickpic=bottomSheetView.findViewById(R.id.btPickpic);
@@ -249,11 +241,11 @@ public class RegisterFragment extends Fragment {
             }
             if (etRgAddress.getText().toString().trim().isEmpty()) {
                 etRgAddress.setError("地址不可為空");
-                status=false;;
+                status=false;
             }
             if (etRgMail.getText().toString().trim().isEmpty()) {
                 etRgMail.setError("郵件不可為空");
-                status=false;;
+                status=false;
             }
             if (!etRgMail.getText().toString().trim().isEmpty()) {
                 if(!android.util.Patterns.EMAIL_ADDRESS.matcher(etRgMail.getText().toString().trim()).matches()) {
@@ -263,29 +255,29 @@ public class RegisterFragment extends Fragment {
             }
             if (etRgPhone.getText().toString().trim().length()!=10) {
                 etRgPhone.setError("手機號碼格式不正確");
-                status=false;;
+                status=false;
             }
             if (etRgBirthday.getText().toString().trim().length()!=10) {
                 etRgBirthday.setError("生日不可為空");
-                status=false;;
+                status=false;
             }
             if (!uploadHeadshot) {
                 Toast.makeText(activity, "請上傳大頭貼", Toast.LENGTH_SHORT).show();
-                status=false;;
+                status=false;
             }
             if (!uploadIdPicF) {
                 Toast.makeText(activity, "請上傳身分證(正面)", Toast.LENGTH_SHORT).show();
-                status=false;;
+                status=false;
             }
             if (!uploadIdPicB) {
                 Toast.makeText(activity, "請上傳身分證(反面)", Toast.LENGTH_SHORT).show();
-                status=false;;
+                status=false;
             }
             //如果是房東
             if(sBundle.equals("Landlord")){
                 if (!uploadGoodPeople) {
                     Toast.makeText(activity, "請上傳良民證", Toast.LENGTH_SHORT).show();
-                    status=false;;
+                    status=false;
                 }
             }
             //檢查點
@@ -321,27 +313,52 @@ public class RegisterFragment extends Fragment {
             //大頭照
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            member.setHeadshot(uploadImage(baos.toByteArray()));
+            picUri=uploadImage(baos.toByteArray());
+            if(picUri==null){
+                Toast.makeText(activity, "大頭照上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
+                uploadHeadshot=false;
+                return;
+            }
+            member.setHeadshot(picUri);
             //身分證正面
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgIdPicB.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            member.setIdImgb(uploadImage(baos.toByteArray()));
+            picUri=uploadImage(baos.toByteArray());
+            if(picUri==null){
+                Toast.makeText(activity, "身分證上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
+                uploadIdPicB=false;
+                return;
+            }
+            member.setIdImgb(picUri);
             //身分證反面
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgIdPicF.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            member.setIdImgf(uploadImage(baos.toByteArray()));
+            picUri=uploadImage(baos.toByteArray());
+            if(picUri==null){
+                Toast.makeText(activity, "身分證上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
+                uploadIdPicF=false;
+                return;
+            }
+            member.setIdImgf(picUri);
+            //如果是申請房東
             if(sBundle.equals("Landlord")){
                 //良民證
+                baos = new ByteArrayOutputStream();
                 ((BitmapDrawable) ivRgGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                member.setCitizen(uploadImage(baos.toByteArray()));
+                picUri=uploadImage(baos.toByteArray());
+                if(picUri==null){
+                    Toast.makeText(activity, "良民證上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
+                    uploadGoodPeople=false;
+                    return;
+                }
+                member.setCitizen(picUri);
             }
+            //將資料轉成JSON
             reqJson.addProperty("action","register");
             reqJson.addProperty("member",new Gson().toJson(member));
             resp= RemoteAccess.getJsonData(url,reqJson.toString());
             respJson=new Gson().fromJson(resp,JsonObject.class);
             if(respJson.get("status").getAsBoolean()) {
-                //處理token
-
                 Toast.makeText(activity, "註冊成功", Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(v).popBackStack(R.id.registerFragment, true);
                 Navigation.findNavController(v)
@@ -508,7 +525,7 @@ public class RegisterFragment extends Fragment {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -519,7 +536,7 @@ public class RegisterFragment extends Fragment {
                     } else {
                         String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
                         Log.d("顯示Firebase上傳圖片的錯誤", errorMessage);
-                        Toast.makeText(activity,"圖片上傳失敗", Toast.LENGTH_SHORT).show();
+                        imagePath=null;
                     }
                 });
         return imagePath;

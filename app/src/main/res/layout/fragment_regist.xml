@@ -135,7 +135,7 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="#390B0101"
                     android:textColor="#FFFFFF"
-                    android:text="請點選新增圖片" />
+                    android:text="請點選此處新增圖片" />
 
             </FrameLayout>
 
@@ -348,7 +348,7 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="#390B0101"
                     android:textColor="#FFFFFF"
-                    android:text="請點選新增圖片" />
+                    android:text="請點選此處新增圖片" />
 
             </FrameLayout>
 
@@ -369,7 +369,7 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="#390B0101"
                     android:textColor="#FFFFFF"
-                    android:text="請點選新增圖片" />
+                    android:text="請點選此處新增圖片" />
 
             </FrameLayout>
 
@@ -412,7 +412,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="#390B0101"
                     android:textColor="#FFFFFF"
-                    android:text="請點選新增圖片"
+                    android:text="請點選此處新增圖片"
                     android:visibility="gone" />
 
             </FrameLayout>

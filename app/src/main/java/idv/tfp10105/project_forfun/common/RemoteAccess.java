@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.commend;
+package idv.tfp10105.project_forfun.common;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.concurrent.FutureTask;
 
