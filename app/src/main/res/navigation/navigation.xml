@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_orderconfirm_houseSnapshot_to_orderconfirm_score"
             app:destination="@id/orderconfirm_score" />
+        <action
+            android:id="@+id/action_orderconfirm_houseSnapshot_to_orderconfirm_otherpay"
+            app:destination="@id/orderconfirm_otherpay" />
     </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment_ho"
@@ -86,13 +89,18 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="idv.tfp10105.project_forfun.signin.registerFragment"
-        android:label="fragment_regist"
+        android:label="註冊"
         tools:layout="@layout/fragment_regist" />
     <fragment
         android:id="@+id/registIntroductionFragment"
         android:name="idv.tfp10105.project_forfun.signin.registIntroductionFragment"
         android:label="fragment_regist_introduction"
         tools:layout="@layout/fragment_regist_introduction" />
+    <fragment
+        android:id="@+id/orderconfirm_otherpay"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_otherpay"
+        android:label="其他款項"
+        tools:layout="@layout/fragment_orderconfirm_otherpay" />
 </navigation>
 
 
