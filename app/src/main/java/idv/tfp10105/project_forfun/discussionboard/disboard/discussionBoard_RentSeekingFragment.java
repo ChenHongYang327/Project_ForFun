@@ -8,11 +8,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -36,7 +34,6 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +43,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
-import idv.tfp10105.project_forfun.discussionboard.bean.Post;
+import idv.tfp10105.project_forfun.commend.Post;
 import idv.tfp10105.project_forfun.orderconfirm.ocf.Book;
 
 public class discussionBoard_RentSeekingFragment extends Fragment {
