@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.discussionboard.bean;
+package idv.tfp10105.project_forfun.commend;
 
 import java.io.Serializable;
 import java.util.Date;
