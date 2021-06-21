@@ -59,7 +59,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class MemberCenterPersonalInformationFragment extends Fragment {
     private Activity activity;
-    private File file;
     private Uri contentUri;
     private Member member;
     //BottomSheet的元件
@@ -82,14 +81,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
     private boolean upNewHS=false;
     private boolean upNewGP=false;
     private SimpleDateFormat sdf;
-    //設定圖片用
-    private Bitmap bitmap = null;
     private FirebaseStorage storage;
     private String picUri; //回傳路徑用
     private ByteArrayOutputStream baos; //上傳用
-    private String imagePath; //上傳的路徑
     private String serverresp;
-    private String url = Common.URL + "memberCenterPersonalInformation";
+    private final String url = Common.URL + "memberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -110,7 +106,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
         // 指定拍照存檔路徑
-        file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         file = new File(file, "picture.jpg");
         contentUri = FileProvider.getUriForFile(
                 activity, activity.getPackageName() + ".fileProvider", file);
@@ -268,7 +264,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -278,11 +274,10 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         Log.d("顯示Firebase上傳圖片的狀態","上傳成功");
                     } else {
                         String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
-                        imagePath=null;
                         Log.d("顯示Firebase上傳圖片的錯誤", errorMessage);
                     }
                 });
-        return imagePath;
+        return imageRef.getPath();
     }
 
 
@@ -348,11 +343,6 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
-                        if(picUri==null){
-                            Toast.makeText(activity, "大頭貼上傳異常,請重新選擇圖片", Toast.LENGTH_SHORT).show();
-                            upNewHS=false;
-                            return;
-                        }
                         member.setHeadshot(picUri);
                         upNewHS=false;
                     }
@@ -364,11 +354,6 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
-                        if(picUri==null){
-                            Toast.makeText(activity, "良民證上傳異常,請重新選擇圖片", Toast.LENGTH_SHORT).show();
-                            upNewGP=false;
-                            return;
-                        }
                         member.setCitizen(picUri);
                         upNewGP = false;
                     } else {
@@ -531,6 +516,8 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
             Uri resultUri = UCrop.getOutput(result.getData());
 
             try {
+                //設定圖片用
+                Bitmap bitmap;
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     bitmap = BitmapFactory.decodeStream(
                             activity.getContentResolver().openInputStream(resultUri));

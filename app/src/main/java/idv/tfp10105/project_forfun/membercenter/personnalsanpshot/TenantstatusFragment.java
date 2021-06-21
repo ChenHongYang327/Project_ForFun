@@ -7,9 +7,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 
@@ -34,6 +36,7 @@ public class TenantstatusFragment extends Fragment {
     private List<PersonEvaluation> personEvaluations  =new ArrayList<>();
     private Member user,selectUser;
     private RecyclerView rvTen;
+    private RatingBar rbTenantScore;
     private final String url = Common.URL +"personalSnapshot";
     public TenantstatusFragment(Member user, Member selectUser) {
         this.user = user;
@@ -46,7 +49,7 @@ public class TenantstatusFragment extends Fragment {
         activity=getActivity();
         //假資料
 //        selectUser=new Member();
-//        selectUser.setMemberId(2);
+        selectUser.setMemberId(3);
 
     }
 
@@ -55,7 +58,7 @@ public class TenantstatusFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_tenantstatus, container, false);
         findView(view);
-        fakedata();
+//        fakedata();
         handleTenData();
         return view;
     }
@@ -89,29 +92,36 @@ public class TenantstatusFragment extends Fragment {
 
     private void findView(View view) {
         rvTen=view.findViewById(R.id.rvTen);
+        rbTenantScore=view.findViewById(R.id.rbTenantScore);
     }
 
     private void handleTenData() {
         //連線
-//        if (RemoteAccess.networkCheck(activity)) {
-//            JsonObject client = new JsonObject();
-//            client.addProperty("action", "TenantStatusEvaluation");
-//            client.addProperty("commentedID",selectUser.getMemberId());
-//            String resp = RemoteAccess.getJsonData(url,client.toString());
-//            if(resp!=null){
-//                if (personEvaluations.size() > 0) {
-//                    Type listType= new TypeToken<List<PersonEvaluation>>(){}.getType();
-//                    personEvaluations=new Gson().fromJson(resp,listType);
-//                    rvTen.setLayoutManager(new LinearLayoutManager(activity));
-//                    rvTen.setAdapter(new PersonnalAdapter(activity, activity, personEvaluations));
-//                } else {
-//                    //沒資料要執行的動作
-//                }
-//            }
-//            else{
-//                //沒資料要執行的動作
-//            }
-//
-//        }
+        if (RemoteAccess.networkCheck(activity)) {
+            JsonObject client = new JsonObject();
+            client.addProperty("action", "getAllEvaluation");
+            client.addProperty("commentedID",selectUser.getMemberId());
+            client.addProperty("status","tenantStatus");
+            String resp = RemoteAccess.getJsonData(url,client.toString());
+            if(resp!=null){
+                    Type listType= new TypeToken<List<PersonEvaluation>>(){}.getType();
+                    personEvaluations=new Gson().fromJson(resp,listType);
+                    rvTen.setLayoutManager(new LinearLayoutManager(activity));
+                    PersonnalAdapter personnalAdapter=new PersonnalAdapter(activity, activity, personEvaluations);
+                    rvTen.setAdapter(personnalAdapter);
+                    int sum=0;
+                    for(PersonEvaluation personEvaluation:personEvaluations){
+                        sum+=personEvaluation.getPersonStar();
+                    }
+                    float avg=(float) sum/personEvaluations.size();//平均分數
+                    rbTenantScore.setRating(avg);
+
+
+            }
+            else{
+                //沒資料要執行的動作
+            }
+
+        }
     }
 }

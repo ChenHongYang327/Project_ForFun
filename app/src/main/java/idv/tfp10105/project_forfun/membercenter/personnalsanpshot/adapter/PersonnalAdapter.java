@@ -23,7 +23,9 @@ import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
@@ -32,11 +34,12 @@ import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.PersonEvaluation;
 
 public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.PersonnalViewHolder>{
+    private final String url = Common.URL +"personalSnapshot";
     private Context context;
     private Activity activity;
     private List<PersonEvaluation> list;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss",Locale.TAIWAN);
 
-    private final String url = Common.URL +"personalSnapshot";
 
     public PersonnalAdapter(Context context, Activity activity, List<PersonEvaluation> list) {
         this.context = context;
@@ -56,28 +59,31 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
     public void onBindViewHolder(@NonNull @NotNull PersonnalAdapter.PersonnalViewHolder holder, int position) {
         PersonEvaluation personEvaluation=list.get(position);
         //設定顯示資料
-//        if(RemoteAccess.networkCheck(activity)){
-//            JsonObject clientreq=new JsonObject();
-//            clientreq.addProperty("action","getCommenter");
-//            clientreq.addProperty("commenterID",personEvaluation.getCommentedBy());
-//            String resp=RemoteAccess.getJsonData(url,clientreq.toString());
-//            Member member=new Gson().fromJson(resp,Member.class);
-//            getImage(holder.ivCommentByPS,member.getHeadshot());//設定頭像
-//            String name=member.getNameF() + member.getNameL();
-//            holder.tvCommentByPS.setText(name);//設定名字
-//            holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數
-//            holder.tvCommentPS.setText(personEvaluation.getPersonComment());//設定評論內容
-//            holder.tvCommentTimePS.setText(personEvaluation.getCreateTime().toString());//設定評論建立時間
-//        }
-//        else{
-//            Toast.makeText(context, "請檢察網路連線", Toast.LENGTH_SHORT).show();
-//        }
-        //假資料
-        holder.tvCommentByPS.setText("測試假資料");//設定名字
-        holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數
-        holder.tvCommentPS.setText(personEvaluation.getPersonComment());//設定評論內容
-        holder.tvCommentTimePS.setText(personEvaluation.getCreateTime().toString());//設定
-        holder.ivCommentByPS.setImageDrawable(activity.getResources().getDrawable(R.drawable.googleg_disabled_color_18));
+        if(RemoteAccess.networkCheck(activity)){
+            JsonObject clientreq=new JsonObject();
+            clientreq.addProperty("action","getCommenter");
+            clientreq.addProperty("commenterID",personEvaluation.getCommentedBy());
+            String resp=RemoteAccess.getJsonData(url,clientreq.toString());
+            Member member=new Gson().fromJson(resp,Member.class);
+            //需替換
+            holder.ivCommentByPS.setImageDrawable(activity.getResources().getDrawable(R.drawable.googleg_disabled_color_18));
+            // getImage(holder.ivCommentByPS,member.getHeadshot());//設定頭像
+            //-------
+            String name=member.getNameL()+member.getNameF();
+            holder.tvCommentByPS.setText(name);//設定名字
+            holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數
+            holder.tvCommentPS.setText(personEvaluation.getPersonComment());//設定評論內容
+            holder.tvCommentTimePS.setText(sdf.format(personEvaluation.getCreateTime()));//設定評論建立時間
+        }
+        else{
+            Toast.makeText(context, "請檢察網路連線", Toast.LENGTH_SHORT).show();
+        }
+        //測試用假資料
+//        holder.tvCommentByPS.setText("測試假資料");//設定名字
+//        holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數
+//        holder.tvCommentPS.setText(personEvaluation.getPersonComment());//設定評論內容
+//        holder.tvCommentTimePS.setText(personEvaluation.getCreateTime().toString());//設定
+//        holder.ivCommentByPS.setImageDrawable(activity.getResources().getDrawable(R.drawable.googleg_disabled_color_18));
     }
 
     @Override
@@ -123,4 +129,5 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
                 });
 
     }
+
 }
