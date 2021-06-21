@@ -40,11 +40,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.common.Common;
-import idv.tfp10105.project_forfun.common.RemoteAccess;
-import idv.tfp10105.project_forfun.common.bean.Post;
+import idv.tfp10105.project_forfun.commend.Commend;
+import idv.tfp10105.project_forfun.commend.RemoteAccess;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
-
+import idv.tfp10105.project_forfun.commend.Post;
 import idv.tfp10105.project_forfun.orderconfirm.ocf.Book;
 
 public class discussionBoard_RentSeekingFragment extends Fragment {
@@ -196,7 +195,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     private List<Post> getPosts() {
         List<Post> posts = null;
         if (RemoteAccess.networkCheck(activity)) {
-            String url = Common.URL + "";
+            String url = Commend.URL + "";
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("action", "getAll");
             String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
@@ -274,7 +273,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         }
 
 
-
 //        public SeekAdapter(Context context, List<Post> posts) {
 //            layoutInflater = LayoutInflater.from(context);
 //            this.posts = posts;
@@ -288,14 +286,14 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
 //        }
 
         // fake data
-        public void setAdapter (List<Book> books) {
+        public void setAdapter(List<Book> books) {
             this.books = books;
         }
 
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             TextView disPostName, disPostTitle, disPostContext, disPostTime;
-            ImageButton disPostBtMore,disPostMemberImg;
+            ImageButton disPostBtMore, disPostMemberImg;
             ImageView disPostImg;
 
             public MyViewHolder(@NonNull @NotNull View itemView) {
@@ -337,14 +335,14 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             holder.disPostImg.setImageResource(R.drawable.post_houseimg_test);
             holder.disPostMemberImg.setImageResource(R.drawable.post_memberhead);
             //設定點擊事件
-            holder.disPostImg.setOnClickListener(v -> {
-                Bundle bundle = new Bundle();
+//            holder.disPostImg.setOnClickListener(v -> {
+//                Bundle bundle = new Bundle();
 //                bundle.putSerializable("book", book);
-                //轉至詳細頁面
-                Navigation.findNavController(v).navigate(R.id.action_discussionBoard_RentSeekingFragment_to_discussionDetailFragment,bundle);
-            });
+//                //轉至詳細頁面
+//                Navigation.findNavController(v).navigate(R.id.action_discussionBoard_RentSeekingFragment_to_discussionDetailFragment,bundle);
+        }
 
-
+//    });
 
 
 //            final Post post = posts.get(position);
@@ -360,7 +358,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
 //                Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment,bundle);
 //            });
         }
-    }
+//    }
 
 
     // 下載Firebase storage的照片並顯示在ImageView上

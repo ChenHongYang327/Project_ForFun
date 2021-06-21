@@ -29,14 +29,14 @@
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout_seek"
-            android:layout_width="328dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center|center_horizontal|fill_vertical"
+            android:layout_gravity="center"
             android:layout_margin="8dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_seeking"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:foregroundGravity="center" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

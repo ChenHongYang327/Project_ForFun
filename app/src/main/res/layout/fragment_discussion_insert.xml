@@ -7,149 +7,130 @@
     android:orientation="vertical"
     tools:context=".discussionboard.controller.discussionInsertFragment">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <EditText
+        android:id="@+id/insert_et_context"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="422dp"
+        android:background="@null"
+        android:ems="10"
+        android:hint="想說些什麼......"
+        android:inputType="textLongMessage|textPersonName"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.058"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/insert_spinner"
+        tools:ignore="MissingConstraints" />
+
+    <ImageButton
+        android:id="@+id/insert_bt_memberHead"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/post_memberhead"
+        app:layout_constraintBottom_toTopOf="@+id/insert_board"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/insert_board"
-                android:layout_width="71dp"
-                android:layout_height="33dp"
-                android:foregroundGravity="center_vertical"
-                android:gravity="center_vertical"
-                android:hint="板塊選擇"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
-                app:layout_constraintEnd_toStartOf="@+id/insert_spinner"
-                app:layout_constraintHorizontal_bias="0.75"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/insert_bt_memberHead"
-                app:layout_constraintVertical_bias="0.0"
-                tools:ignore="MissingConstraints" />
+    <ImageButton
+        android:id="@+id/insert_bt_insert"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/shap"
+        android:src="@drawable/bt_post"
+        app:layout_constraintBottom_toTopOf="@+id/insert_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.883"
+        app:layout_constraintStart_toEndOf="@+id/insert_memberName_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
 
-            <ImageButton
-                android:id="@+id/insert_bt_memberHead"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/post_memberhead"
-                app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
-                app:layout_constraintEnd_toStartOf="@+id/insert_board"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.224"
-                tools:ignore="MissingConstraints" />
+    <TextView
+        android:id="@+id/insert_memberName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:hint="name"
+        android:textAllCaps="true"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toTopOf="@+id/insert_et_insert"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toEndOf="@+id/insert_bt_memberHead"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.175"
+        tools:ignore="MissingConstraints,UnknownId" />
 
-            <TextView
-                android:id="@+id/insert_memberName_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="24dp"
-                android:hint="name"
-                android:textAllCaps="true"
-                android:textColor="#000000"
-                app:layout_constraintBottom_toTopOf="@+id/insert_board"
-                app:layout_constraintEnd_toStartOf="@+id/insert_bt_insert"
-                app:layout_constraintHorizontal_bias="0.037"
-                app:layout_constraintStart_toEndOf="@+id/insert_bt_memberHead"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.464"
-                tools:ignore="MissingConstraints,UnknownId" />
+    <Spinner
+        android:id="@+id/insert_spinner"
+        android:layout_width="220dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="76dp"
+        android:layout_marginBottom="150dp"
+        android:background="@drawable/shap"
+        android:foreground="@drawable/spinner"
+        app:layout_constraintBottom_toTopOf="@+id/insert_et_context"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.858"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
-            <ImageView
-                android:id="@+id/insert_bt_image"
-                android:layout_width="305dp"
-                android:layout_height="167dp"
-                android:src="@drawable/uploadpicture"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.528"
-                app:layout_constraintStart_toStartOf="parent" />
+    <ImageButton
+        android:id="@+id/insert_bt_image"
+        android:layout_width="305dp"
+        android:layout_height="167dp"
+        android:layout_marginTop="332dp"
+        android:background="@drawable/shap"
+        android:foreground="@drawable/uploadpicture"
+        android:src="@drawable/uploadpicture"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.579" />
 
-            <EditText
-                android:id="@+id/insert_et_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:ems="10"
-                android:hint="標題......"
-                android:inputType="textLongMessage|textMultiLine|textPersonName"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.117"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.409"
-                tools:ignore="MissingConstraints" />
+    <EditText
+        android:id="@+id/insert_et_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="55dp"
+        android:background="@null"
+        android:ems="10"
+        android:hint="標題......"
+        android:inputType="textLongMessage|textPersonName"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/insert_et_context"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.071"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/insert_board"
+        tools:ignore="MissingConstraints" />
 
-            <EditText
-                android:id="@+id/insert_et_context"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@null"
-                android:ems="10"
-                android:hint="想說些什麼......"
-                android:inputType="textLongMessage|textMultiLine|textPersonName"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/insert_bt_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.117"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/insert_et_title"
-                app:layout_constraintVertical_bias="0.0"
-                tools:ignore="MissingConstraints" />
-
-            <ImageButton
-                android:id="@+id/insert_bt_insert"
-                android:layout_width="64dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginRight="24dp"
-                android:background="@drawable/bt_post"
-                android:src="@drawable/bt_post"
-                app:layout_constraintBottom_toTopOf="@+id/insert_bt_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <Spinner
-                android:id="@+id/insert_spinner"
-                android:layout_width="220dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:layout_marginRight="24dp"
-                android:background="@drawable/spinner"
-                android:foreground="@drawable/shap"
-                app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/insert_bt_insert"
-                app:layout_constraintVertical_bias="0.2"
-                tools:ignore="MissingConstraints" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-
+    <TextView
+        android:id="@+id/insert_board"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="73dp"
+        android:text="板塊選擇"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
+        app:layout_constraintEnd_toStartOf="@+id/insert_spinner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/insert_bt_memberHead"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
