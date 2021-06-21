@@ -22,12 +22,13 @@
         android:id="@+id/imageView"
         android:layout_width="250dp"
         android:layout_height="350dp"
-        android:layout_marginBottom="280dp"
         android:src="@drawable/mark_removebg_preview"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView6"
@@ -68,16 +69,15 @@
         android:id="@+id/ed_phone"
         android:layout_width="230dp"
         android:layout_height="25dp"
+        android:layout_marginTop="300dp"
         android:background="@drawable/et_comment"
         android:ems="10"
+        android:hint="0911-111-111"
         android:inputType="textPersonName"
-        android:text="0911-111-111 "
-        app:layout_constraintBottom_toBottomOf="@+id/textView5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.795"
+        app:layout_constraintHorizontal_bias="0.79"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView5"
-        app:layout_constraintVertical_bias="0.447" />
+        app:layout_constraintTop_toTopOf="@+id/textView5" />
 
     <ImageButton
         android:id="@+id/signin_assist"
@@ -99,7 +99,6 @@
         android:background="@drawable/et_comment"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text=" * * * * * *  "
         app:layout_constraintBottom_toBottomOf="@+id/textView5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.79"
@@ -111,43 +110,37 @@
         android:id="@+id/text_prompt"
         android:layout_width="400dp"
         android:layout_height="20dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:background="#E8F5E9"
         android:ems="10"
         android:gravity="center"
-        android:hint="請輸入手機號碼及驗證碼"
-        android:text="@+id/text_prompt01"
+        android:text="請輸入手機號碼及驗證碼"
         android:textColor="#000000"
-        android:textColorHint="#000000"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ed_Verification_code"
-        app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="4dp" />
+        tools:layout_editor_absoluteX="5dp" />
 
     <ImageButton
         android:id="@+id/signin_bt_Sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         android:src="@drawable/bt_signin_login"
-        app:layout_constraintBottom_toBottomOf="@+id/textView5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_prompt"
-        app:layout_constraintVertical_bias="0.013" />
+        app:layout_constraintTop_toBottomOf="@+id/text_prompt" />
 
     <ImageButton
         android:id="@+id/signin_bt_registered"
         android:layout_width="wrap_content"
         android:layout_height="69dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginTop="8dp"
         android:src="@drawable/bt_registered"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.615"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signin_bt_Sign_in" />
 
     <TextView
         android:id="@+id/signin_tv_tourist"

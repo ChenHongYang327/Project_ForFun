@@ -18,6 +18,8 @@
     <string name="log_out_dialog">您確定要登出?</string>
     <string name="sure">確定</string>
     <string name="cancel">取消</string>
+    <!--登入頁面    -->
+    <string name="textErrorMessage">手機或驗證碼錯誤</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

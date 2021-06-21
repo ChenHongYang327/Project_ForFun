@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun;
+package idv.tfp10105.project_forfun.signin;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import idv.tfp10105.project_forfun.R;
 
 
 public class Guided_Tour_Fragment extends Fragment {
