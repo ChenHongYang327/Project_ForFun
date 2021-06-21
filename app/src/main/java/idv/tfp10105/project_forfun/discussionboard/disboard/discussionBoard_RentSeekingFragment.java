@@ -43,7 +43,6 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.commend.Commend;
 import idv.tfp10105.project_forfun.commend.RemoteAccess;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
-import idv.tfp10105.project_forfun.commend.Post;
 import idv.tfp10105.project_forfun.orderconfirm.ocf.Book;
 
 public class discussionBoard_RentSeekingFragment extends Fragment {
