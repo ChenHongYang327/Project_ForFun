@@ -34,18 +34,6 @@
             android:text="需求單" />
     </com.google.android.material.tabs.TabLayout>
 
-    <ImageButton
-        android:id="@+id/dis_bt_needHistory"
-        android:layout_width="116dp"
-        android:layout_height="32dp"
-        android:layout_gravity="right"
-        android:src="@drawable/bt_needhistory" />
-
-    <SearchView
-        android:id="@+id/dis_searchview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/dis_viewPage2"
         android:layout_width="match_parent"

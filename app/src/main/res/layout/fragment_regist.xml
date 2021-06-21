@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".membercenter.meberCenterPersonalInformationFragment">
+    tools:context=".signin.RegisterFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,18 +15,18 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btPIEdit"
+            android:id="@+id/btRgSubmit"
             android:layout_width="140dp"
             android:layout_height="50dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/bt_edit" />
+            android:background="@drawable/bt_sure" />
 
         <ImageButton
-            android:id="@+id/btPIApply"
+            android:id="@+id/btRgCancel"
             android:layout_width="140dp"
             android:layout_height="50dp"
-            android:background="@drawable/bt_apply" />
+            android:background="@drawable/bt_cancel" />
     </LinearLayout>
 
     <ScrollView
@@ -45,16 +45,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvRole"
+                    android:id="@+id/rgTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:text="帳號權限:"
-                    android:textSize="20sp"
+                    android:text="註冊頁面"
+                    android:textSize="34sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -66,7 +67,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvName"
+                    android:id="@+id/tvRgName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -75,31 +76,28 @@
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etNameL"
+                    android:id="@+id/etRgNameL"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
+                    android:hint="姓"
                     android:inputType="textPersonName"
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etNameF"
+                    android:id="@+id/etRgNameF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
+                    android:hint="名字"
                     android:inputType="textPersonName"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -109,7 +107,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvHeadshot"
+                    android:id="@+id/tvRgHeadshot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -124,51 +122,28 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/ivHeadshot"
+                    android:id="@+id/ivRgHeadshot"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    app:srcCompat="@drawable/ic_account_black_48dp" />
 
                 <TextView
-                    android:id="@+id/HSNote"
+                    android:id="@+id/rgHSNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
-                    android:text="請點選變更圖片"
-                    android:visibility="gone" />
+                    android:background="#390B0101"
+                    android:textColor="#FFFFFF"
+                    android:text="請點選此處新增圖片" />
 
             </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btPTakePic"
-                    android:layout_width="112dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bt_takepic"
-                    android:visibility="gone" />
-
-                <ImageButton
-                    android:id="@+id/btPPickPic"
-                    android:layout_width="112dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:background="@drawable/bt_pickpic"
-                    android:visibility="gone" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/tvGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -183,19 +158,17 @@
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/rbMan"
+                        android:id="@+id/rbRgMan"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:enabled="false"
                         android:text="男" />
 
                     <RadioButton
-                        android:id="@+id/rbWoman"
+                        android:id="@+id/rbRgWoman"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:enabled="false"
                         android:text="女" />
 
                 </RadioGroup>
@@ -209,7 +182,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvId"
+                    android:id="@+id/tvRgId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -219,14 +192,12 @@
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etId"
+                    android:id="@+id/etRgId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
                     android:inputType="textPersonName"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -238,7 +209,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvAddress"
+                    android:id="@+id/tvRgAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -248,14 +219,12 @@
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etAddress"
+                    android:id="@+id/etRgAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
                     android:inputType="textPersonName"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -267,24 +236,25 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvBirthday"
+                    android:id="@+id/tvRgBirthday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:text="生日:"
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etBirthday"
+                    android:id="@+id/etRgBirthday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
+                    android:focusableInTouchMode="false"
                     android:inputType="none"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -296,7 +266,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvPhone"
+                    android:id="@+id/tvRgPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -306,14 +276,12 @@
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etPhone"
+                    android:id="@+id/etRgPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
                     android:inputType="number"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -325,7 +293,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvMail"
+                    android:id="@+id/tvRgMail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -335,14 +303,12 @@
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/etMail"
+                    android:id="@+id/etRgMail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
-                    android:background="@null"
                     android:ems="10"
-                    android:enabled="false"
                     android:inputType="textEmailAddress"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -354,7 +320,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvIdPic"
+                    android:id="@+id/tvRgIdPic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -365,17 +331,47 @@
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivIdPicF"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                tools:src="@tools:sample/avatars" />
+                android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/ivIdPicB"
+                <ImageView
+                    android:id="@+id/ivRgIdPicF"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:src="@drawable/regist_id1" />
+
+                <TextView
+                    android:id="@+id/rgIDFNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:background="#390B0101"
+                    android:textColor="#FFFFFF"
+                    android:text="請點選此處新增圖片" />
+
+            </FrameLayout>
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                tools:src="@tools:sample/avatars" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivRgIdPicB"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:src="@drawable/regist_id2" />
+
+                <TextView
+                    android:id="@+id/rgIDBNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:background="#390B0101"
+                    android:textColor="#FFFFFF"
+                    android:text="請點選此處新增圖片" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -385,7 +381,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvGoodPeople"
+                    android:id="@+id/tvRgGoodPeople"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -393,15 +389,8 @@
                     android:layout_marginLeft="16dp"
                     android:text="良民證"
                     android:textSize="20sp"
-                    android:visibility="invisible" />
+                    android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/tvGoodPeopleNote"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="(若欲申請成房東請補齊良民證)"
-                    android:textColor="#FF0606"
-                    android:visibility="invisible" />
             </LinearLayout>
 
             <FrameLayout
@@ -409,46 +398,24 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/ivGoodPeople"
+                    android:id="@+id/ivRgGoodPeople"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_plus_black_48dp" />
 
                 <TextView
-                    android:id="@+id/GPNote"
+                    android:id="@+id/rgGoodPeopleNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
-                    android:text="請點選新增圖片"
+                    android:layout_marginBottom="8dp"
+                    android:background="#390B0101"
+                    android:textColor="#FFFFFF"
+                    android:text="請點選此處新增圖片"
                     android:visibility="gone" />
 
             </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btGTakePic"
-                    android:layout_width="112dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bt_takepic"
-                    android:visibility="invisible" />
-
-                <ImageButton
-                    android:id="@+id/btGPickPic"
-                    android:layout_width="112dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:background="@drawable/bt_pickpic"
-                    android:visibility="invisible" />
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

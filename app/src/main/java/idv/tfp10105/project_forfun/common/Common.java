@@ -1,6 +1,6 @@
-package idv.tfp10105.project_forfun.commend;
+package idv.tfp10105.project_forfun.common;
 
-public class Commend {
+public class Common {
     //要連線的伺服器
     public final static String URL = "http://10.0.2.2:8080/ForFun_DB/";
     //實機

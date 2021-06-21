@@ -50,14 +50,14 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.commend.Commend;
-import idv.tfp10105.project_forfun.commend.Member;
-import idv.tfp10105.project_forfun.commend.RemoteAccess;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.bean.Member;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 import static android.app.Activity.RESULT_OK;
 
 
-public class meberCenterPersonalInformationFragment extends Fragment {
+public class MemberCenterPersonalInformationFragment extends Fragment {
     private Activity activity;
     private File file;
     private Uri contentUri;
@@ -73,7 +73,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private RadioButton rbMan, rbWoman;
     private ScrollView scrollView;
     //判斷點擊哪個按鈕
-    private int btPIEditClick = 0; // 0->編輯個人資料 1->完成
+    private int btPIEditClick = 0; // 0->編輯個人資料 1->完成(編輯資料) 2->完成(申請房東)
     private int btPIApplyClick = 0;  // 0->申請成房東 1->取消
     //判斷上傳點擊哪個按鈕
     private boolean HSisClick=false;
@@ -85,10 +85,11 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     //設定圖片用
     private Bitmap bitmap = null;
     private FirebaseStorage storage;
-    private String picUri; //上傳用
+    private String picUri; //回傳路徑用
     private ByteArrayOutputStream baos; //上傳用
+    private String imagePath; //上傳的路徑
     private String serverresp;
-    private String url = Commend.URL + "meberCenterPersonalInformation";
+    private String url = Common.URL + "memberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -118,7 +119,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_meber_center_personal_information, container, false);
+        View view = inflater.inflate(R.layout.fragment_member_center_personal_information, container, false);
         //bottomeSheet
         bottomSheetDialog = new BottomSheetDialog(activity);
         bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet,null);
@@ -175,12 +176,13 @@ public class meberCenterPersonalInformationFragment extends Fragment {
     private void handleData() {
         if (RemoteAccess.networkCheck(activity)) {
             //防沒連到伺服器閃退(會有空指標例外)
-            if (RemoteAccess.getJsonData(url, null).equals("error")) {
+            if (serverresp.equals("error")) {
                 Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
                 btPIEdit.setEnabled(false);
                 btPIApply.setEnabled(false);
                 return;
             }
+
             member = new Gson().fromJson(serverresp, Member.class);
             //整理回傳的資訊
             String name = member.getNameL() + member.getNameF();
@@ -266,7 +268,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -276,8 +278,8 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                         Log.d("顯示Firebase上傳圖片的狀態","上傳成功");
                     } else {
                         String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
+                        imagePath=null;
                         Log.d("顯示Firebase上傳圖片的錯誤", errorMessage);
-                        Toast.makeText(activity,"圖片上傳失敗", Toast.LENGTH_SHORT).show();
                     }
                 });
         return imagePath;
@@ -289,7 +291,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
             //編輯個人資料
             if (btPIEditClick == 0) {
                 //變更按鈕
-                btPIEditClick = 1;//完成時的代碼
+                btPIEditClick = 1;//完成編輯時的代碼
                 btPIApplyClick = 1;//取消時的代碼
                 btPIEdit.setImageResource(R.drawable.bt_sure);
                 btPIApply.setVisibility(View.VISIBLE);
@@ -308,8 +310,8 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                 etAddress.setEnabled(true); //改address
 
             }
-            //點擊完成
-            else if (btPIEditClick == 1) {
+            //點擊完成(編輯的及申請房東)
+            else if (btPIEditClick == 1||btPIEditClick == 2) {
                 //判斷是否為編輯個人資料
                 if(etNameF.getVisibility()==View.VISIBLE) {
                     if (etNameL.getText().toString().trim().isEmpty()) {
@@ -346,19 +348,29 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
+                        if(picUri==null){
+                            Toast.makeText(activity, "大頭貼上傳異常,請重新選擇圖片", Toast.LENGTH_SHORT).show();
+                            upNewHS=false;
+                            return;
+                        }
                         member.setHeadshot(picUri);
                         upNewHS=false;
                     }
                 }
                 //若點擊完成為申請成為房東
-               else {
+               if(btPIEditClick == 2){
                     //上傳良民證圖片
                     if (upNewGP) {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
+                        if(picUri==null){
+                            Toast.makeText(activity, "良民證上傳異常,請重新選擇圖片", Toast.LENGTH_SHORT).show();
+                            upNewGP=false;
+                            return;
+                        }
                         member.setCitizen(picUri);
-//                        upNewGP = false;
+                        upNewGP = false;
                     } else {
                         Toast.makeText(activity, "未更新良民證照片", Toast.LENGTH_SHORT).show();
                         return;
@@ -404,9 +416,9 @@ public class meberCenterPersonalInformationFragment extends Fragment {
                     HSNote.setVisibility(View.GONE);
                     //------------------
                     //遇到bug的又不想解的解法
-//                    Navigation.findNavController(v).popBackStack(R.id.meberCenterPersonalInformationFragment,true);
+//                    Navigation.findNavController(v).popBackStack(R.id.MemberCenterPersonalInformationFragment,true);
 //                    Navigation.findNavController(v)
-//                            .navigate(R.id.meberCenterPersonalInformationFragment);
+//                            .navigate(R.id.MemberCenterPersonalInformationFragment);
 
 
                 }
@@ -418,7 +430,7 @@ public class meberCenterPersonalInformationFragment extends Fragment {
         btPIApply.setOnClickListener(v -> {
             //點選申請房東
             if (btPIApplyClick == 0) {
-                btPIEditClick = 1;
+                btPIEditClick = 2;//申請房東的完成
                 btPIApplyClick = 1;
                 btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消圖片
                 btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定圖片
@@ -438,15 +450,15 @@ public class meberCenterPersonalInformationFragment extends Fragment {
 
         });
             ivHeadshot.setOnClickListener(v->{
-                //編輯模式時
+                //編輯模式時及點選編輯時
                 if(btPIEditClick==1) {
                     HSisClick = true;
                     bottomSheetDialog.show();
                 }
             });
             ivGoodPeople.setOnClickListener(v->{
-                //編輯模式時
-                if(btPIEditClick==1) {
+                //編輯模式
+                if(btPIEditClick==2) {
                     GPisClick = true;
                     bottomSheetDialog.show();
                 }

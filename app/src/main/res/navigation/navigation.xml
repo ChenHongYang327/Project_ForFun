@@ -3,7 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
+<<<<<<< HEAD
     app:startDestination="@id/signin_in">
+=======
+    app:startDestination="@id/registIntroductionFragment">
+>>>>>>> a8e570edda9633d0a451a3d1ac310b47b709aaa1
     <fragment
         android:id="@+id/homeFragment"
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
@@ -11,7 +15,7 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/memberCenterFragment"
-        android:name="idv.tfp10105.project_forfun.membercenter.memberCenterFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterFragment"
         android:label="會員中心"
         tools:layout="@layout/fragment_member_center"/>
     <fragment
@@ -28,9 +32,9 @@
     </fragment>
     <fragment
         android:id="@+id/meberCenterPersonalInformationFragment"
-        android:name="idv.tfp10105.project_forfun.membercenter.meberCenterPersonalInformationFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterPersonalInformationFragment"
         android:label="個人資料"
-        tools:layout="@layout/fragment_meber_center_personal_information" />
+        tools:layout="@layout/fragment_member_center_personal_information" />
     <fragment
         android:id="@+id/discussionBoardFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
@@ -47,6 +51,9 @@
         <action
             android:id="@+id/action_orderconfirm_houseSnapshot_to_orderconfirm_score"
             app:destination="@id/orderconfirm_score" />
+        <action
+            android:id="@+id/action_orderconfirm_houseSnapshot_to_orderconfirm_otherpay"
+            app:destination="@id/orderconfirm_otherpay" />
     </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment_ho"
@@ -84,10 +91,54 @@
         android:label="fragment_signin_in"
         tools:layout="@layout/fragment_signin_in" />
     <fragment
+<<<<<<< HEAD
         android:id="@+id/guided_Tour_Fragment"
         android:name="idv.tfp10105.project_forfun.signin.Guided_Tour_Fragment"
         android:label="fragment_guided__tour_"
         tools:layout="@layout/fragment_guided__tour_" />
+=======
+        android:id="@+id/registerFragment"
+        android:name="idv.tfp10105.project_forfun.signin.RegisterFragment"
+        android:label="註冊"
+        tools:layout="@layout/fragment_regist" />
+    <fragment
+        android:id="@+id/registIntroductionFragment"
+        android:name="idv.tfp10105.project_forfun.signin.RegistIntroductionFragment"
+        android:label="fragment_regist_introduction"
+        tools:layout="@layout/fragment_regist_introduction" />
+    <fragment
+        android:id="@+id/orderconfirm_otherpay"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_otherpay"
+        android:label="其他款項"
+        tools:layout="@layout/fragment_orderconfirm_otherpay" />
+    <fragment
+        android:id="@+id/discussionBoard_RentSeekingFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeekingFragment"
+        android:label="fragment_discussion_board_rent_seeking"
+        tools:layout="@layout/fragment_discussion_board_rent_seeking" >
+        <action
+            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionDetailFragment"
+            app:destination="@id/discussionDetailFragment" />
+        <action
+            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionInsertFragment"
+            app:destination="@id/discussionInsertFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/discussionInsertFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionInsertFragment"
+        android:label="fragment_discussion_insert"
+        tools:layout="@layout/fragment_discussion_insert" />
+    <fragment
+        android:id="@+id/discussionDetailFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionDetailFragment"
+        android:label="fragment_discussion_detail"
+        tools:layout="@layout/fragment_discussion_detail" />
+    <fragment
+        android:id="@+id/personalSnapshotFragment2"
+        android:name="idv.tfp10105.project_forfun.membercenter.personnalsanpshot.PersonalSnapshotFragment"
+        android:label="個人資訊快照"
+        tools:layout="@layout/fragment_personal_snapshot" />
+>>>>>>> a8e570edda9633d0a451a3d1ac310b47b709aaa1
 </navigation>
 
 

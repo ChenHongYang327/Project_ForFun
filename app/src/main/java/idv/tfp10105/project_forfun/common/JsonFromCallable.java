@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.commend;
+package idv.tfp10105.project_forfun.common;
 
 import android.util.Log;
 
