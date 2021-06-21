@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -24,11 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-//import android.widget.ArrayAdapter;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +39,8 @@ import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.yalantis.ucrop.UCrop;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +50,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.Post;
+
 
 import static android.app.Activity.RESULT_OK;
 
@@ -52,7 +61,7 @@ public class discussionInsertFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
     private FragmentActivity activity;
     private EditText etTitle, etContext;
-    private ImageButton insert_bt_picture, insert_bt_push, insert_bt_memberHead;
+    private ImageButton insert_bt_push, insert_bt_memberHead;
     private TextView insert_MemberName, insert_board;
     private Spinner insert_spinner;
     private String imagePath;
@@ -60,18 +69,20 @@ public class discussionInsertFragment extends Fragment {
     private byte[] image;
     private File file;
     private Uri contentUri;
+    private ImageView insert_bt_picture;
+    private boolean pictureTaken;
+    private String board;
+    String url = Common.URL ;
+
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            this::takePictureResult);
+            new ActivityResultContracts.StartActivityForResult(), this::takePictureResult);
 
     ActivityResultLauncher<Intent> pickPictureLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            this::pickPictureResult);
+            new ActivityResultContracts.StartActivityForResult(), this::pickPictureResult);
 
     ActivityResultLauncher<Intent> cropPictureLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            this::cropPictureResult);
+            new ActivityResultContracts.StartActivityForResult(), this::cropPictureResult);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,10 +101,11 @@ public class discussionInsertFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        board = "";
         findViews(view);
-        handleSpinner();
+        handleSpinner(board);
         handleInsert_bt_picture();
-        handleFinishInsert();
+        handleFinishInsert(view);
 
     }
 
@@ -103,13 +115,15 @@ public class discussionInsertFragment extends Fragment {
         insert_bt_push = view.findViewById(R.id.insert_bt_insert);
         insert_spinner = view.findViewById(R.id.insert_spinner);
         etTitle = view.findViewById(R.id.insert_et_title);
-        etContext = view.findViewById(R.id.insert_et_title);
+        etContext = view.findViewById(R.id.insert_et_context);
         insert_MemberName = view.findViewById(R.id.insert_memberName_text);
         insert_board = view.findViewById(R.id.insert_board);
 
     }
 
-    private void handleSpinner() {
+    //控制spinner
+    private String handleSpinner( String board) {
+        //index:0    index:1   index:2
         List<String> itemList = Arrays.asList("租屋交流", "知識問答", "需求單");
         //實例化Adapter物件，並設定選項的外觀
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, itemList);
@@ -118,16 +132,15 @@ public class discussionInsertFragment extends Fragment {
         //設定Adapter
         insert_spinner.setAdapter(adapter);
         //設定預選選項
-        insert_spinner.setSelection(0, true);
+        insert_spinner.setSelection(0, false);
 
         //註冊/實作 選項被選取監聽器
         insert_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String sPos = String.valueOf(position);
-                String sInfo = parent.getItemAtPosition(position).toString();
-                insert_board.setText(sInfo);
+
+                insert_board.setText(insert_spinner.getSelectedItem().toString());
 
             }
 
@@ -137,14 +150,18 @@ public class discussionInsertFragment extends Fragment {
 
                 TextView errorText = (TextView) insert_spinner.getSelectedView();
                 errorText.setError("");
-                errorText.setTextColor(Color.RED);//just to highlight that this is an error
-                errorText.setText("請選擇板塊");//changes the selected item text to this
+                //just to highlight that this is an error
+                errorText.setTextColor(Color.RED);
+                //changes the selected item text to this
+                errorText.setText("請選擇板塊");
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, new String[]{""});
                 insert_spinner.setAdapter(adapter);
 
             }
         });
+        board = String.valueOf(insert_board);
+        return board;
     }
 
     private void handleInsert_bt_picture() {
@@ -153,6 +170,7 @@ public class discussionInsertFragment extends Fragment {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
         //連結的介面
         View view = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet, null);
+        //自定義的三個按鈕
         Button btCancel = view.findViewById(R.id.btCancel);
         Button bt_pickPicture = view.findViewById(R.id.btPickpic);
         Button bt_takePicture = view.findViewById(R.id.btTakepic);
@@ -163,19 +181,20 @@ public class discussionInsertFragment extends Fragment {
         //將背景設為透明，否則預設白底
         parent.setBackgroundResource(android.R.color.transparent);
 
+        //按鈕控制
         bt_takePicture.setOnClickListener(v -> {
             //開啟拍照
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             //指定儲存路徑
             file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             file = new File(file, "picture.jpg");
-            contentUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", file);
+            contentUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".fileProvider", file);
             //取得原圖
             intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
             try {
                 takePictureLauncher.launch(intent);
             } catch (ActivityNotFoundException e) {
-                Toast.makeText(activity, "no camera app found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "找不到相機應用程式", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -185,28 +204,55 @@ public class discussionInsertFragment extends Fragment {
             pickPictureLauncher.launch(intent);
         });
 
-        btCancel.setOnClickListener(v -> {
-            bottomSheetDialog.dismiss();
-        });
-
         insert_bt_picture.setOnClickListener((v)->{
             //顯示BottomSheet
             bottomSheetDialog.show();
         });
+
+        btCancel.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+
+        });
+
     }
 
-    private void handleFinishInsert() {
+    private void handleFinishInsert(View view) {
         insert_bt_push.setOnClickListener(v -> {
             //取得user輸入的值
             String title = etTitle.getText().toString().trim();
-            if (title.length() == 0) {
+            if (title.length() <= 0) {
                 Toast.makeText(activity, "Title is invalid", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String context = etTitle.getText().toString().trim();
-            Toast.makeText(activity, "context is invalid", Toast.LENGTH_SHORT).show();
-            return;
+            String context = etContext.getText().toString().trim();
+            if (context.length() <= 0){
+                Toast.makeText(activity, "context is invalid", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (RemoteAccess.networkCheck(activity)) {
+                //用json傳至後端
+                url += "DiscussionBoardController";
+                Post post = new Post(0, board, 0, title, context, imagePath);
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("action", "postInsert");
+                jsonObject.addProperty("post", new Gson().toJson(post));
+                int count;
+                //執行緒池物件
+                String result = RemoteAccess.getJsonData(url, jsonObject.toString());
+                //新增筆數
+                count = Integer.parseInt(result);
+                //筆數為0
+                if (count == 0) {
+                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+            }
         });
+        NavController navController = Navigation.findNavController(view);
+        navController.popBackStack();
     }
 
     private void takePictureResult(ActivityResult result) {
@@ -249,9 +295,11 @@ public class discussionInsertFragment extends Fragment {
 
     private String uploadImage(Uri resultUri) {
 
+
         //取得根目錄
         StorageReference rootRef = storage.getReference();
         imagePath = getString(R.string.app_name) + "/Discussion_insert/" + System.currentTimeMillis();
+
         //建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         //將儲存照片上傳 檔案
@@ -260,9 +308,10 @@ public class discussionInsertFragment extends Fragment {
                     if (task.isSuccessful()) {
                         String message = "上傳成功";
                         Log.d(TAG, message);
-                        Toast.makeText(activity, "", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "上傳結果： " + message, Toast.LENGTH_SHORT).show();
                         //下載剛上傳的照片
                         downloadImage(imagePath);
+
                     } else {
                         String message = task.getException() == null ? "Upload fail" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
@@ -289,7 +338,6 @@ public class discussionInsertFragment extends Fragment {
                         Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
 
 }
