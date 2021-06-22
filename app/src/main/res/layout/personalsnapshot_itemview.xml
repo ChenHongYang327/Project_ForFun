@@ -16,13 +16,14 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
+            <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/ivCommentByPS"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="2dp"
+                app:civ_shadow_radius="10dp"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
@@ -36,6 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:isIndicator="true"
+                android:progressTint="#FCFF8F"
                 android:rating="5" />
 
         </LinearLayout>
@@ -44,13 +46,18 @@
             android:id="@+id/tvCommentPS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/tvCommentTimePS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="TextView"
+            android:textSize="12sp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

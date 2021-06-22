@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -34,12 +35,13 @@ import idv.tfp10105.project_forfun.membercenter.personnalsanpshot.adapter.Person
 public class TenantstatusFragment extends Fragment {
     private Activity activity;
     private List<PersonEvaluation> personEvaluations  =new ArrayList<>();
-    private Member user,selectUser;
+    private Member selectUser;
     private RecyclerView rvTen;
     private RatingBar rbTenantScore;
+    private TextView tenStatusNote,tvTenantScore;
     private final String url = Common.URL +"personalSnapshot";
-    public TenantstatusFragment(Member user, Member selectUser) {
-        this.user = user;
+
+    public TenantstatusFragment(Member selectUser) {
         this.selectUser = selectUser;
     }
 
@@ -48,7 +50,6 @@ public class TenantstatusFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity=getActivity();
         //假資料
-//        selectUser=new Member();
         selectUser.setMemberId(3);
 
     }
@@ -93,6 +94,8 @@ public class TenantstatusFragment extends Fragment {
     private void findView(View view) {
         rvTen=view.findViewById(R.id.rvTen);
         rbTenantScore=view.findViewById(R.id.rbTenantScore);
+        tenStatusNote=view.findViewById(R.id.tenStatusNote);
+        tvTenantScore=view.findViewById(R.id.tvTenantScore);
     }
 
     private void handleTenData() {
@@ -103,9 +106,14 @@ public class TenantstatusFragment extends Fragment {
             client.addProperty("commentedID",selectUser.getMemberId());
             client.addProperty("status","tenantStatus");
             String resp = RemoteAccess.getJsonData(url,client.toString());
-            if(resp!=null){
+
                     Type listType= new TypeToken<List<PersonEvaluation>>(){}.getType();
                     personEvaluations=new Gson().fromJson(resp,listType);
+                    if(personEvaluations.size()==0){
+                         rvTen.setVisibility(View.GONE);
+                        tenStatusNote.setVisibility(View.VISIBLE);
+                        return;
+                    }
                     rvTen.setLayoutManager(new LinearLayoutManager(activity));
                     PersonnalAdapter personnalAdapter=new PersonnalAdapter(activity, activity, personEvaluations);
                     rvTen.setAdapter(personnalAdapter);
@@ -114,13 +122,9 @@ public class TenantstatusFragment extends Fragment {
                         sum+=personEvaluation.getPersonStar();
                     }
                     float avg=(float) sum/personEvaluations.size();//平均分數
+                    tvTenantScore.setText("房客評價平均分:"+avg);
                     rbTenantScore.setRating(avg);
 
-
-            }
-            else{
-                //沒資料要執行的動作
-            }
 
         }
     }

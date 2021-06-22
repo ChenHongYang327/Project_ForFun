@@ -7,40 +7,58 @@
     android:orientation="vertical"
     tools:context=".membercenter.personnalsanpshot.PersonalSnapshotFragment">
 
-    <ImageView
+    <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/ivPSHS"
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        app:civ_shadow="true"
+        app:civ_shadow_radius="10dp"
         tools:src="@tools:sample/avatars" />
 
-    <TextView
-        android:id="@+id/tvPSName"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="姓名:" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvPSGender"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="性別:" />
+        <TextView
+            android:id="@+id/tvPSName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|left"
+            android:text="姓名:"
+            android:textSize="24sp" />
 
-    <TextView
-        android:id="@+id/tvPSAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="戶籍地" />
+        <TextView
+            android:id="@+id/tvPSAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:text="戶籍地"
+            android:textSize="24sp" />
 
-    <TextView
-        android:id="@+id/tvPSCreatTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="註冊時間:" />
+        <TextView
+            android:id="@+id/tvPSCreatTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:text="註冊時間:"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tvPSGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:text="性別:"
+            android:textSize="24sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

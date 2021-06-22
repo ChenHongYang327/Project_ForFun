@@ -65,10 +65,7 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
             clientreq.addProperty("commenterID",personEvaluation.getCommentedBy());
             String resp=RemoteAccess.getJsonData(url,clientreq.toString());
             Member member=new Gson().fromJson(resp,Member.class);
-            //需替換
-            holder.ivCommentByPS.setImageDrawable(activity.getResources().getDrawable(R.drawable.googleg_disabled_color_18));
-            // getImage(holder.ivCommentByPS,member.getHeadshot());//設定頭像
-            //-------
+            getImage(holder.ivCommentByPS,member.getHeadshot());//設定頭像
             String name=member.getNameL()+member.getNameF();
             holder.tvCommentByPS.setText(name);//設定名字
             holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數

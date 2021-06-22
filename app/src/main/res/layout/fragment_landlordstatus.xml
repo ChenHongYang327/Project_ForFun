@@ -10,18 +10,33 @@
         android:id="@+id/tvLandlordScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
-        android:text="房客評價平均分" />
+        android:text="房東評價平均分:" />
 
     <RatingBar
-        android:id="@+id/rvLandlordScore"
+        android:id="@+id/rbLandlordScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:rating="5" />
+        android:isIndicator="true"
+        android:max="5"
+        android:progressTint="#FCFF8F"
+         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLand"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/landStatusNote"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="尚未有任何評價"
+        android:visibility="gone"/>
 </LinearLayout>
