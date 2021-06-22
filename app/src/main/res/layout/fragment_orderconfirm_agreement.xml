@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="36dp"
                 android:ems="10"
-                android:inputType="textPersonName"
+                android:inputType="number"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView14" />
@@ -275,7 +275,7 @@
 
                 <ImageView
                     android:id="@+id/imgview_ocrAgreement_HOCanvas"
-                    android:layout_width="180dp"
+                    android:layout_width="170dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="16dp"
                     android:src="@drawable/post_background"
@@ -299,7 +299,7 @@
 
                 <ImageView
                     android:id="@+id/imgview_ocrAgreement_Canvas"
-                    android:layout_width="180dp"
+                    android:layout_width="170dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="16dp"
                     android:src="@drawable/post_background"
@@ -318,7 +318,7 @@
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="@+id/imgview_ocrAgreement_Canvas"
                     app:layout_constraintEnd_toEndOf="@+id/imgview_ocrAgreement_Canvas"
-                    app:layout_constraintStart_toEndOf="@+id/imgview_ocrAgreement_HOCanvas"
+                    app:layout_constraintStart_toStartOf="@+id/imgview_ocrAgreement_Canvas"
                     app:layout_constraintTop_toTopOf="@+id/imgview_ocrAgreement_Canvas" />
 
                 <TextView
