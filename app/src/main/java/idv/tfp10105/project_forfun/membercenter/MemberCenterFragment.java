@@ -7,9 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -49,7 +47,7 @@ public class MemberCenterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_member_center, container, false);
+        View view=inflater.inflate(R.layout.fragment_membercenter, container, false);
         findeView(view);
         return  view;
     }
@@ -98,8 +96,8 @@ public class MemberCenterFragment extends Fragment {
         });
 
         tvMyRating.setOnClickListener(v->{
-
-
+            Navigation.findNavController(v)
+                    .navigate(R.id.myEvaluationnFragment);
         });
 
         tvLogOut.setOnClickListener(v->{

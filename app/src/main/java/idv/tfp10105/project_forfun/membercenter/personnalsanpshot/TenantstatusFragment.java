@@ -7,13 +7,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.gson.Gson;
@@ -30,7 +28,7 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.PersonEvaluation;
-import idv.tfp10105.project_forfun.membercenter.personnalsanpshot.adapter.PersonnalAdapter;
+import idv.tfp10105.project_forfun.membercenter.adapter.PersonnalAdapter;
 
 public class TenantstatusFragment extends Fragment {
     private Activity activity;
@@ -57,7 +55,7 @@ public class TenantstatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_tenantstatus, container, false);
+        View view=inflater.inflate(R.layout.fragment_personalsnapshot_tenantstatus, container, false);
         findView(view);
 //        fakedata();
         handleTenData();

@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
@@ -38,7 +37,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Member;
-import idv.tfp10105.project_forfun.membercenter.personnalsanpshot.adapter.PersonnalVPAdapter;
+import idv.tfp10105.project_forfun.membercenter.adapter.PersonnalVPAdapter;
 
 
 public class PersonalSnapshotFragment extends Fragment {
@@ -48,7 +47,7 @@ public class PersonalSnapshotFragment extends Fragment {
     private CircularImageView ivPSHS;
     private TabLayout tlPS;
     private ViewPager2 vpPSStar;
-    private List<Fragment> tabList=new ArrayList<>();
+    private final List<Fragment> tabList=new ArrayList<>();
     private Member selectUser;
     private ImageButton btPSMessage,btPSReport;
 
@@ -63,7 +62,7 @@ public class PersonalSnapshotFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       View view=inflater.inflate(R.layout.fragment_personal_snapshot, container, false);
+       View view=inflater.inflate(R.layout.fragment_personalsnapshot, container, false);
        findView(view);
        fakedata();
        handleTab();
@@ -92,10 +91,8 @@ public class PersonalSnapshotFragment extends Fragment {
 
     private void handleTab() {
         //Fragment放入list
-        LandlordstatusFragment Landlordstatus=new LandlordstatusFragment(selectUser);
-        TenantstatusFragment Tenantstatus=new TenantstatusFragment(selectUser);
-        tabList.add(Tenantstatus);//房客
-        tabList.add(Landlordstatus);//房東
+        tabList.add(new LandlordstatusFragment(selectUser));//房客
+        tabList.add(new TenantstatusFragment(selectUser));//房東
         //list放入Adapter
         PersonnalVPAdapter myAdapter = new PersonnalVPAdapter(this, tabList);
         vpPSStar.setAdapter(myAdapter);

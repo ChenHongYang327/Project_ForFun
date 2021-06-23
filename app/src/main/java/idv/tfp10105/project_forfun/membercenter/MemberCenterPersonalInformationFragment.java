@@ -119,7 +119,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_member_center_personal_information, container, false);
+        View view = inflater.inflate(R.layout.fragment_membercenter_personalinformation, container, false);
         //bottomeSheet
         bottomSheetDialog = new BottomSheetDialog(activity);
         bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet,null);

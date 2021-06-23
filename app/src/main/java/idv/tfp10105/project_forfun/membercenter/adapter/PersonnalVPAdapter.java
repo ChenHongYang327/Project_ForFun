@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.membercenter.personnalsanpshot.adapter;
+package idv.tfp10105.project_forfun.membercenter.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

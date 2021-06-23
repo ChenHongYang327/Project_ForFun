@@ -26,7 +26,7 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.PersonEvaluation;
-import idv.tfp10105.project_forfun.membercenter.personnalsanpshot.adapter.PersonnalAdapter;
+import idv.tfp10105.project_forfun.membercenter.adapter.PersonnalAdapter;
 
 
 public class LandlordstatusFragment extends Fragment {
@@ -50,7 +50,7 @@ public class LandlordstatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_landlordstatus, container, false);
+        View view=inflater.inflate(R.layout.fragment_personalsnapshot_landlordstatus, container, false);
         findView(view);
         handleLanData();
         return view;
@@ -88,9 +88,6 @@ public class LandlordstatusFragment extends Fragment {
                 float avg=(float) sum/personEvaluations.size();//平均分數
                 tvLandlordScore.setText("房東平均分數:"+avg);
                 rbLandlordScore.setRating(avg);
-
-
-
 
 
 

@@ -13,7 +13,7 @@
         android:id="@+id/memberCenterFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterFragment"
         android:label="會員中心"
-        tools:layout="@layout/fragment_member_center">
+        tools:layout="@layout/fragment_membercenter">
         <action
             android:id="@+id/action_memberCenterFragment_to_signinInFragment"
             app:destination="@id/signinInFragment" />
@@ -34,7 +34,7 @@
         android:id="@+id/meberCenterPersonalInformationFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterPersonalInformationFragment"
         android:label="個人資料"
-        tools:layout="@layout/fragment_member_center_personal_information" />
+        tools:layout="@layout/fragment_membercenter_personalinformation" />
     <fragment
         android:id="@+id/discussionBoardFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
@@ -131,7 +131,12 @@
         android:id="@+id/personalSnapshotFragment2"
         android:name="idv.tfp10105.project_forfun.membercenter.personnalsanpshot.PersonalSnapshotFragment"
         android:label="個人資訊快照"
-        tools:layout="@layout/fragment_personal_snapshot" />
+        tools:layout="@layout/fragment_personalsnapshot" />
+    <fragment
+        android:id="@+id/myEvaluationnFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.myevalution.MyEvaluationnFragment"
+        android:label="我的評價"
+        tools:layout="@layout/fragment_myevaluationn" />
 </navigation>
 
 

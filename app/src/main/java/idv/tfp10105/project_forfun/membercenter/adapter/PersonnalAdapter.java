@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.membercenter.personnalsanpshot.adapter;
+package idv.tfp10105.project_forfun.membercenter.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -35,10 +35,10 @@ import idv.tfp10105.project_forfun.common.bean.PersonEvaluation;
 
 public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.PersonnalViewHolder>{
     private final String url = Common.URL +"personalSnapshot";
-    private Context context;
-    private Activity activity;
-    private List<PersonEvaluation> list;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss",Locale.TAIWAN);
+    private final Context context;
+    private final Activity activity;
+    private final List<PersonEvaluation> list;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss",Locale.TAIWAN);
 
 
     public PersonnalAdapter(Context context, Activity activity, List<PersonEvaluation> list) {
@@ -75,12 +75,6 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
         else{
             Toast.makeText(context, "請檢察網路連線", Toast.LENGTH_SHORT).show();
         }
-        //測試用假資料
-//        holder.tvCommentByPS.setText("測試假資料");//設定名字
-//        holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數
-//        holder.tvCommentPS.setText(personEvaluation.getPersonComment());//設定評論內容
-//        holder.tvCommentTimePS.setText(personEvaluation.getCreateTime().toString());//設定
-//        holder.ivCommentByPS.setImageDrawable(activity.getResources().getDrawable(R.drawable.googleg_disabled_color_18));
     }
 
     @Override
@@ -88,14 +82,14 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
         return list==null?0:list.size();
     }
 
-    public class PersonnalViewHolder extends RecyclerView.ViewHolder {
-        private ImageView ivCommentByPS;
-        private TextView tvCommentByPS;
-        private TextView tvCommentPS;
-        private TextView tvCommentTimePS;
-        private RatingBar ratingPS;
+      class PersonnalViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivCommentByPS;
+        TextView tvCommentByPS;
+        TextView tvCommentPS;
+        TextView tvCommentTimePS;
+        RatingBar ratingPS;
 
-        public  PersonnalViewHolder(@NonNull View itemView) {
+        PersonnalViewHolder(@NonNull View itemView) {
             super(itemView);
             ivCommentByPS=itemView.findViewById(R.id.ivCommentByPS);
             tvCommentByPS=itemView.findViewById(R.id.tvCommentByPS);
