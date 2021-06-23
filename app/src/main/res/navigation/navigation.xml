@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/registIntroductionFragment">
+    app:startDestination="@id/signinInFragment">
     <fragment
         android:id="@+id/homeFragment"
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
@@ -82,10 +82,10 @@
         android:label="評價"
         tools:layout="@layout/fragment_orderconfirm_score" />
     <fragment
-        android:id="@+id/signin_in"
-        android:name="idv.tfp10105.project_forfun.signin.signin_in"
-        android:label="fragment_signin_in"
-        tools:layout="@layout/fragment_signin_in" />
+        android:id="@+id/signinInFragment"
+        android:name="idv.tfp10105.project_forfun.signin.SignInFragment"
+        android:label="登入頁面"
+        tools:layout="@layout/fragment_signIn" />
     <fragment
         android:id="@+id/registerFragment"
         android:name="idv.tfp10105.project_forfun.signin.RegisterFragment"

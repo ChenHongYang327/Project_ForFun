@@ -1,6 +1,8 @@
 package idv.tfp10105.project_forfun.membercenter;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,10 +29,13 @@ public class MemberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
             tvFunctionTour,tvMyRating,tvLogOut;
+    private SharedPreferences sharedPreferences;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
+
     }
 
     @Override
@@ -57,7 +62,14 @@ public class MemberCenterFragment extends Fragment {
     }
 
     private void handleClick() {
+        int role=sharedPreferences.getInt("role",-1);
         tvPersonalInformation.setOnClickListener(v->{
+            if(role==3){
+                Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(v)
+                        .navigate(R.id.signinInFragment);
+                return;
+            }
             Navigation.findNavController(v)
                     .navigate(R.id.meberCenterPersonalInformationFragment);
         });

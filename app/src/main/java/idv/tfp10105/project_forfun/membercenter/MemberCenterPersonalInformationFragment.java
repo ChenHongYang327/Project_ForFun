@@ -2,7 +2,9 @@ package idv.tfp10105.project_forfun.membercenter;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
@@ -85,6 +87,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
     private String picUri; //回傳路徑用
     private ByteArrayOutputStream baos; //上傳用
     private String serverresp;
+    private SharedPreferences sharedPreferences;
     private final String url = Common.URL + "memberCenterPersonalInformation";
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -110,6 +113,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         file = new File(file, "picture.jpg");
         contentUri = FileProvider.getUriForFile(
                 activity, activity.getPackageName() + ".fileProvider", file);
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -127,7 +131,8 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         //跟後端提出請求
         JsonObject clientreq = new JsonObject();
         clientreq.addProperty("action", "getMember");
-        clientreq.addProperty("member_id", 3);  //要改
+        int memberId=sharedPreferences.getInt("memberId",-1);
+        clientreq.addProperty("member_id",memberId);
         serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
         return view;
     }
@@ -369,6 +374,15 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                 serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
                 if(serverresp.equals("true")){
                     Toast.makeText(activity, "更新成功", Toast.LENGTH_SHORT).show();
+                    String citizen=member.getCitizen()==null?"":member.getCitizen();
+                    sharedPreferences.edit()
+                            .putString("name",member.getNameL()+member.getNameF())
+                            .putString("address",member.getAddress())
+                            .putString("mail",member.getMail())
+                            .putString("headshot",member.getHeadshot())
+                            .putString("citizen",citizen)
+                            .apply();
+
                     //------------------
                     //將頁面恢復參數變回預設
                     //如果是房客且有上傳良民證

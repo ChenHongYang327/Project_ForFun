@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
-        android:text="點我進首頁 提示:\n選擇身份進入下一頁填寫資料"
+        android:text="提示:\n選擇身份進入下一頁填寫資料"
         android:textSize="20sp" />
 
     <LinearLayout
