@@ -50,7 +50,7 @@ public class SignatureView extends View implements View.OnTouchListener {
 
         signaturePaint = new Paint();
         signaturePaint.setAntiAlias(true);
-        signaturePaint.setColor(Color.BLACK);
+        signaturePaint.setColor(Color.BLUE);
         signaturePaint.setStyle(Paint.Style.FILL_AND_STROKE);
         signaturePaint.setStrokeWidth(15f);
         signaturePaint.setStrokeCap(Paint.Cap.ROUND);
