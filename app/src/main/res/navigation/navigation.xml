@@ -13,7 +13,11 @@
         android:id="@+id/memberCenterFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterFragment"
         android:label="會員中心"
-        tools:layout="@layout/fragment_member_center"/>
+        tools:layout="@layout/fragment_member_center">
+        <action
+            android:id="@+id/action_memberCenterFragment_to_signinInFragment"
+            app:destination="@id/signinInFragment" />
+    </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment"

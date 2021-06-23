@@ -21,19 +21,27 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.JsonObject;
+
 import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 public class MemberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
             tvFunctionTour,tvMyRating,tvLogOut;
     private SharedPreferences sharedPreferences;
+    private FirebaseAuth auth;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
+        auth = FirebaseAuth.getInstance();
         sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
 
     }
@@ -100,10 +108,23 @@ public class MemberCenterFragment extends Fragment {
             logOutDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
             logOutDialog.setMessage(R.string.log_out_dialog); //提示訊息
             logOutDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
-                Toast.makeText(activity, "sure", Toast.LENGTH_SHORT).show();
+                auth.signOut();
+                JsonObject req=new JsonObject();
+                req.addProperty("action","clearToken");
+                req.addProperty("memberId",sharedPreferences.getInt("memberId",-1));
+                String url = Common.URL + "signInController";
+                RemoteAccess.getJsonData(url,req.toString());//不接回覆
+                sharedPreferences.edit().clear().apply();
+                sharedPreferences.edit()
+                        .putBoolean("firstOpen",false)
+                        .apply();
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+                Navigation.findNavController(v).popBackStack(R.id.memberCenterFragment,true);
+
             });
             logOutDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
-                Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+
             });
             //設定對話框顏色
             Window window=logOutDialog.show().getWindow();
