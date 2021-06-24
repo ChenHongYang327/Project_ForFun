@@ -123,6 +123,11 @@
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionDetailFragment"
         android:label="fragment_discussion_detail"
         tools:layout="@layout/fragment_discussion_detail" />
+    <fragment
+        android:id="@+id/publishFragment"
+        android:name="idv.tfp10105.project_forfun.publish.PublishFragment"
+        android:label="刊登房屋"
+        tools:layout="@layout/fragment_publish" />
 </navigation>
 
 

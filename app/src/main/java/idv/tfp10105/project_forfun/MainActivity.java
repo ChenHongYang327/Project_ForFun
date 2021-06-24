@@ -85,8 +85,9 @@ public class MainActivity extends AppCompatActivity {
                 tvTitle.setText(Objects.requireNonNull(navController.getCurrentDestination()).getLabel());
                 //隱藏bottomNav的頁面(未完成五個主頁面)
                 if(navController.getCurrentDestination().getId()==R.id.homeFragment||
-                     navController.getCurrentDestination().getId()==R.id.memberCenterFragment||
-                        navController.getCurrentDestination().getId()==R.id.discussionBoardFragment
+                    navController.getCurrentDestination().getId()==R.id.memberCenterFragment||
+                    navController.getCurrentDestination().getId()==R.id.discussionBoardFragment ||
+                    navController.getCurrentDestination().getId() == R.id.publishFragment
                 ){
                     bottomNavigationView.setVisibility(View.VISIBLE);
                 }
@@ -95,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //隱藏actionbar的頁面
                 if(navController.getCurrentDestination().getId()==R.id.signin_in||
-                        navController.getCurrentDestination().getId()==R.id.registIntroductionFragment||
-                        navController.getCurrentDestination().getId()==R.id.registerFragment
+                    navController.getCurrentDestination().getId()==R.id.registIntroductionFragment||
+                    navController.getCurrentDestination().getId()==R.id.registerFragment
                 ){
                     actionBar.hide();
                 }
