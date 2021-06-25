@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import idv.tfp10105.project_forfun.R;
+import tech.cherri.tpdirect.api.TPDGooglePay;
 
 public class TappayActivity extends AppCompatActivity {
 
@@ -18,7 +19,7 @@ public class TappayActivity extends AppCompatActivity {
     public static final String TAPPAY_DOMAIN_SANDBOX = "https://sandbox.tappaysdk.com/";
     public static final String TAPPAY_PAY_BY_PRIME_URL = "tpc/payment/pay-by-prime";
     public ProgressDialog mProgressDialog;
-    //private TPDGooglePay tpdGooglePay;
+    private TPDGooglePay tpdGooglePay;
 
     private ImageView btBuy, btCancel, btReturn, btConfirm, imgPic;
     private TextView tvAccount, tvNotes, tvCardInfo, tvResult;
