@@ -35,7 +35,17 @@
         android:id="@+id/discussionBoardFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
         android:label="討論區"
-        tools:layout="@layout/fragment_discussion_board" />
+        tools:layout="@layout/fragment_discussion_board" >
+        <action
+            android:id="@+id/action_discussionBoardFragment_to_discussionInsertFragment"
+            app:destination="@id/discussionInsertFragment" />
+        <action
+            android:id="@+id/action_discussionBoardFragment_to_discussionDetailFragment"
+            app:destination="@id/discussionDetailFragment" />
+        <action
+            android:id="@+id/action_discussionBoardFragment_to_discussionUpdateFragment"
+            app:destination="@id/discussionUpdateFragment" />
+    </fragment>
     <fragment
         android:id="@+id/orderconfirm_houseSnapshot"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_houseSnapshot"
@@ -102,18 +112,6 @@
         android:label="其他款項"
         tools:layout="@layout/fragment_orderconfirm_otherpay" />
     <fragment
-        android:id="@+id/discussionBoard_RentSeekingFragment"
-        android:name="idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeekingFragment"
-        android:label="fragment_discussion_board_rent_seeking"
-        tools:layout="@layout/fragment_discussion_board_rent_seeking" >
-        <action
-            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionDetailFragment"
-            app:destination="@id/discussionDetailFragment" />
-        <action
-            android:id="@+id/action_discussionBoard_RentSeekingFragment_to_discussionInsertFragment"
-            app:destination="@id/discussionInsertFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/discussionInsertFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionInsertFragment"
         android:label="fragment_discussion_insert"
@@ -128,6 +126,10 @@
         android:name="idv.tfp10105.project_forfun.membercenter.personnalsanpshot.PersonalSnapshotFragment"
         android:label="個人資訊快照"
         tools:layout="@layout/fragment_personal_snapshot" />
+    <fragment
+        android:id="@+id/discussionUpdateFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionUpdateFragment"
+        android:label="discussionUpdateFragment" />
 </navigation>
 
 
