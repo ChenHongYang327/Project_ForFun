@@ -4,16 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -71,6 +74,12 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
             holder.ratingPS.setRating(personEvaluation.getPersonStar());//設定星數
             holder.tvCommentPS.setText(personEvaluation.getPersonComment());//設定評論內容
             holder.tvCommentTimePS.setText(sdf.format(personEvaluation.getCreateTime()));//設定評論建立時間
+            holder.linearLayoutPS.setOnClickListener(v->{
+                Bundle bundle=new Bundle();
+                bundle.putSerializable("SelectUser",member);
+                Navigation.findNavController(v)
+                        .navigate(R.id.personalSnapshotFragment,bundle);
+            });
         }
         else{
             Toast.makeText(context, "請檢察網路連線", Toast.LENGTH_SHORT).show();
@@ -83,6 +92,7 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
     }
 
       class PersonnalViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout linearLayoutPS;
         ImageView ivCommentByPS;
         TextView tvCommentByPS;
         TextView tvCommentPS;
@@ -96,6 +106,7 @@ public class PersonnalAdapter extends RecyclerView.Adapter<PersonnalAdapter.Pers
             tvCommentPS=itemView.findViewById(R.id.tvCommentPS);
             ratingPS=itemView.findViewById(R.id.ratingPS);
             tvCommentTimePS=itemView.findViewById(R.id.tvCommentTimePS);
+            linearLayoutPS=itemView.findViewById(R.id.linearLayoutPS);
 
         }
     }

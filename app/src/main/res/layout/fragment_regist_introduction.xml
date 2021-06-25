@@ -33,7 +33,8 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="20dp"
-                android:src="@drawable/regist_landlord"
+                android:src="?android:attr/selectableItemBackground"
+                android:background="@drawable/regist_landlord"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,6 +70,7 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_marginBottom="8dp"
+                android:src="?android:attr/selectableItemBackground"
                 android:background="@drawable/bt_landlord"
                 android:text="Button"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -123,6 +125,7 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_marginBottom="8dp"
+                android:src="?android:attr/selectableItemBackground"
                 android:background="@drawable/bt_tenant"
                 android:text="Button"
                 app:layout_constraintBottom_toBottomOf="parent"

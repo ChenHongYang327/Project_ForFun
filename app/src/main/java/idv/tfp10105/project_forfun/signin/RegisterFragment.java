@@ -171,7 +171,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void handleClick() {
-        // 假資料用
+        // 快速填寫假資料
         rgTitle.setOnClickListener(v->{
             etRgNameL.setText("林");
             etRgNameF.setText("驊");
@@ -203,6 +203,9 @@ public class RegisterFragment extends Fragment {
                     m_Calendar.get(Calendar.YEAR),
                     m_Calendar.get(Calendar.MONTH),
                     m_Calendar.get(Calendar.DAY_OF_MONTH));
+            Calendar maxCalendar = Calendar.getInstance();
+            maxCalendar.set(Calendar.YEAR, maxCalendar.get(Calendar.YEAR) - 18);
+            dialog.getDatePicker().setMaxDate(maxCalendar.getTimeInMillis());
             dialog.show();
             dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.BLACK);
@@ -303,7 +306,6 @@ public class RegisterFragment extends Fragment {
             }
             member.setId(etRgId.getText().toString().trim());
             member.setAddress(etRgAddress.getText().toString().trim());
-            Log.d("顯示生日",etRgBirthday.getText().toString().replace("/", "-"));
             member.setBirthady(Timestamp.valueOf(etRgBirthday.getText().toString().replace("/", "-")+" "+"00:00:00"));
             member.setMail(etRgMail.getText().toString().trim());
             //大頭照

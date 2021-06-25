@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -64,17 +65,9 @@ public class PersonalSnapshotFragment extends Fragment {
                              Bundle savedInstanceState) {
        View view=inflater.inflate(R.layout.fragment_personalsnapshot, container, false);
        findView(view);
-       fakedata();
-       handleTab();
-       handleView();
        return view;
     }
 
-
-    private void fakedata() {
-        selectUser=new Member();
-        selectUser.setMemberId(3);
-    }
 
     private void findView(View view) {
         tlPS=view.findViewById(R.id.tlPS);
@@ -88,11 +81,17 @@ public class PersonalSnapshotFragment extends Fragment {
         btPSReport=view.findViewById(R.id.btPSReport);
     }
 
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        handleTab();
+        handleView();
+    }
 
     private void handleTab() {
         //Fragment放入list
-        tabList.add(new LandlordstatusFragment(selectUser));//房客
-        tabList.add(new TenantstatusFragment(selectUser));//房東
+        tabList.add(new TenantstatusFragment(selectUser));//房客
+        tabList.add(new LandlordstatusFragment(selectUser));//房東
         //list放入Adapter
         PersonnalVPAdapter myAdapter = new PersonnalVPAdapter(this, tabList);
         vpPSStar.setAdapter(myAdapter);
@@ -136,6 +135,7 @@ public class PersonalSnapshotFragment extends Fragment {
             btPSMessage.setOnClickListener(v->{
 
             });
+
             //檢舉跳轉bundle
             btPSReport.setOnClickListener(v->{
 

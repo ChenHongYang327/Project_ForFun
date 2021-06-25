@@ -34,6 +34,7 @@ public class MemberCenterFragment extends Fragment {
             tvFunctionTour,tvMyRating,tvLogOut;
     private SharedPreferences sharedPreferences;
     private FirebaseAuth auth;
+    private int role;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class MemberCenterFragment extends Fragment {
         activity=getActivity();
         auth = FirebaseAuth.getInstance();
         sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
-
+        role=sharedPreferences.getInt("role",-1);
     }
 
     @Override
@@ -68,20 +69,18 @@ public class MemberCenterFragment extends Fragment {
     }
 
     private void handleClick() {
-        int role=sharedPreferences.getInt("role",-1);
         tvPersonalInformation.setOnClickListener(v->{
-            if(role==3){
-                Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
+            if(checkAccess()) {
                 Navigation.findNavController(v)
-                        .navigate(R.id.signinInFragment);
-                return;
+                        .navigate(R.id.meberCenterPersonalInformationFragment);
             }
-            Navigation.findNavController(v)
-                    .navigate(R.id.meberCenterPersonalInformationFragment);
         });
 
         tvFavoriteList.setOnClickListener(v->{
-
+            if(checkAccess()) {
+                Navigation.findNavController(v)
+                        .navigate(R.id.myFavoriteFragment);
+            }
         });
 
         tvOrderList.setOnClickListener(v->{
@@ -96,11 +95,16 @@ public class MemberCenterFragment extends Fragment {
         });
 
         tvMyRating.setOnClickListener(v->{
-            Navigation.findNavController(v)
-                    .navigate(R.id.myEvaluationnFragment);
+            if(checkAccess()) {
+                Navigation.findNavController(v)
+                        .navigate(R.id.myEvaluationnFragment);
+            }
         });
 
         tvLogOut.setOnClickListener(v->{
+            if(!checkAccess()) {
+                return;
+            }
             AlertDialog.Builder logOutDialog = new AlertDialog.Builder(activity);
             logOutDialog.setTitle(R.string.log_out);  //設置標題
             logOutDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
@@ -133,5 +137,15 @@ public class MemberCenterFragment extends Fragment {
 
         });
 
+    }
+    public boolean checkAccess(){
+        if(role==3){
+            Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(tvLogOut)
+                    .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
+            return false;
+        }
+        return true;
     }
 }

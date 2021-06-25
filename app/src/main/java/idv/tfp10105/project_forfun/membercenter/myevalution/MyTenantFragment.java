@@ -3,6 +3,8 @@ package idv.tfp10105.project_forfun.membercenter.myevalution;
 import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -52,7 +56,6 @@ public class MyTenantFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_myevaluationn_tenant, container, false);
         findView(view);
-        handleData();
         return view;
     }
 
@@ -63,6 +66,12 @@ public class MyTenantFragment extends Fragment {
         rvMyTen=view.findViewById(R.id.rvMyTen);
         rbMyTen=view.findViewById(R.id.rbMyTen);
 
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        handleData();
     }
 
     private void handleData() {

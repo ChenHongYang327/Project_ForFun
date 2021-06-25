@@ -11,7 +11,9 @@
         android:id="@+id/tlMyEvalution"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabTextColor="@android:color/tertiary_text_dark" />
+        app:tabTextColor="@android:color/tertiary_text_dark"
+        app:tabMaxWidth="0dp"
+        app:tabMode="fixed" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpMyEvalution"

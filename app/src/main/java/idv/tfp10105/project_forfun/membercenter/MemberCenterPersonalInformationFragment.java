@@ -108,12 +108,6 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
-        // 指定拍照存檔路徑
-        File file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        file = new File(file, "picture.jpg");
-        contentUri = FileProvider.getUriForFile(
-                activity, activity.getPackageName() + ".fileProvider", file);
-        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -128,12 +122,6 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         parent.setBackgroundResource(android.R.color.transparent);
         //------
         findView(view);
-        //跟後端提出請求
-        JsonObject clientreq = new JsonObject();
-        clientreq.addProperty("action", "getMember");
-        int memberId=sharedPreferences.getInt("memberId",-1);
-        clientreq.addProperty("member_id",memberId);
-        serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
         return view;
     }
 
@@ -141,6 +129,18 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // 指定拍照存檔路徑
+        File file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        file = new File(file, "picture.jpg");
+        contentUri = FileProvider.getUriForFile(
+                activity, activity.getPackageName() + ".fileProvider", file);
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
+        //跟後端提出請求
+        JsonObject clientreq = new JsonObject();
+        clientreq.addProperty("action", "getMember");
+        int memberId=sharedPreferences.getInt("memberId",-1);
+        clientreq.addProperty("member_id",memberId);
+        serverresp = RemoteAccess.getJsonData(url, clientreq.toString());
         handleData();
         handleClick();
 
@@ -293,9 +293,9 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                 //變更按鈕
                 btPIEditClick = 1;//完成編輯時的代碼
                 btPIApplyClick = 1;//取消時的代碼
-                btPIEdit.setImageResource(R.drawable.bt_sure);
+                btPIEdit.setBackgroundResource(R.drawable.bt_sure);
                 btPIApply.setVisibility(View.VISIBLE);
-                btPIApply.setImageResource(R.drawable.bt_cancel);
+                btPIApply.setBackgroundResource(R.drawable.bt_cancel);
                 HSNote.setVisibility(View.VISIBLE);
                 etNameL.setEnabled(true); //改姓
                 etNameL.setText(member.getNameL());
@@ -348,6 +348,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
+                        if(picUri.isEmpty()){
+                            Toast.makeText(activity, "大頭貼上傳失敗請重新上傳", Toast.LENGTH_SHORT).show();
+                            upNewHS=false;
+                            return;
+                        }
                         member.setHeadshot(picUri);
                         upNewHS=false;
                     }
@@ -359,6 +364,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         picUri = uploadImage(baos.toByteArray());
+                        if(picUri.isEmpty()){
+                            Toast.makeText(activity, "大頭貼上傳失敗請重新上傳", Toast.LENGTH_SHORT).show();
+                            upNewGP = false;
+                            return;
+                        }
                         member.setCitizen(picUri);
                         upNewGP = false;
                     } else {
@@ -402,8 +412,8 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                     GPisClick=false;
                     upNewHS=false;
                     upNewGP=false;
-                    btPIEdit.setImageResource(R.drawable.bt_edit);
-                    btPIApply.setImageResource(R.drawable.bt_apply);
+                    btPIEdit.setBackgroundResource(R.drawable.bt_edit);
+                    btPIApply.setBackgroundResource(R.drawable.bt_apply);
                     etNameL.setEnabled(false); //改姓
                     String name=member.getNameL()+member.getNameF();
                     etNameL.setText(name);
@@ -431,8 +441,8 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
             if (btPIApplyClick == 0) {
                 btPIEditClick = 2;//申請房東的完成
                 btPIApplyClick = 1;
-                btPIApply.setImageResource(R.drawable.bt_cancel); //改為取消圖片
-                btPIEdit.setImageResource(R.drawable.bt_sure); //改為確定圖片
+                btPIApply.setBackgroundResource(R.drawable.bt_cancel); //改為取消圖片
+                btPIEdit.setBackgroundResource(R.drawable.bt_sure); //改為確定圖片
                 tvGoodPeople.setVisibility(View.VISIBLE);
                 ivGoodPeople.setVisibility(View.VISIBLE);
                 tvGoodPeopleNote.setVisibility(View.VISIBLE);

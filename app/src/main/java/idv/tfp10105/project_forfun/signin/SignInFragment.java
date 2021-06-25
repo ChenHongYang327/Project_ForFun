@@ -7,10 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
@@ -31,7 +28,6 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -71,7 +67,7 @@ public class SignInFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_sign_in, container, false);
+        View view=inflater.inflate(R.layout.fragment_signin, container, false);
         return view;
     }
 
@@ -100,12 +96,13 @@ public class SignInFragment extends Fragment {
         super.onStart();
         // 檢查電話號碼是否驗證成功過
         FirebaseUser user = auth.getCurrentUser();
-        if (user != null) {
+//        if (user != null)
+        if ( sharedPreferences.getInt("memberId",-1)>0){
             if(sharedPreferences.getBoolean("firstOpen",true)) {
                 //跳轉至導覽頁後跳轉首頁
             }
-            if(new Date().getTime()-sharedPreferences.getLong("lastlogin",new Date().getTime())>10*60*1000){
-                Toast.makeText(activity, "離上次登入超過十分鐘", Toast.LENGTH_SHORT).show();
+            if(new Date().getTime()-sharedPreferences.getLong("lastlogin",new Date().getTime())>60*60*1000){
+                Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
                 auth.signOut();
                 JsonObject req=new JsonObject();
                 req.addProperty("action","clearToken");
@@ -161,7 +158,7 @@ public class SignInFragment extends Fragment {
                 etPhone.setError("手機號碼格式錯誤");
                 return;
             }
-            Toast.makeText(activity, phone, Toast.LENGTH_SHORT).show();
+
             resendVerificationCode("+886" + phone, resendToken);
         });
         //驗證登入
@@ -174,12 +171,25 @@ public class SignInFragment extends Fragment {
             // 將應用程式收到的驗證識別代號(verificationId)與user輸入的簡訊驗證碼(verificationCode)送至Firebase
             verifyIDAndCode(verificationId, verificationCode);
         });
-        //快速登入
-        imageView.setOnLongClickListener(v -> {
+
+        //自動填入
+        imageView.setOnClickListener(v -> {
+            Toast.makeText(activity, "自動填入", Toast.LENGTH_SHORT).show();
             etPhone.setText("0921371162");;
             etVerificationCode.setText("123456");
+        });
+
+
+        //快速登入
+        imageView.setOnLongClickListener(v -> {
+            Toast.makeText(activity, "略過電話驗證", Toast.LENGTH_SHORT).show();
+            etPhone.setText("0921371162");;
+            phone=etPhone.getText().toString().trim();
+            etVerificationCode.setText("123456");
+            phoneSure();
             return true;
         });
+
         btRegistered.setOnClickListener(v->{
             Navigation.findNavController(v)
                     .navigate(R.id.registIntroductionFragment);
@@ -318,7 +328,7 @@ public class SignInFragment extends Fragment {
          user action. */
         @Override
         public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
-            Log.d("顯示驗證碼錯誤", "onVerificationCompleted: " + credential);
+            Log.d("顯示驗證碼驗證完成", "onVerificationCompleted: " + credential);
         }
 
         /**

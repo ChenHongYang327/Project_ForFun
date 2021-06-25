@@ -47,8 +47,6 @@ public class TenantstatusFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
-        //假資料
-        selectUser.setMemberId(3);
 
     }
 
@@ -57,36 +55,9 @@ public class TenantstatusFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_personalsnapshot_tenantstatus, container, false);
         findView(view);
-//        fakedata();
+
         handleTenData();
         return view;
-    }
-
-    private void fakedata() {
-        PersonEvaluation fake1=new PersonEvaluation();
-        PersonEvaluation fake2=new PersonEvaluation();
-        PersonEvaluation fake3=new PersonEvaluation();
-        fake1.setPersonComment("還不錯");
-        fake1.setPersonStar(3);
-        fake1.setCommented(3);
-        fake1.setCommentedBy(2);
-        fake1.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        fake2.setPersonComment("還行");
-        fake2.setPersonStar(4);
-        fake2.setCommented(3);
-        fake2.setCommentedBy(2);
-        fake2.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        fake3.setPersonComment("很棒");
-        fake3.setPersonStar(2);
-        fake3.setCommented(3);
-        fake3.setCommentedBy(2);
-        fake3.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        personEvaluations.add(fake1);
-        personEvaluations.add(fake2);
-        personEvaluations.add(fake3);
-        rvTen.setLayoutManager(new LinearLayoutManager(activity));
-        rvTen.setAdapter(new PersonnalAdapter(activity, activity, personEvaluations));
-
     }
 
     private void findView(View view) {

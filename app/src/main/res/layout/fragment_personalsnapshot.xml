@@ -33,6 +33,15 @@
             android:textSize="24sp" />
 
         <TextView
+            android:id="@+id/tvPSGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:text="性別:"
+            android:textSize="24sp" />
+
+        <TextView
             android:id="@+id/tvPSAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,14 +59,6 @@
             android:text="註冊時間:"
             android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/tvPSGender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="left"
-            android:text="性別:"
-            android:textSize="24sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -91,7 +92,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         app:tabIndicatorColor="#000000"
-        app:tabMode="auto" />
+        app:tabMaxWidth="0dp"
+        app:tabMode="fixed" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpPSStar"
