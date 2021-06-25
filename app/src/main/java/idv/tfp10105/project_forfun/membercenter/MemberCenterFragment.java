@@ -1,13 +1,13 @@
 package idv.tfp10105.project_forfun.membercenter;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -19,24 +19,35 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.JsonObject;
+
 import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 public class MemberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
             tvFunctionTour,tvMyRating,tvLogOut;
+    private SharedPreferences sharedPreferences;
+    private FirebaseAuth auth;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
+        auth = FirebaseAuth.getInstance();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_member_center, container, false);
+        View view=inflater.inflate(R.layout.fragment_membercenter, container, false);
         findeView(view);
         return  view;
     }
@@ -57,7 +68,14 @@ public class MemberCenterFragment extends Fragment {
     }
 
     private void handleClick() {
+        int role=sharedPreferences.getInt("role",-1);
         tvPersonalInformation.setOnClickListener(v->{
+            if(role==3){
+                Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(v)
+                        .navigate(R.id.signinInFragment);
+                return;
+            }
             Navigation.findNavController(v)
                     .navigate(R.id.meberCenterPersonalInformationFragment);
         });
@@ -78,8 +96,8 @@ public class MemberCenterFragment extends Fragment {
         });
 
         tvMyRating.setOnClickListener(v->{
-
-
+            Navigation.findNavController(v)
+                    .navigate(R.id.myEvaluationnFragment);
         });
 
         tvLogOut.setOnClickListener(v->{
@@ -88,10 +106,23 @@ public class MemberCenterFragment extends Fragment {
             logOutDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
             logOutDialog.setMessage(R.string.log_out_dialog); //提示訊息
             logOutDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
-                Toast.makeText(activity, "sure", Toast.LENGTH_SHORT).show();
+                auth.signOut();
+                JsonObject req=new JsonObject();
+                req.addProperty("action","clearToken");
+                req.addProperty("memberId",sharedPreferences.getInt("memberId",-1));
+                String url = Common.URL + "signInController";
+                RemoteAccess.getJsonData(url,req.toString());//不接回覆
+                sharedPreferences.edit().clear().apply();
+                sharedPreferences.edit()
+                        .putBoolean("firstOpen",false)
+                        .apply();
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+                Navigation.findNavController(v).popBackStack(R.id.memberCenterFragment,true);
+
             });
             logOutDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
-                Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+
             });
             //設定對話框顏色
             Window window=logOutDialog.show().getWindow();

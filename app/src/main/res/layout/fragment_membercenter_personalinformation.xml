@@ -20,13 +20,13 @@
             android:layout_height="50dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/bt_edit" />
+            android:src="@drawable/bt_edit" />
 
         <ImageButton
             android:id="@+id/btPIApply"
             android:layout_width="140dp"
             android:layout_height="50dp"
-            android:background="@drawable/bt_apply" />
+            android:src="@drawable/bt_apply" />
     </LinearLayout>
 
     <ScrollView

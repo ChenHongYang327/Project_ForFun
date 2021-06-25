@@ -1,8 +1,9 @@
 package idv.tfp10105.project_forfun.common.bean;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Member {
+public class Member implements Serializable {
 
 	private Integer memberId;
 	private Integer role;

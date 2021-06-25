@@ -72,14 +72,10 @@ public class RegisterFragment extends Fragment {
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheetView;
     private Button btPickpic,btTakepic,btCancel;
-    //圖片處理
-    private Bitmap bitmap = null; //設定圖片顯示用
     private FirebaseStorage storage;
     private String picUri; //回傳路徑用
     private ByteArrayOutputStream baos; //上傳用
-    private String imagePath;//上傳路徑
     //拍照
-    private File file;
     private Uri contentUri;
     //判斷是否上傳成功
     private boolean uploadHeadshot=false;
@@ -91,7 +87,7 @@ public class RegisterFragment extends Fragment {
     private boolean clickIdPicF=false;
     private boolean clickIdPicB=false;
     private boolean clickGoodPeople=false;
-    private String url = Common.URL + "/register";
+    private final String url = Common.URL + "/register";
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             this::takePictureResult);
@@ -111,7 +107,7 @@ public class RegisterFragment extends Fragment {
         storage = FirebaseStorage.getInstance();
         sBundle=getArguments()!=null? getArguments().getString("Apply"):"";
         // 指定拍照存檔路徑
-        file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         file = new File(file, "picture.jpg");
         contentUri = FileProvider.getUriForFile(
                 activity, activity.getPackageName() + ".fileProvider", file);
@@ -314,31 +310,16 @@ public class RegisterFragment extends Fragment {
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
             picUri=uploadImage(baos.toByteArray());
-            if(picUri==null){
-                Toast.makeText(activity, "大頭照上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
-                uploadHeadshot=false;
-                return;
-            }
             member.setHeadshot(picUri);
             //身分證正面
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgIdPicB.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
             picUri=uploadImage(baos.toByteArray());
-            if(picUri==null){
-                Toast.makeText(activity, "身分證上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
-                uploadIdPicB=false;
-                return;
-            }
             member.setIdImgb(picUri);
             //身分證反面
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgIdPicF.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
             picUri=uploadImage(baos.toByteArray());
-            if(picUri==null){
-                Toast.makeText(activity, "身分證上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
-                uploadIdPicF=false;
-                return;
-            }
             member.setIdImgf(picUri);
             //如果是申請房東
             if(sBundle.equals("Landlord")){
@@ -346,11 +327,6 @@ public class RegisterFragment extends Fragment {
                 baos = new ByteArrayOutputStream();
                 ((BitmapDrawable) ivRgGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 picUri=uploadImage(baos.toByteArray());
-                if(picUri==null){
-                    Toast.makeText(activity, "良民證上傳錯誤,請重新選擇照片", Toast.LENGTH_SHORT).show();
-                    uploadGoodPeople=false;
-                    return;
-                }
                 member.setCitizen(picUri);
             }
             //將資料轉成JSON
@@ -473,6 +449,9 @@ public class RegisterFragment extends Fragment {
         if (result.getData() != null) {
             Uri resultUri = UCrop.getOutput(result.getData());
             try {
+                //圖片處理
+                //設定圖片顯示用
+                Bitmap bitmap;
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     bitmap = BitmapFactory.decodeStream(
                             activity.getContentResolver().openInputStream(resultUri));
@@ -525,7 +504,7 @@ public class RegisterFragment extends Fragment {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -536,9 +515,8 @@ public class RegisterFragment extends Fragment {
                     } else {
                         String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
                         Log.d("顯示Firebase上傳圖片的錯誤", errorMessage);
-                        imagePath=null;
                     }
                 });
-        return imagePath;
+        return imageRef.getPath();
     }
 }

@@ -20,7 +20,7 @@ import idv.tfp10105.project_forfun.R;
 public class RegistIntroductionFragment extends Fragment {
     private Activity activity;
     private ImageButton btTenant,btLandlord;
-    private TextView temp;
+
 
 
     @Override
@@ -36,7 +36,6 @@ public class RegistIntroductionFragment extends Fragment {
         View view=inflater.inflate(R.layout.fragment_regist_introduction, container, false);
         btTenant=view.findViewById(R.id.btTenant);
         btLandlord=view.findViewById(R.id.btLandlord);
-        temp=view.findViewById(R.id.temp);
         return view;
     }
 
@@ -53,12 +52,6 @@ public class RegistIntroductionFragment extends Fragment {
             bundle.putString("Apply","Landlord");
             Navigation.findNavController(v)
                     .navigate(R.id.registerFragment,bundle);
-        });
-        //要刪掉
-        temp.setOnClickListener(v->{
-            Navigation.findNavController(v).popBackStack(R.id.registIntroductionFragment,true);
-            Navigation.findNavController(v)
-                    .navigate(R.id.homeFragment);
         });
 
     }

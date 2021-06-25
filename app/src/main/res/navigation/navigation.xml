@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/registIntroductionFragment">
+    app:startDestination="@id/publishFragment">
     <fragment
         android:id="@+id/homeFragment"
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
@@ -13,7 +13,11 @@
         android:id="@+id/memberCenterFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterFragment"
         android:label="會員中心"
-        tools:layout="@layout/fragment_member_center"/>
+        tools:layout="@layout/fragment_membercenter">
+        <action
+            android:id="@+id/action_memberCenterFragment_to_signinInFragment"
+            app:destination="@id/signinInFragment" />
+    </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment"
         android:name="idv.tfp10105.project_forfun.orderconfirm.Orderconfirm_mainfragment"
@@ -30,7 +34,7 @@
         android:id="@+id/meberCenterPersonalInformationFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterPersonalInformationFragment"
         android:label="個人資料"
-        tools:layout="@layout/fragment_member_center_personal_information" />
+        tools:layout="@layout/fragment_membercenter_personalinformation" />
     <fragment
         android:id="@+id/discussionBoardFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
@@ -82,10 +86,10 @@
         android:label="評價"
         tools:layout="@layout/fragment_orderconfirm_score" />
     <fragment
-        android:id="@+id/signin_in"
-        android:name="idv.tfp10105.project_forfun.signin.signin_in"
-        android:label="fragment_signin_in"
-        tools:layout="@layout/fragment_signin_in" />
+        android:id="@+id/signinInFragment"
+        android:name="idv.tfp10105.project_forfun.signin.SignInFragment"
+        android:label="登入頁面"
+        tools:layout="@layout/fragment_signIn" />
     <fragment
         android:id="@+id/registerFragment"
         android:name="idv.tfp10105.project_forfun.signin.RegisterFragment"
@@ -128,6 +132,16 @@
         android:name="idv.tfp10105.project_forfun.publish.PublishFragment"
         android:label="刊登房屋"
         tools:layout="@layout/fragment_publish" />
+    <fragment
+        android:id="@+id/personalSnapshotFragment2"
+        android:name="idv.tfp10105.project_forfun.membercenter.personnalsanpshot.PersonalSnapshotFragment"
+        android:label="個人資訊快照"
+        tools:layout="@layout/fragment_personalsnapshot" />
+    <fragment
+        android:id="@+id/myEvaluationnFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.myevalution.MyEvaluationnFragment"
+        android:label="我的評價"
+        tools:layout="@layout/fragment_myevaluationn" />
 </navigation>
 
 

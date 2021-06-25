@@ -1,34 +1,40 @@
-package idv.tfp10105.project_forfun.commend;
-
+package idv.tfp10105.project_forfun.common.bean;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Post implements Serializable {
 
     private Integer postId;
-    private Integer boardId;
+    private String boardId;
     private Integer posterId;
     private String postTitle;
     private String postImg;
     private String posterImg;
-    private String context;
-    private Date createTime;
-    private Date updateTime;
-    private Date deleteTime;
+    private String postContext;
+    private Timestamp createTime;
+    private Timestamp updateTime;
+    private Timestamp deleteTime;
 
-    public Post() {
-    }
-
-    public Post(Integer postId, Integer boardId, Integer posterId, String postTitle, String postImg,
-                String posterImg, String context, Date createTime, Date updateTime, Date deleteTime)
-    {
+    public Post(Integer postId, String boardId, Integer posterId, String postTitle, String postContext, String postImg) {
         this.postId = postId;
         this.boardId = boardId;
         this.posterId = posterId;
         this.postTitle = postTitle;
         this.postImg = postImg;
+        this.postContext = postContext;
+    }
+
+    public Post(Integer postId, String boardId, Integer posterId, String postTitle, String postContext, String postImg,
+                String posterImg, Timestamp createTime, Timestamp updateTime, Timestamp deleteTime)
+    {
+        this.postId = postId;
+        this.boardId = boardId;
+        this.posterId = posterId;
+        this.postTitle = postTitle;
+        this.postContext = postContext;
+        this.postImg = postImg;
         this.posterImg = posterImg;
-        this.context = context;
         this.createTime = createTime;
         this.updateTime = updateTime;
         this.deleteTime = deleteTime;
@@ -42,11 +48,11 @@ public class Post implements Serializable {
         this.postId = postId;
     }
 
-    public Integer getBoardId() {
+    public String getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(Integer boardId) {
+    public void setBoardId(String boardId) {
         this.boardId = boardId;
     }
 
@@ -82,19 +88,19 @@ public class Post implements Serializable {
         this.posterImg = posterImg;
     }
 
-    public String getContext() {
-        return context;
+    public String getPostContext() {
+        return postContext;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setPostContext(String postContext) {
+        this.postContext = postContext;
     }
 
     public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
     }
 
@@ -102,7 +108,7 @@ public class Post implements Serializable {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 
@@ -110,7 +116,7 @@ public class Post implements Serializable {
         return deleteTime;
     }
 
-    public void setDeleteTime(Date deleteTime) {
+    public void setDeleteTime(Timestamp deleteTime) {
         this.deleteTime = deleteTime;
     }
 }
