@@ -19,6 +19,19 @@
     <string name="sure">確定</string>
     <string name="cancel">取消</string>
 
+    <!-- 填上TapPay Portal上註冊的資料 -->
+    <!-- 開發者 / 應用程式 -->
+    <string name="TapPay_AppID">20648</string>
+    <string name="TapPay_AppKey">app_gvt0G15dGJHjcPKGRrtKdo1ZQhov5Ib2uwJW9wpO3Mo1nguuE01KAE1DvXXe</string>
+
+    <!-- 帳戶資訊 -->
+    <string name="TapPay_PartnerKey">partner_bxBsflQzsqHNLin5HTsx2ReoTyXcmeJ7cYh8vzfN23uQlphzxvw3SDvn</string>
+
+    <!-- 商家管理 / 商家設置-->
+    <!-- MerchantName->BankName-->
+    <string name="TapPay_MerchantName">TW_TAISHIN</string>
+    <string name="TapPay_MerchantID">ahic2569k3ig_TAISHIN</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

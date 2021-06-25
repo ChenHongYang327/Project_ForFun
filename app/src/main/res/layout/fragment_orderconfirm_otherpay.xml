@@ -84,21 +84,14 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_ocrOtherPay_notes" />
 
                 <ImageView
-                    android:id="@+id/bt_ocrOtherPay_return"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/bt_9044blank"
-                    app:layout_constraintBottom_toBottomOf="@+id/bt_ocrOtherPay_cansel"
-                    app:layout_constraintEnd_toStartOf="@+id/bt_ocrOtherPay_confirm"
-                    app:layout_constraintStart_toEndOf="@+id/bt_ocrOtherPay_cansel" />
-
-                <ImageView
                     android:id="@+id/bt_ocrOtherPay_cansel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
                     android:layout_marginTop="50dp"
                     android:layout_marginBottom="32dp"
-                    android:src="@drawable/bt_9044blank"
+                    android:src="@drawable/bt_14050blank"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/img_ocrOtherPay_pic" />
@@ -107,8 +100,10 @@
                     android:id="@+id/bt_ocrOtherPay_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/bt_9044blank"
-                    app:layout_constraintBottom_toBottomOf="@+id/bt_ocrOtherPay_return"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/bt_14050blank"
+                    app:layout_constraintBottom_toBottomOf="@+id/bt_ocrOtherPay_cansel"
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
@@ -121,17 +116,6 @@
                     app:layout_constraintEnd_toEndOf="@+id/bt_ocrOtherPay_cansel"
                     app:layout_constraintStart_toStartOf="@+id/bt_ocrOtherPay_cansel"
                     app:layout_constraintTop_toTopOf="@+id/bt_ocrOtherPay_cansel" />
-
-                <TextView
-                    android:id="@+id/tvbt_ocrOtherPay_return"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="退回房東"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/bt_ocrOtherPay_return"
-                    app:layout_constraintEnd_toEndOf="@+id/bt_ocrOtherPay_return"
-                    app:layout_constraintStart_toStartOf="@+id/bt_ocrOtherPay_return"
-                    app:layout_constraintTop_toTopOf="@+id/bt_ocrOtherPay_return" />
 
                 <TextView
                     android:id="@+id/textView34"
