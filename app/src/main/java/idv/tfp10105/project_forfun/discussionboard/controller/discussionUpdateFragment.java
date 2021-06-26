@@ -6,9 +6,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,23 +32,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -48,35 +42,30 @@ import com.yalantis.ucrop.UCrop;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Post;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Book;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.POWER_SERVICE;
 
-public class discussionInsertFragment extends Fragment {
+public class discussionUpdateFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
     private FragmentActivity activity;
-    private EditText etTitle, etContext;
-    private ImageButton insert_bt_push, insert_bt_memberHead;
-    private TextView insert_MemberName, insert_board;
-    private Spinner insert_spinner;
+    private EditText update_context_edtext, update_title_edtext;
+    private ImageButton update_bt_save, update_bt_memberhead;
+    private TextView update_memberName_text, update_time_text ;
     private String imagePath;
     private FirebaseStorage storage;
     private byte[] image;
     private File file;
     private Uri contentUri;
-    private ImageView insert_bt_picture;
-    private boolean pictureTaken;
+    private ImageView update_bt_imageView;
     private String url = Common.URL ;
     private SharedPreferences sharedPreferences;
     private Bundle bundle;
+    private Post post;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -100,78 +89,56 @@ public class discussionInsertFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_discussion_insert, container, false);
-
+        View view = inflater.inflate(R.layout.fragment_discussion_update, container, false);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         findViews(view);
-        handleSpinner();
-        handleInsert_bt_picture();
-        handleFinishInsert(view);
-    }
+        final NavController navController = Navigation.findNavController(view);
+        Bundle bundle = getArguments();
+        if(bundle == null || bundle.getSerializable("post") == null) {
+            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
+            navController.popBackStack();
+            return;
+        }
+        post = (Post) bundle.getSerializable("post");
+        showPost();
 
+        handleUpdate_bt_picture();
+        handleFinishInsert();
+    }
 
 
     private void findViews(View view) {
-        insert_bt_picture = view.findViewById(R.id.insert_bt_image);
-        insert_bt_memberHead = view.findViewById(R.id.insert_bt_memberHead);
-        insert_bt_push = view.findViewById(R.id.insert_bt_insert);
-        insert_spinner = view.findViewById(R.id.insert_spinner);
-        etTitle = view.findViewById(R.id.insert_et_title);
-        etContext = view.findViewById(R.id.insert_et_context);
-        insert_MemberName = view.findViewById(R.id.insert_memberName_text);
-        insert_board = view.findViewById(R.id.insert_board);
+        update_bt_imageView = view.findViewById(R.id.update_imageView);
+        update_bt_memberhead = view.findViewById(R.id.update_bt_memberhead);
+        update_bt_save = view.findViewById(R.id.update_bt_save);
+        update_title_edtext = view.findViewById(R.id.update_title_edtext);
+        update_context_edtext = view.findViewById(R.id.update_context_edtext);
+        update_memberName_text = view.findViewById(R.id.update_memberName_text);
+        update_time_text = view.findViewById(R.id.update_time_text);
 
     }
 
-    //控制spinner
-    private String handleSpinner( ) {
-        //index:0    index:1   index:2
-        List<String> itemList = Arrays.asList("租屋交流", "知識問答", "需求單");
-        //實例化Adapter物件，並設定選項的外觀
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, itemList);
-        //設定展開時的外觀
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //設定Adapter
-        insert_spinner.setAdapter(adapter);
-        //設定預選選項
-        insert_spinner.setSelection(0, false);
+    //從bundle取資料
+    private void showPost() {
 
-        //註冊/實作 選項被選取監聽器
-        insert_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        if (imagePath != "") {
+            showImage(post.getPostImg());
+        } else {
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                insert_board.setText(insert_spinner.getSelectedItem().toString());
-
-            }
-
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-                TextView errorText = (TextView) insert_spinner.getSelectedView();
-                errorText.setError("");
-                //just to highlight that this is an error
-                errorText.setTextColor(Color.RED);
-                //changes the selected item text to this
-                errorText.setText("請選擇板塊");
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, new String[]{""});
-                insert_spinner.setAdapter(adapter);
-
-            }
-        });
-        return  insert_spinner.getSelectedItem().toString();
+            update_bt_imageView.setImageResource(R.drawable.no_image);
+        }
+        update_title_edtext.setText(post.getPostTitle());
+        update_context_edtext.setText(post.getPostContext());
+//        update_time_text.setText(post.getUpdateTime().toString());
     }
 
-    private void handleInsert_bt_picture() {
+
+    private void handleUpdate_bt_picture() {
 
         //初始化BottomSheet
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
@@ -211,7 +178,7 @@ public class discussionInsertFragment extends Fragment {
             pickPictureLauncher.launch(intent);
         });
 
-        insert_bt_picture.setOnClickListener((v)->{
+        update_bt_imageView.setOnClickListener((v)->{
             //顯示BottomSheet
             bottomSheetDialog.show();
         });
@@ -223,25 +190,26 @@ public class discussionInsertFragment extends Fragment {
 
     }
 
-    private void handleFinishInsert(View view) {
-        insert_bt_push.setOnClickListener(v -> {
+    private void handleFinishInsert() {
+        update_bt_save.setOnClickListener(v -> {
             //取得user輸入的值
-            String title = etTitle.getText().toString().trim();
-            if (title.length() <= 0) {
-                Toast.makeText(activity, "Title is invalid", Toast.LENGTH_SHORT).show();
+            String context = update_context_edtext.getText().toString().trim();
+            if (context.length() <= 0){
+                Toast.makeText(activity, "請輸入內文", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String context = etContext.getText().toString().trim();
-            if (context.length() <= 0){
-                Toast.makeText(activity, "context is invalid", Toast.LENGTH_SHORT).show();
+            String title = update_title_edtext.getText().toString().trim();
+            if (context.length() <= 0) {
+                Toast.makeText(activity, "請輸入標題", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (RemoteAccess.networkCheck(activity)) {
                 //用json傳至後端
                 url += "DiscussionBoardController";
-                Post post = new Post(0, insert_spinner.getSelectedItem().toString(), 0, title, context, imagePath);
+                int id = post.getPostId();
+                post.setFiles(id, 0, title, context, imagePath);
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("action", "postInsert");
+                jsonObject.addProperty("action", "postUpdate");
                 jsonObject.addProperty("post", new Gson().toJson(post));
                 int count;
                 //執行緒池物件
@@ -250,13 +218,11 @@ public class discussionInsertFragment extends Fragment {
                 count = Integer.parseInt(result);
                 //筆數為0
                 if (count == 0) {
-                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
 
-                    //傳板塊資料回去
-                    bundle = new Bundle();
-                    bundle.putString("board",insert_spinner.getSelectedItem().toString());
+
                     //抽掉頁面
                     Navigation.findNavController(v).popBackStack(R.id.discussionInsertFragment,true);
                     Navigation.findNavController(v).navigate(R.id.discussionBoardFragment,bundle);
@@ -311,7 +277,7 @@ public class discussionInsertFragment extends Fragment {
 
         //取得根目錄
         StorageReference rootRef = storage.getReference();
-        imagePath = getString(R.string.app_name) + "/Discussion_insert/" + System.currentTimeMillis();
+        imagePath = getString(R.string.app_name) + "/Discussion_update/" + System.currentTimeMillis();
 
         //建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
@@ -323,7 +289,7 @@ public class discussionInsertFragment extends Fragment {
                         Log.d(TAG, message);
                         Toast.makeText(activity, "上傳結果： " + message, Toast.LENGTH_SHORT).show();
                         //下載剛上傳的照片
-                        downloadImage(imagePath);
+                        showImage(imagePath);
 
                     } else {
                         String message = task.getException() == null ? "Upload fail" : task.getException().getMessage();
@@ -334,25 +300,43 @@ public class discussionInsertFragment extends Fragment {
         return imagePath;
     }
 
-    private void downloadImage(String imagePath) {
+//    private void downloadImage(final ImageView imageView, final String path) {
+//        final int ONE_MEGABYTE = 1024 * 1024;
+//        StorageReference imageRef = storage.getReference().child(path);
+//        //最多能暫存記憶體的量
+//        imageRef.getBytes(ONE_MEGABYTE)
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful() && task.getResult() != null) {
+//                        image = task.getResult();
+//                        //轉bitmap呈現前端
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+//                        imageView.setImageBitmap(bitmap);
+//                    } else {
+//                        String message  = task.getException() == null ? "Download fail" : task.getException().getMessage();
+//                        Log.e(TAG, "message: " + message);
+//                        imageView.setImageResource(R.drawable.no_image);
+//                        Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
+
+//     下載Firebase storage的照片並顯示在ImageView上
+    private void showImage(final String imagePath) {
         final int ONE_MEGABYTE = 1024 * 1024;
         StorageReference imageRef = storage.getReference().child(imagePath);
-        //最多能暫存記憶體的量
         imageRef.getBytes(ONE_MEGABYTE)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        image = task.getResult();
-                        //轉bitmap呈現前端
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                        insert_bt_picture.setImageBitmap(bitmap);
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        update_bt_imageView.setImageBitmap(bitmap);
                     } else {
-                        String message  = task.getException() == null ? "Download fail" : task.getException().getMessage();
-                        Log.e(TAG, "message: " + message);
-                        insert_bt_picture.setImageResource(R.drawable.no_image);
-                        Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + imagePath : task.getException().getMessage() + ": " + imagePath;
+                        Log.e(TAG, message);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
 }
-

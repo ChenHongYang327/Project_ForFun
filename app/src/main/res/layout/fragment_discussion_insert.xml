@@ -116,8 +116,7 @@
                 app:layout_constraintHorizontal_bias="0.117"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/insert_et_title"
-                app:layout_constraintVertical_bias="0.0"
-                tools:ignore="MissingConstraints" />
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageButton
                 android:id="@+id/insert_bt_insert"
@@ -126,7 +125,6 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
-                android:background="@drawable/bt_post"
                 android:src="@drawable/bt_post"
                 app:layout_constraintBottom_toTopOf="@+id/insert_bt_image"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -1,12 +1,16 @@
 package idv.tfp10105.project_forfun.discussionboard;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -20,7 +24,9 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
@@ -35,17 +41,22 @@ public class discussionBoardFragment extends Fragment {
     private String[] title = {"租屋交流", "知識問答", "需求單"};
     private ViewPager2 viewPager;
     private TabLayout disTab;
+    private String  bundle;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         activity = getActivity();
+
+        bundle = getArguments() != null ? (String) getArguments().getSerializable("board"): "";
+
         View view = inflater.inflate(R.layout.fragment_discussion_board, container, false);
         findViews(view);
         return view;
@@ -53,6 +64,9 @@ public class discussionBoardFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
         viewPager.setAdapter(new MyAdapter(activity));
         TabLayoutMediator tab = new TabLayoutMediator(disTab, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
@@ -73,6 +87,7 @@ public class discussionBoardFragment extends Fragment {
         tab.attach();
     }
 
+
     private void findViews(View view) {
         viewPager = view.findViewById(R.id.dis_viewPage2);
         disTab = view.findViewById(R.id.dis_tabview);
@@ -83,9 +98,23 @@ public class discussionBoardFragment extends Fragment {
             super((FragmentActivity) fragmentActivity);
         }
 
+        @Override
+        public int getItemCount() {
+            return 3;
+        }
+
         @NotNull
         @Override
         public Fragment createFragment(int position) {
+
+            if (bundle.equals("租屋交流")) {
+                viewPager.setCurrentItem(0);
+            } else if (bundle.equals("知識問答")) {
+                viewPager.setCurrentItem(1);
+            } else {
+                //指定跳轉 viewPager2的 index
+                viewPager.setCurrentItem(2);
+            }
 
             switch (position)
             {
@@ -96,20 +125,9 @@ public class discussionBoardFragment extends Fragment {
                 default:
                     return new discussionBoard_RentSeekingFragment();
 
-                //下方寫法會報錯 RecyclerView 提示No adapter attached;skipping
-
-//                case 0:
-//                    return new Fragment(R.layout.fragment_discussion_board_rent_house);
-//                case 1:
-//                    return new Fragment(R.layout.fragment_discussion_board_knowledge);
-//                default:
-//                    return new Fragment(R.layout.fragment_discussion_board_rent_seeking);
             }
         }
 
-        @Override
-        public int getItemCount() {
-            return 3;
-        }
     }
+
 }
