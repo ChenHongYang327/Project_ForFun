@@ -117,7 +117,7 @@ public class OcrHO_Publishing extends Fragment {
             String city = cityNames.get(position);
             getImage(holder.ivPublishList, publish.getTitleImg()==null?"/":publish.getTitleImg());
             holder.tvPLName.setText(publish.getTitle());
-            holder.tvPLArea.setText("地區:" + city+publish.getCityId());
+            holder.tvPLArea.setText("地區:" + city);
             holder.tvPLPing.setText("坪數:" + publish.getSquare() + "坪");
             holder.tvPLMoney.setText("$" + publish.getRent() + "/月");
             if(publish.getDeleteTime()!=null) {
