@@ -1,12 +1,16 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +24,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.orderconfirm.tappayNetwork.RemoteAccess_TapPay;
 import tech.cherri.tpdirect.api.TPDCard;
 import tech.cherri.tpdirect.api.TPDConsumer;
@@ -37,13 +43,16 @@ public class TappayActivity extends AppCompatActivity {
     //google＆tappay 相關宣告
     public static final String TAPPAY_DOMAIN_SANDBOX = "https://sandbox.tappaysdk.com/";
     public static final String TAPPAY_PAY_BY_PRIME_URL = "tpc/payment/pay-by-prime";
-    public ProgressDialog mProgressDialog;
+    public ProgressDialog mProgressDialog; //轉圈圈元件
     private TPDGooglePay tpdGooglePay;
     private PaymentData paymentData;
 
     private ImageView btBuy, btCancel, btReturn, btConfirm, imgPic; //button用圖片表示
     private TextView tvAccount, tvNotes, tvCardInfo, tvResult;
     private TextView tvReturnText, tvConfirmText, tvancelText;
+    private SharedPreferences sharedPreferences;
+    private String TAPPATACCOUNY = "10"; //付款總額
+
 
     //設定信用卡類別
     public static final TPDCard.CardType[] CARD_TYPES = new TPDCard.CardType[]{
@@ -53,11 +62,11 @@ public class TappayActivity extends AppCompatActivity {
             , TPDCard.CardType.AmericanExpress
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tappay);
+
         //宣告元件參照
         btBuy = findViewById(R.id.bt_ocrTapPay_toBuy);
         btCancel = findViewById(R.id.bt_ocrTapPay_cancel);
@@ -73,43 +82,100 @@ public class TappayActivity extends AppCompatActivity {
         tvConfirmText = findViewById(R.id.tv_ocrTapPay_confirmText);
         tvReturnText = findViewById(R.id.tv_ocrTapPay_returnText);
 
-        // TODO: 判斷誰登入
+        //隱藏 action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
+        // bt 初始設定
+        btConfirm.setVisibility(View.GONE);
+        tvConfirmText.setText("");
+        btBuy.setEnabled(false);
 
         handleViews();
+
+        //宣告 偏號設定檔位置
+        sharedPreferences = getSharedPreferences("SharedPreferences",Context.MODE_PRIVATE);
+        // TODO: 判斷誰登入
+        String str = sharedPreferences.getString("tappay","-1");
+
+        switch (str){
+            case "order":
+                prepareGooglePay();
+                orderEvent();
+                break;
+
+            case "otherpay":
+                prepareGooglePay();
+                otherPayEvent();
+                break;
+
+            default:
+                Toast.makeText(this,"找不到付款資訊",Toast.LENGTH_LONG).show();
+                finish();
+                break;
+        }
+    }
+
+    //TODO:set order tableInfo
+    private void orderEvent() {
+
+        //檢查網路連線，順便拿值
+        if(RemoteAccess.networkCheck(this)){
+            String url = Common.URL + "Order";
+
+            JsonObject jsonObject = new JsonObject();
+            
+
+
+
+        }
+
+
+
+
+        //tvResult.setText("order");
+    }
+
+    //TODO:set otherpay tableInfo
+    private void otherPayEvent() {
+
+        //tvResult.setText("otherpay");
+    }
+
+    private void handleViews() {
 
         TPDSetup.initInstance(this,
                 Integer.parseInt(getString(R.string.TapPay_AppID)),
                 getString(R.string.TapPay_AppKey),
                 TPDServerType.Sandbox);
 
-        prepareGooglePay();
-
-    }
-
-    private void handleViews() {
-        btBuy.setEnabled(false);
         btBuy.setOnClickListener(v->{
             // 跳出user資訊視窗讓user確認，確認後會呼叫onActivityResult()
             tpdGooglePay.requestPayment(TransactionInfo.newBuilder()
                     .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                     // 消費總金額
-                    .setTotalPrice("10")
+                    .setTotalPrice(TAPPATACCOUNY)
                     // 設定幣別
                     .setCurrencyCode("TWD")
                     .build(), LOAD_PAYMENT_DATA_REQUEST_CODE);
         });
 
         //確認按鈕事件
-        btConfirm.setEnabled(false);
         btConfirm.setOnClickListener(v->{
             getPrimeFromTapPay(paymentData);
+            btBuy.setEnabled(false);
         });
+
+        //退回按鈕事件 (delete)
+        btReturn.setOnClickListener(v->{
+
+            finish();
+        });
+
 
         //取消按鈕事件
         btCancel.setOnClickListener(v->{
-            Toast.makeText(this,"cancel",Toast.LENGTH_SHORT).show();
-            //TODO: cancel navugation
+            finish();
         });
     }
 
@@ -122,7 +188,8 @@ public class TappayActivity extends AppCompatActivity {
         if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
-                    btConfirm.setEnabled(true);
+                    btConfirm.setVisibility(View.VISIBLE);
+                    tvConfirmText.setText("確認付款");
                     // 取得支付資訊
                     paymentData = PaymentData.getFromIntent(data);
                     if (paymentData != null) {
@@ -131,17 +198,13 @@ public class TappayActivity extends AppCompatActivity {
                     }
                     break;
                 case Activity.RESULT_CANCELED:
-                    btConfirm.setEnabled(false);
-                    // tvResult.setText(R.string.textCanceled);
                     break;
                 case AutoResolveHelper.RESULT_ERROR:
-                    btConfirm.setEnabled(false);
                     Status status = AutoResolveHelper.getStatusFromIntent(data);
                     if (status != null) {
                         String text = "status code: " + status.getStatusCode() +
                                 " , message: " + status.getStatusMessage();
                         Log.d(TAG, text);
-                        tvResult.setText(text);
                     }
                     break;
                 default:
@@ -173,7 +236,6 @@ public class TappayActivity extends AppCompatActivity {
                 btBuy.setEnabled(true);
             } else {
                 btBuy.setEnabled(false);
-                //       tvResult.setText(R.string.textCannotUseGPay);
             }
         });
     }
@@ -216,7 +278,13 @@ public class TappayActivity extends AppCompatActivity {
                             getString(R.string.TapPay_PartnerKey),
                             getString(R.string.TapPay_MerchantID));
                     Log.d(TAG, text);
-                    tvResult.setText(text);
+                    //tvResult.setText(text);
+                    tvResult.setText("success");
+
+                    btConfirm.setVisibility(View.GONE);
+                    tvConfirmText.setText("");
+                    btReturn.setVisibility(View.GONE);
+                    tvReturnText.setText("");
                 },
                 //called back 失敗
                 (status, reportMsg) -> {
@@ -225,7 +293,7 @@ public class TappayActivity extends AppCompatActivity {
                     hideProgressDialog();
                     String text = "TapPay getPrime failed. status: " + status + ", message: " + reportMsg;
                     Log.d(TAG, text);
-                    //tvResult.setText(text);
+                    tvResult.setText(text);
                 });
     }
 
