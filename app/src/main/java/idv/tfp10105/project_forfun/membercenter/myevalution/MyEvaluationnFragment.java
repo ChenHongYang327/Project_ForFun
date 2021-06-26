@@ -63,12 +63,13 @@ public class MyEvaluationnFragment extends Fragment {
             //Fragment放入list
             tabList.add(new MyTenantFragment(memberId));//房客
 //            if (role == 2) {
-                tabList.add(new MyLandlordFragment(memberId));//房東
+            tabList.add(new MyLandlordFragment(memberId));//房東
 //            }
         }
         //list放入Adapter
         PersonnalVPAdapter myAdapter = new PersonnalVPAdapter(this, tabList);
         vpMyEvalution.setAdapter(myAdapter);
+        vpMyEvalution.setOffscreenPageLimit(tabList.size() - 1);//預加載
         //TabLayout和ViewPager的綁定
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tlMyEvalution, vpMyEvalution, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
@@ -83,11 +84,5 @@ public class MyEvaluationnFragment extends Fragment {
             }
         });
         tabLayoutMediator.attach();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        vpMyEvalution.setOffscreenPageLimit(tabList.size() - 1);//預加載
     }
 }

@@ -40,6 +40,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.yalantis.ucrop.UCrop;
 
@@ -333,7 +334,7 @@ public class RegisterFragment extends Fragment {
             }
             //將資料轉成JSON
             reqJson.addProperty("action","register");
-            reqJson.addProperty("member",new Gson().toJson(member));
+            reqJson.addProperty("member",new GsonBuilder().setDateFormat("yyyy-MM-dd").create().toJson(member));
             resp= RemoteAccess.getJsonData(url,reqJson.toString());
             respJson=new Gson().fromJson(resp,JsonObject.class);
             if(respJson.get("status").getAsBoolean()) {
@@ -355,6 +356,7 @@ public class RegisterFragment extends Fragment {
             Navigation.findNavController(v).popBackStack(R.id.registIntroductionFragment,true);
             Navigation.findNavController(v)
                     .navigate(R.id.registIntroductionFragment);
+
         });
 
         ivRgHeadshot.setOnClickListener(v->{

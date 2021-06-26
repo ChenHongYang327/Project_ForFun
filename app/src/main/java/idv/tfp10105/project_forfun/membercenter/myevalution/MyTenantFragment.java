@@ -22,6 +22,8 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +73,7 @@ public class MyTenantFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        handleData();
+//        handleData();
     }
 
     private void handleData() {
@@ -97,10 +99,15 @@ public class MyTenantFragment extends Fragment {
                 sum+=personEvaluation.getPersonStar();
             }
             float avg=(float) sum/personEvaluations.size();//平均分數
-            tvMyTenScore.setText("房客平均分數:"+avg);
+            tvMyTenScore.setText("房客平均分數:"+(float)new BigDecimal(avg).setScale(1, RoundingMode.UP).doubleValue());
             rbMyTen.setRating(avg);
 
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        handleData();
+    }
 }

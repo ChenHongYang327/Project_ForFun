@@ -6,9 +6,8 @@
     android:orientation="vertical"
     tools:context=".orderconfirm.ocf_houseOwner.OcrHO_Publishing" >
 
-    <TextView
-        android:id="@+id/textView6"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPublishList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Publishing Fragment" />
+        android:layout_height="match_parent" />
 </LinearLayout>
