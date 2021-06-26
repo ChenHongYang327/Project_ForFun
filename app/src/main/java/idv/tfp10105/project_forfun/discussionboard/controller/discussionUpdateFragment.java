@@ -108,7 +108,7 @@ public class discussionUpdateFragment extends Fragment {
         showPost();
 
         handleUpdate_bt_picture();
-        handleFinishInsert(view);
+        handleFinishInsert();
     }
 
 
@@ -123,22 +123,13 @@ public class discussionUpdateFragment extends Fragment {
 
     }
 
+    //從bundle取資料
     private void showPost() {
-        url += "DiscussionBoardController";
-        String imagePath = post.getPostImg();
-        int imageSize = getResources().getDisplayMetrics().widthPixels / 3;
-        int postId = post.getPostId();
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("action","getImage");
-        jsonObject.addProperty("imagePath",imagePath);
-        jsonObject.addProperty("postId", postId);
-        jsonObject.addProperty("imageSize", imageSize);
-        String jsonUpdate = RemoteAccess.getJsonData(url, jsonObject.toString());
-        if (jsonUpdate != null)
-        {
-        showImage(imagePath);
 
+        if (imagePath != "") {
+            showImage(post.getPostImg());
         } else {
+
             update_bt_imageView.setImageResource(R.drawable.no_image);
         }
         update_title_edtext.setText(post.getPostTitle());
@@ -199,7 +190,7 @@ public class discussionUpdateFragment extends Fragment {
 
     }
 
-    private void handleFinishInsert(View view) {
+    private void handleFinishInsert() {
         update_bt_save.setOnClickListener(v -> {
             //取得user輸入的值
             String context = update_context_edtext.getText().toString().trim();
