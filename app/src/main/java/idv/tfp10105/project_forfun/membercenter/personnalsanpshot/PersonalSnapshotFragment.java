@@ -96,8 +96,10 @@ public class PersonalSnapshotFragment extends Fragment {
 
     private void handleTab() {
         //Fragment放入list
-        tabList.add(new TenantstatusFragment(selectUser));//房客
-        tabList.add(new LandlordstatusFragment(selectUser));//房東
+        if(tabList.size()!=2) {
+            tabList.add(new TenantstatusFragment(selectUser));//房客
+            tabList.add(new LandlordstatusFragment(selectUser));//房東
+        }
         //list放入Adapter
         PersonnalVPAdapter myAdapter = new PersonnalVPAdapter(this, tabList);
         vpPSStar.setAdapter(myAdapter);
