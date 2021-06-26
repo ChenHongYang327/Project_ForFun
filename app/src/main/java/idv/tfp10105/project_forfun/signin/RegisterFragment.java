@@ -312,24 +312,24 @@ public class RegisterFragment extends Fragment {
             //大頭照
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            picUri=uploadImage(baos.toByteArray());
+            picUri=uploadImage(baos.toByteArray(),"Headshot");
             member.setHeadshot(picUri);
             //身分證正面
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgIdPicB.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            picUri=uploadImage(baos.toByteArray());
+            picUri=uploadImage(baos.toByteArray(),"IdImgb");
             member.setIdImgb(picUri);
             //身分證反面
             baos = new ByteArrayOutputStream();
             ((BitmapDrawable) ivRgIdPicF.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            picUri=uploadImage(baos.toByteArray());
+            picUri=uploadImage(baos.toByteArray(),"IdImgf");
             member.setIdImgf(picUri);
             //如果是申請房東
             if(sBundle.equals("Landlord")){
                 //良民證
                 baos = new ByteArrayOutputStream();
                 ((BitmapDrawable) ivRgGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                picUri=uploadImage(baos.toByteArray());
+                picUri=uploadImage(baos.toByteArray(),"Citizen");
                 member.setCitizen(picUri);
             }
             //將資料轉成JSON
@@ -341,7 +341,7 @@ public class RegisterFragment extends Fragment {
                 Toast.makeText(activity, "註冊成功", Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(v).popBackStack(R.id.registerFragment, true);
                 Navigation.findNavController(v)
-                        .navigate(R.id.homeFragment);
+                        .navigate(R.id.signinInFragment);
             }
             else {
                 Toast.makeText(activity, "註冊失敗請聯繫管理員", Toast.LENGTH_SHORT).show();
@@ -504,11 +504,11 @@ public class RegisterFragment extends Fragment {
     }
 
     //上傳Firebase storage的照片
-    private String uploadImage(byte[] imageByte) {
+    private String uploadImage(byte[] imageByte,String imgSort) {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ imgSort;
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳

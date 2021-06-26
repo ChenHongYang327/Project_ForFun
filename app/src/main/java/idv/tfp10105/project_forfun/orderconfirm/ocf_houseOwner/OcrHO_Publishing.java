@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -48,6 +50,8 @@ public class OcrHO_Publishing extends Fragment {
     private final String url = Common.URL + "publishManage";
     private SharedPreferences sharedPreferences;
     private RecyclerView rvPublishList;
+    private TextView tvPublishlNote;
+    private int phone;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +65,9 @@ public class OcrHO_Publishing extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ocr_h_o_publishing, container, false);
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        phone= sharedPreferences.getInt("phone", -1);
         rvPublishList = view.findViewById(R.id.rvPublishList);
+        tvPublishlNote = view.findViewById(R.id.tvPublishlNote);
         return view;
     }
 
@@ -81,8 +87,13 @@ public class OcrHO_Publishing extends Fragment {
         }.getType();
         publishes = new Gson().fromJson(resp.get("publishes").getAsString(), publishList);
         cityNames = new Gson().fromJson(resp.get("cityNames").getAsString(), cityNamesList);
+        if(publishes.size()==0){
+            rvPublishList.setVisibility(View.GONE);
+            tvPublishlNote.setVisibility(View.VISIBLE);
+            return;
+        }
         rvPublishList.setLayoutManager(new LinearLayoutManager(activity));
-        rvPublishList.setAdapter(new PublishlistAdapter(activity, publishes, cityNames));
+        rvPublishList.setAdapter(new PublishlistAdapter(activity, publishes, cityNames,phone));
 
     }
 
@@ -92,11 +103,14 @@ public class OcrHO_Publishing extends Fragment {
         private Context context;
         private List<Publish> publishes;
         private List<String> cityNames;
+        private int phone;
 
-        public PublishlistAdapter(Context context, List<Publish> publishes, List<String> cityNames) {
+
+        public PublishlistAdapter(Context context, List<Publish> publishes, List<String> cityNames, int phone) {
             this.context = context;
             this.publishes = publishes;
             this.cityNames = cityNames;
+            this.phone = phone;
         }
 
         @NonNull
@@ -142,11 +156,15 @@ public class OcrHO_Publishing extends Fragment {
                                 //編輯頁面
 
                             } else if (item.getItemId() == R.id.publishDelete) {
-                                AlertDialog.Builder logOutDialog = new AlertDialog.Builder(activity);
-                                logOutDialog.setTitle("刪除");  //設置標題
-                                logOutDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
-                                logOutDialog.setMessage("您確定要刪除?"); //提示訊息
-                                logOutDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
+                                AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
+                                final EditText etinput=new EditText(activity);
+                                etinput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                deleteDialog.setView(etinput);
+                                deleteDialog.setTitle("刪除");  //設置標題
+                                deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
+                                deleteDialog.setMessage("請輸入您的手機號碼"); //提示訊息
+                                deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
+                                    if(etinput.getText().toString().trim().equals("0"+String.valueOf(phone))){
                                     JsonObject req = new JsonObject();
                                     req.addProperty("action", "pubishDelete");
                                     req.addProperty("publishId", publishId);
@@ -165,12 +183,16 @@ public class OcrHO_Publishing extends Fragment {
                                     } else {
                                         Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
                                     }
+                                    return;
+                                    }
+                                    else{
+                                        Toast.makeText(context, "輸入錯誤", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                deleteDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                                 });
-                                logOutDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
-
-                                });
-                                Window window = logOutDialog.show().getWindow();
+                                Window window =  deleteDialog.show().getWindow();
                                 Button btSure = window.findViewById(android.R.id.button1);
                                 Button btCancel = window.findViewById(android.R.id.button2);
                                 btSure.setTextColor(getResources().getColor(R.color.black));

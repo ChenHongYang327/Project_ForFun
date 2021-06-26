@@ -118,10 +118,9 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/bt_signin_login"
         android:src="?android:attr/selectableItemBackground"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/signin_bt_registered"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.62"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
@@ -133,7 +132,6 @@
         android:src="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@+id/signin_tv_tourist"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.615"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
