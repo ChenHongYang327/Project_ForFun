@@ -134,7 +134,7 @@
         android:id="@+id/personalSnapshotFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.personnalsanpshot.PersonalSnapshotFragment"
         android:label="個人資訊快照"
-<<<<<<< HEAD
+
         tools:layout="@layout/fragment_personalsnapshot" />
     <fragment
         android:id="@+id/myEvaluationnFragment"
@@ -146,13 +146,12 @@
         android:name="idv.tfp10105.project_forfun.membercenter.myfavorite.MyFavoriteFragment"
         android:label="收藏名單"
         tools:layout="@layout/fragment_membercenter_myfavorite" />
-=======
-        tools:layout="@layout/fragment_personal_snapshot" />
+
     <fragment
         android:id="@+id/discussionUpdateFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionUpdateFragment"
         android:label="discussionUpdateFragment" />
->>>>>>> 王威力
+
 </navigation>
 
 
