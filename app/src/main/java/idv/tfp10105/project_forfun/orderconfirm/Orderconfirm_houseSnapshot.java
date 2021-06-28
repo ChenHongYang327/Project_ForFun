@@ -56,7 +56,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         //TODO: 應該還要判斷房東或房客點進來
         //判斷跳轉頁面來源
         Bundle bundle = getArguments();
-        switch (bundle.getInt("ocr")){
+        switch (bundle.getInt("OCR")){
             case 1:
                 Toast.makeText(activity,"reserve",Toast.LENGTH_SHORT).show();
                 reserveEvent(view);

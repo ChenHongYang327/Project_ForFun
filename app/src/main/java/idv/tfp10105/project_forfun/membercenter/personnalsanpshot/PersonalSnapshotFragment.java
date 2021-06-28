@@ -1,6 +1,8 @@
 package idv.tfp10105.project_forfun.membercenter.personnalsanpshot;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -44,20 +46,23 @@ import idv.tfp10105.project_forfun.membercenter.adapter.PersonnalVPAdapter;
 public class PersonalSnapshotFragment extends Fragment {
     private final String url = Common.URL +"personalSnapshot";
     private Activity activity;
-    private TextView tvPSName,tvPSGender,tvPSAddress,tvPSCreatTime;
+    private TextView tvPSName,tvPSGender,tvPSAddress,tvPSCreatTime,tvRole2;
     private CircularImageView ivPSHS;
     private TabLayout tlPS;
     private ViewPager2 vpPSStar;
     private final List<Fragment> tabList=new ArrayList<>();
     private Member selectUser;
     private ImageButton btPSMessage,btPSReport;
-
+    private SharedPreferences sharedPreferences;
+    private int userId;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
         //傳值
         selectUser=getArguments()!=null?(Member)getArguments().getSerializable("SelectUser"):null;
+        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        userId = sharedPreferences.getInt("memberId", -1);
     }
 
     @Override
@@ -79,6 +84,7 @@ public class PersonalSnapshotFragment extends Fragment {
         ivPSHS=view.findViewById(R.id.ivPSHS);
         btPSMessage=view.findViewById(R.id.btPSMessage);
         btPSReport=view.findViewById(R.id.btPSReport);
+        tvRole2=view.findViewById(R.id.tvRole2);
     }
 
     @Override
@@ -90,8 +96,10 @@ public class PersonalSnapshotFragment extends Fragment {
 
     private void handleTab() {
         //Fragment放入list
-        tabList.add(new TenantstatusFragment(selectUser));//房客
-        tabList.add(new LandlordstatusFragment(selectUser));//房東
+        if(tabList.size()!=2) {
+            tabList.add(new TenantstatusFragment(selectUser));//房客
+            tabList.add(new LandlordstatusFragment(selectUser));//房東
+        }
         //list放入Adapter
         PersonnalVPAdapter myAdapter = new PersonnalVPAdapter(this, tabList);
         vpPSStar.setAdapter(myAdapter);
@@ -116,10 +124,13 @@ public class PersonalSnapshotFragment extends Fragment {
             JsonObject clientreq=new JsonObject();
             clientreq.addProperty("action","personalSnapshot");
             clientreq.addProperty("memberID",selectUser.getMemberId());
-            String resp=RemoteAccess.getJsonData(url,clientreq.toString());
+            String resp=RemoteAccess.getJsonData(url,clientreq.toString());//請求
             Member member=new Gson().fromJson(resp,Member.class);
             // 此頁面的用戶
             String name=member.getNameL()+member.getNameF();
+            if(member.getRole()==2){
+                tvRole2.setVisibility(View.VISIBLE);
+            }
             tvPSName.setText("姓名:"+name);
             if(member.getGender()==1){
                 tvPSGender.setText("性別:男");
@@ -133,11 +144,16 @@ public class PersonalSnapshotFragment extends Fragment {
             getImage(ivPSHS,member.getHeadshot());
             //私訊跳轉bundle
             btPSMessage.setOnClickListener(v->{
-
+                if(userId==selectUser.getMemberId()){
+                    Toast.makeText(activity, "你想私訊自己?", Toast.LENGTH_SHORT).show();
+                }
             });
 
             //檢舉跳轉bundle
             btPSReport.setOnClickListener(v->{
+                if(userId==selectUser.getMemberId()){
+                    Toast.makeText(activity, "你要檢舉自己?", Toast.LENGTH_SHORT).show();
+                }
 
             });
 

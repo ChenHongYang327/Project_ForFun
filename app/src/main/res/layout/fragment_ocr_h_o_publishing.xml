@@ -4,18 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".membercenter.myfavorite.MyFavoriteFragment" >
+    tools:context=".orderconfirm.ocf_houseOwner.OcrHO_Publishing" >
 
     <TextView
-        android:id="@+id/tvFavoriteNote"
+        android:id="@+id/tvPublishlNote"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="還沒有任何收藏"
+        android:gravity="center|center_vertical"
+        android:text="還沒有刊登房屋"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMyFavorite"
+        android:id="@+id/rvPublishList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
 </LinearLayout>

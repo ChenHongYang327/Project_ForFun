@@ -69,6 +69,9 @@ public class MemberCenterFragment extends Fragment {
     }
 
     private void handleClick() {
+        if(role==3){
+            tvLogOut.setText("登入或註冊");
+        }
         tvPersonalInformation.setOnClickListener(v->{
             if(checkAccess()) {
                 Navigation.findNavController(v)
@@ -84,8 +87,10 @@ public class MemberCenterFragment extends Fragment {
         });
 
         tvOrderList.setOnClickListener(v->{
-            Navigation.findNavController(v)
-                    .navigate(R.id.orderconfirm_mainfragment);
+            if(checkAccess()) {
+                Navigation.findNavController(v)
+                        .navigate(R.id.orderconfirm_mainfragment);
+            }
         });
 
 
@@ -102,7 +107,10 @@ public class MemberCenterFragment extends Fragment {
         });
 
         tvLogOut.setOnClickListener(v->{
-            if(!checkAccess()) {
+            if(role==3) {
+                Navigation.findNavController(tvLogOut)
+                        .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
                 return;
             }
             AlertDialog.Builder logOutDialog = new AlertDialog.Builder(activity);
@@ -143,7 +151,7 @@ public class MemberCenterFragment extends Fragment {
             Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(tvLogOut)
                     .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
-            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
+//            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
             return false;
         }
         return true;

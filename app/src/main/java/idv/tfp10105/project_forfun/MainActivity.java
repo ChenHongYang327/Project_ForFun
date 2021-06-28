@@ -1,13 +1,16 @@
 package idv.tfp10105.project_forfun;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private NavController navController;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,10 +50,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleView() {
+//        SharedPreferences sharedPreferences;
+//        int role;
+//        sharedPreferences = getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
         //介面
         ActionBar actionBar;
         View view;
-        ImageView imgBell;//actionbar 中的ImageView
+        ImageButton btBell;//actionbar 中的ImageView
         TextView tvTitle;//actionbar 中的TextView
         navController = Navigation.findNavController(this, R.id.fragmentContainerView);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
@@ -58,14 +65,22 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);  //客製化actionbar主題
             actionBar.setCustomView(R.layout.actionbar_layout);         //客製化actionbar
             view = actionBar.getCustomView();                             //取得view
-            imgBell = view.findViewById(R.id.imgBell);              //取得元件
+            btBell = view.findViewById(R.id.btBell);              //取得元件
             tvTitle = view.findViewById(R.id.tvTitle);
-            imgBell.setOnClickListener(v -> {
+            btBell.setOnClickListener(v -> {
                 Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
             });
+            //navController監聽器
             //設置actionbar title及顯示狀態
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 tvTitle.setText(Objects.requireNonNull(navController.getCurrentDestination()).getLabel());
+                //bottom功能管理
+//                role =sharedPreferences.getInt("role",-1);
+//                  if (role == 3) {
+//                        Toast.makeText(this, "進", Toast.LENGTH_SHORT).show();
+//                        bottomNavigationView.getMenu().findItem(R.id.publishFragment).setEnabled(true);
+//                        bottomNavigationView.getMenu().findItem(R.id.discussionBoardFragment).setEnabled(true);
+//                    }
                 //隱藏bottomNav的頁面(未完成五個主頁面)
                 if(navController.getCurrentDestination().getId()==R.id.homeFragment||
                     navController.getCurrentDestination().getId()==R.id.memberCenterFragment||

@@ -265,11 +265,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
 
     }
     //上傳Firebase storage的照片
-    private String uploadImage(byte[] imageByte) {
+    private String uploadImage(byte[] imageByte,String imgSort) {
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
         //  回傳資料庫的路徑
-        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ System.currentTimeMillis();
+        final String imagePath = getString(R.string.app_name) + "/Person/"+member.getPhone()+"/"+ imgSort;
         // 建立當下目錄的子路徑
         final StorageReference imageRef = rootRef.child(imagePath);
         // 將儲存在imageVIew的照片上傳
@@ -347,7 +347,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                     if(upNewHS) {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivHeadshot.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        picUri = uploadImage(baos.toByteArray());
+                        picUri = uploadImage(baos.toByteArray(),"Headshot");
                         if(picUri.isEmpty()){
                             Toast.makeText(activity, "大頭貼上傳失敗請重新上傳", Toast.LENGTH_SHORT).show();
                             upNewHS=false;
@@ -363,7 +363,7 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                     if (upNewGP) {
                         baos = new ByteArrayOutputStream();
                         ((BitmapDrawable) ivGoodPeople.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        picUri = uploadImage(baos.toByteArray());
+                        picUri = uploadImage(baos.toByteArray(),"Citizen");
                         if(picUri.isEmpty()){
                             Toast.makeText(activity, "大頭貼上傳失敗請重新上傳", Toast.LENGTH_SHORT).show();
                             upNewGP = false;
