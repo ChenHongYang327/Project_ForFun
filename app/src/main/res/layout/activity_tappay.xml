@@ -85,7 +85,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="備註："
+                    android:text="說明："
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/tView12"
                     app:layout_constraintTop_toBottomOf="@+id/tView12" />
@@ -202,6 +202,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="需登入Google帳號"
+                    android:textColor="#F44336"
+                    android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/bt_ocrTapPay_toBuy" />
