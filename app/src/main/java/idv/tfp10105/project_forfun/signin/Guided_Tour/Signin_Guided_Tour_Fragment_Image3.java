@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.signin;
+package idv.tfp10105.project_forfun.signin.Guided_Tour;
 
 import android.os.Bundle;
 

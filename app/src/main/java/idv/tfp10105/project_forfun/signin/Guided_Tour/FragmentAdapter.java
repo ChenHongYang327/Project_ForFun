@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.signin;
+package idv.tfp10105.project_forfun.signin.Guided_Tour;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -7,6 +7,10 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import org.jetbrains.annotations.NotNull;
+
+import idv.tfp10105.project_forfun.signin.Guided_Tour.Signin_Guided_Tour_Fragment_Image;
+import idv.tfp10105.project_forfun.signin.Guided_Tour.Signin_Guided_Tour_Fragment_Image2;
+import idv.tfp10105.project_forfun.signin.Guided_Tour.Signin_Guided_Tour_Fragment_Image3;
 
 public class FragmentAdapter extends FragmentStateAdapter {
     public FragmentAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle) {

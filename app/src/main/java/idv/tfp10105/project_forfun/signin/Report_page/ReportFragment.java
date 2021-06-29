@@ -1,66 +1,59 @@
-package idv.tfp10105.project_forfun.signin;
+package idv.tfp10105.project_forfun.signin.Report_page;
 
+import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 
 import idv.tfp10105.project_forfun.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ReportFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class ReportFragment extends Fragment {
+    private Activity activity;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private Spinner spinner;
+    private EditText edDetailedStatus;
+    private ImageButton btConfirm, btCancel;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ReportFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ReportFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ReportFragment newInstance(String param1, String param2) {
-        ReportFragment fragment = new ReportFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_report, container, false);
+        View view=inflater.inflate(R.layout.fragment_signin, container, false);
+        return view;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        findViews(view);
+    }
+
+
+    private void findViews(View view) {
+        spinner = view.findViewById(R.id.report_page_spinner); // 檢舉類別選項
+        edDetailedStatus = view.findViewById(R.id.report_page_ed_Detailed_status); // 詳細狀況輸入欄位
+        btConfirm = view.findViewById(R.id.report_page_bt_confirm); // 按鈕 確認
+        btCancel = view.findViewById(R.id.report_page_bt_cancel); // 按鈕 取消
+
+
     }
 }
+
+
