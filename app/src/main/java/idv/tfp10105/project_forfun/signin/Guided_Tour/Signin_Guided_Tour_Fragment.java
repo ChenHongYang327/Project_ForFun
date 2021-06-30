@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun;
+package idv.tfp10105.project_forfun.signin.Guided_Tour;
 
 import android.os.Bundle;
 
@@ -12,13 +12,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
-
-import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
 
-import idv.tfp10105.project_forfun.signin.FragmentAdapter;
+import idv.tfp10105.project_forfun.R;
 
 
 public class Signin_Guided_Tour_Fragment extends Fragment {

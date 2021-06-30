@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".signin.Customer_Service_Page.Customer_Service_Fragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="360dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="40dp"
+        android:background="#E8F5E9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="240dp"
+        android:src="@drawable/customer_service_view2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/customer_service_ed_name"
+        android:layout_width="230dp"
+        android:layout_height="25dp"
+        android:background="#FFFFFF"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/textView45"
+        app:layout_constraintTop_toTopOf="@+id/textView45" />
+
+    <EditText
+        android:id="@+id/customer_service_ed_message"
+        android:layout_width="230dp"
+        android:layout_height="25dp"
+        android:background="#FFFFFF"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/textView49"
+        app:layout_constraintTop_toTopOf="@+id/textView49" />
+
+    <EditText
+        android:id="@+id/customer_service_ed_phone"
+        android:layout_width="230dp"
+        android:layout_height="25dp"
+        android:background="#FFFFFF"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/textView47"
+        app:layout_constraintTop_toTopOf="@+id/textView47" />
+
+    <TextView
+        android:id="@+id/textView49"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginTop="168dp"
+        android:background="#FFFFFF"
+        android:text="   留   言   ："
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:backgroundTint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="@+id/imageView7"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="54dp" />
+
+    <ImageButton
+        android:id="@+id/customer_service_bt_CallCustomerService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/customer_service_call_customer_service"
+        app:layout_constraintBottom_toBottomOf="@+id/textView29"
+        app:layout_constraintEnd_toEndOf="@+id/textView29"
+        app:layout_constraintStart_toStartOf="@+id/textView29"
+        app:layout_constraintTop_toTopOf="@+id/textView29" />
+
+    <ImageButton
+        android:id="@+id/customer_service_bt_sendEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/customer_service_send_email"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+        app:layout_constraintEnd_toEndOf="@+id/imageView7"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="@+id/imageView7" />
+
+    <TextView
+        android:id="@+id/textView42"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="如需幫助請留聯絡方式！並留言！"
+        android:textColor="#FF0000"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView7" />
+
+    <TextView
+        android:id="@+id/textView45"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginTop="48dp"
+        android:background="#FFFFFF"
+        android:text="   姓   名   ："
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:backgroundTint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="@+id/imageView7"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="54dp" />
+
+    <EditText
+        android:id="@+id/customer_service_ed_mail"
+        android:layout_width="230dp"
+        android:layout_height="25dp"
+        android:background="#FFFFFF"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/textView48"
+        app:layout_constraintTop_toTopOf="@+id/textView48" />
+
+    <TextView
+        android:id="@+id/textView47"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginTop="128dp"
+        android:background="#FFFFFF"
+        android:text="手機號碼："
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:backgroundTint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="@+id/imageView7"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="54dp" />
+
+    <TextView
+        android:id="@+id/textView48"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginTop="88dp"
+        android:background="#FFFFFF"
+        android:text="聯絡信箱："
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:backgroundTint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="@+id/imageView7"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="54dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

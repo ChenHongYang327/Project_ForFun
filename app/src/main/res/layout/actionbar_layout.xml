@@ -18,12 +18,13 @@
         android:textSize="28sp"
         tools:text="標題" />
 
-    <ImageView
-        android:id="@+id/imgBell"
+    <ImageButton
+        android:id="@+id/btBell"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="center"
         android:layout_marginEnd="5dp"
         android:layout_marginRight="5dp"
-        app:srcCompat="@drawable/ic_bell_black_48dp" />
+        android:src="?android:attr/selectableItemBackground"
+        android:background="@drawable/ic_bell_black_48dp" />
 </LinearLayout>

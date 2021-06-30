@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -31,6 +32,7 @@ import idv.tfp10105.project_forfun.membercenter.adapter.MyFavoriteAdapter;
 public class MyFavoriteFragment extends Fragment {
     private Activity activity;
     private RecyclerView rvMyFavorite;
+    private TextView tvFavoriteNote;
     private SharedPreferences sharedPreferences;
     private List<Publish> publishes;
     private List<String> cityNames;
@@ -44,6 +46,7 @@ public class MyFavoriteFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
 
 
     }
@@ -52,7 +55,6 @@ public class MyFavoriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
        View view=inflater.inflate(R.layout.fragment_membercenter_myfavorite, container, false);
-        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
        findView(view);
         handleData();
         handleView();
@@ -73,11 +75,16 @@ public class MyFavoriteFragment extends Fragment {
         publishes=new Gson().fromJson(jsonObject.get("publishList").getAsString(),publishList);
         cityNames=new Gson().fromJson(jsonObject.get("cityName").getAsString(),cityList);
         favorites=new  Gson().fromJson(jsonObject.get("favoriteId").getAsString(),favoriteList);
+        if(favorites.size()==0){
+            rvMyFavorite.setVisibility(View.GONE);
+            tvFavoriteNote.setVisibility(View.VISIBLE);
+        }
 
     }
 
     private void findView(View view) {
         rvMyFavorite=view.findViewById(R.id.rvMyFavorite);
+        tvFavoriteNote=view.findViewById(R.id.tvFavoriteNote);
     }
 
     private void handleView() {

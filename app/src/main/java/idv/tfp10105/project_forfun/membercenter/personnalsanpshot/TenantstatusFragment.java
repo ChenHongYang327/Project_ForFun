@@ -19,6 +19,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +93,7 @@ public class TenantstatusFragment extends Fragment {
                         sum+=personEvaluation.getPersonStar();
                     }
                     float avg=(float) sum/personEvaluations.size();//平均分數
-                    tvTenantScore.setText("房客評價平均分:"+avg);
+                    tvTenantScore.setText("房客評價平均分:"+(float)new BigDecimal(avg).setScale(1, RoundingMode.UP).doubleValue());
                     rbTenantScore.setRating(avg);
 
 

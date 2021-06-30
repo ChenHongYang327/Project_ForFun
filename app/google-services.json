@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "332785573063-ma36majt0sp8aa0ej0u6ivj83umeifuq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "idv.tfp10105.project_forfun",
+            "certificate_hash": "13c285ee1ae015065986cffb667f57c15c6d0b9b"
+          }
+        },
+        {
           "client_id": "332785573063-fedv2bg3bddcp9s7tugpnplbnfsan3g6.apps.googleusercontent.com",
           "client_type": 3
         }

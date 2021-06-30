@@ -54,11 +54,11 @@
                     android:id="@+id/tView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="8dp"
                     android:text="其他："
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/tView16"
-                    app:layout_constraintTop_toBottomOf="@+id/bt_ocrTapPay_toBuy" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
                 <TextView
                     android:id="@+id/tv_ocrTapPay_result"
@@ -85,7 +85,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="備註："
+                    android:text="說明："
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/tView12"
                     app:layout_constraintTop_toBottomOf="@+id/tView12" />
@@ -115,8 +115,8 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/bt_9044blank"
                     app:layout_constraintBottom_toBottomOf="@+id/bt_ocrTapPay_cancel"
-                    app:layout_constraintEnd_toStartOf="@+id/bt_ocrTapPay_confirm"
-                    app:layout_constraintStart_toEndOf="@+id/bt_ocrTapPay_cancel" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
                     android:id="@+id/bt_ocrTapPay_cancel"
@@ -145,7 +145,7 @@
                     android:id="@+id/tv_ocrTapPay_cancelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="取消"
+                    android:text="離開"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/bt_ocrTapPay_cancel"
                     app:layout_constraintEnd_toEndOf="@+id/bt_ocrTapPay_cancel"
@@ -188,13 +188,25 @@
 
                 <ImageView
                     android:id="@+id/bt_ocrTapPay_toBuy"
-                    android:layout_width="161dp"
-                    android:layout_height="47dp"
+                    android:layout_width="191dp"
+                    android:layout_height="57dp"
                     android:layout_marginTop="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tView16"
                     app:srcCompat="@drawable/icon_tappay" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="需登入Google帳號"
+                    android:textColor="#F44336"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bt_ocrTapPay_toBuy" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

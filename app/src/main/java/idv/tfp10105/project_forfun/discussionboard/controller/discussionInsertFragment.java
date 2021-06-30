@@ -1,7 +1,9 @@
 package idv.tfp10105.project_forfun.discussionboard.controller;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -53,9 +55,10 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Post;
-
+import idv.tfp10105.project_forfun.orderconfirm.ocf.Book;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.POWER_SERVICE;
 
 public class discussionInsertFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
@@ -71,8 +74,9 @@ public class discussionInsertFragment extends Fragment {
     private Uri contentUri;
     private ImageView insert_bt_picture;
     private boolean pictureTaken;
-    private String board;
-    String url = Common.URL ;
+    private String url = Common.URL ;
+    private SharedPreferences sharedPreferences;
+    private Bundle bundle;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -89,25 +93,29 @@ public class discussionInsertFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
+        sharedPreferences = activity.getSharedPreferences("PreferencesName", Context.MODE_PRIVATE);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discussion_insert, container, false);
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        board = "";
+
         findViews(view);
-        handleSpinner(board);
+        handleSpinner();
         handleInsert_bt_picture();
         handleFinishInsert(view);
-
     }
+
+
 
     private void findViews(View view) {
         insert_bt_picture = view.findViewById(R.id.insert_bt_image);
@@ -122,7 +130,7 @@ public class discussionInsertFragment extends Fragment {
     }
 
     //控制spinner
-    private String handleSpinner( String board) {
+    private String handleSpinner( ) {
         //index:0    index:1   index:2
         List<String> itemList = Arrays.asList("租屋交流", "知識問答", "需求單");
         //實例化Adapter物件，並設定選項的外觀
@@ -160,8 +168,7 @@ public class discussionInsertFragment extends Fragment {
 
             }
         });
-        board = String.valueOf(insert_board);
-        return board;
+        return  insert_spinner.getSelectedItem().toString();
     }
 
     private void handleInsert_bt_picture() {
@@ -232,7 +239,7 @@ public class discussionInsertFragment extends Fragment {
             if (RemoteAccess.networkCheck(activity)) {
                 //用json傳至後端
                 url += "DiscussionBoardController";
-                Post post = new Post(0, board, 0, title, context, imagePath);
+                Post post = new Post(0, insert_spinner.getSelectedItem().toString(), 0, title, context, imagePath);
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("action", "postInsert");
                 jsonObject.addProperty("post", new Gson().toJson(post));
@@ -246,13 +253,20 @@ public class discussionInsertFragment extends Fragment {
                     Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+
+                    //傳板塊資料回去
+                    bundle = new Bundle();
+                    bundle.putString("board",insert_spinner.getSelectedItem().toString());
+                    //抽掉頁面
+                    Navigation.findNavController(v).popBackStack(R.id.discussionInsertFragment,true);
+                    Navigation.findNavController(v).navigate(R.id.discussionBoardFragment,bundle);
+
                 }
             } else {
                 Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
             }
         });
-        NavController navController = Navigation.findNavController(view);
-        navController.popBackStack();
+
     }
 
     private void takePictureResult(ActivityResult result) {
@@ -295,7 +309,6 @@ public class discussionInsertFragment extends Fragment {
 
     private String uploadImage(Uri resultUri) {
 
-
         //取得根目錄
         StorageReference rootRef = storage.getReference();
         imagePath = getString(R.string.app_name) + "/Discussion_insert/" + System.currentTimeMillis();
@@ -335,6 +348,7 @@ public class discussionInsertFragment extends Fragment {
                     } else {
                         String message  = task.getException() == null ? "Download fail" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
+                        insert_bt_picture.setImageResource(R.drawable.no_image);
                         Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
                     }
                 });
