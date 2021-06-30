@@ -36,32 +36,26 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.common.CityAreaUtil;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Area;
@@ -78,7 +72,6 @@ public class PublishFragment extends Fragment {
     private Geocoder geocoder;
     private Uri uriPicture;
     private FirebaseStorage storage;
-    private int uploadImgViewId;
 
     // UI元件
     private TextInputEditText editPublishTitle, editPublishInfo, editPublishAddress, editPublishRent, editPublishDeposit, editPublishSquare;
@@ -96,9 +89,8 @@ public class PublishFragment extends Fragment {
 
     // 變動資料
     int publishId = 0;
+    private int uploadImgViewId;
     String[] furnished = new String[9];
-
-    // 固定資料
     List<City> cityList;
     List<Area> areaList;
     Map<Integer, List<Area>> areaMap;
@@ -162,7 +154,9 @@ public class PublishFragment extends Fragment {
         geocoder = new Geocoder(activity);
         storage = FirebaseStorage.getInstance();
 
-        areaMap = new HashMap<>();
+        cityList = CityAreaUtil.getInstance().getCityList();
+        areaList = CityAreaUtil.getInstance().getAreaList();
+        areaMap = CityAreaUtil.getInstance().getAreaMap();
 
         return inflater.inflate(R.layout.fragment_publish, container, false);
     }
@@ -170,9 +164,6 @@ public class PublishFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // 取得縣市及行政區資料
-        getCityAreaData();
 
         // UI元件
         // 編輯文字
@@ -248,42 +239,6 @@ public class PublishFragment extends Fragment {
             editPublishSquare.setText("100");
             cbPublishFurnishedAll.setChecked(true);
         });
-    }
-
-    /*
-     * 取得縣市及行政區資料
-     */
-    private void getCityAreaData() {
-        if (RemoteAccess.networkCheck(activity)) {
-            String url = Common.URL + "/getCityAreaData";
-            String jsonIn = RemoteAccess.getJsonData(url, "");
-            JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
-
-            String cityJson = object.get("city").getAsString();
-            Type listCity = new TypeToken<List<City>>() {}.getType();
-            cityList = gson.fromJson(cityJson, listCity);
-
-            String areaJson = object.get("area").getAsString();
-            Type listArea = new TypeToken<List<Area>>() {}.getType();
-            areaList = gson.fromJson(areaJson, listArea);
-            for (Area area : areaList) {
-                // 把資料從list轉成map，方便之後取資料
-                if (areaMap.get(area.getCityId()) == null) {
-                    List<Area> areas = new ArrayList<>();
-                    areas.add(area);
-
-                    areaMap.put(area.getCityId(), areas);
-                } else {
-                    areaMap.get(area.getCityId()).add(area);
-                }
-            }
-
-//            for (Integer key : areaMap.keySet()) {
-//                for (Area aa : areaMap.get(key)) {
-//                    Log.d("jsonIn", "key = " + key + ", cityId = " + aa.getCityId() + ", getAreaName = " + aa.getAreaName());
-//                }
-//            }
-        }
     }
 
     /*
@@ -452,22 +407,16 @@ public class PublishFragment extends Fragment {
                 String cityName = ((TextView)view).getText().toString();
 
                 // 更換對應的行政區資料
-                for (City city : cityList) {
-                    if (cityName.equals(city.getCityName())) {
-                        List<String> areaNames = new ArrayList<>();
-                        for (Area area : areaMap.get(city.getCityId())) {
-                            areaNames.add(area.getAreaName());
-                        }
-
-                        ArrayAdapter<String> areaAdapter = (ArrayAdapter<String>) spPublishArea.getAdapter();
-                        areaAdapter.clear();
-                        areaAdapter.addAll(areaNames);
-                        areaAdapter.notifyDataSetChanged();
-                        spPublishArea.setSelection(0, true);
-
-                        break;
-                    }
+                List<String> areaNames = new ArrayList<>();
+                for (Area area : areaMap.get(cityList.get(position).getCityId())) {
+                    areaNames.add(area.getAreaName());
                 }
+
+                ArrayAdapter<String> areaAdapter = (ArrayAdapter<String>) spPublishArea.getAdapter();
+                areaAdapter.clear();
+                areaAdapter.addAll(areaNames);
+                areaAdapter.notifyDataSetChanged();
+                spPublishArea.setSelection(0, true);
 //                Log.d("spinner", "cityName = " + cityName + ", position = " + position + ", id = " + id);
             }
 
@@ -609,24 +558,13 @@ public class PublishFragment extends Fragment {
 
             // 資料整理
             // 縣市
-            String cityName = ((TextView)spPublishCity.getSelectedView()).getText().toString();
-            int cityId = 0;
-            for (City city : cityList) {
-                if (cityName.equals(city.getCityName())) {
-                    cityId = city.getCityId();
-                    break;
-                }
-            }
+            // 縣市
+            int cityId = cityList.get(spPublishCity.getSelectedItemPosition()).getCityId();
+            String cityName = cityList.get(spPublishCity.getSelectedItemPosition()).getCityName();
 
             // 行政區
-            String areaName = ((TextView)spPublishArea.getSelectedView()).getText().toString();
-            int areaId = 0;
-            for (Area area : areaList) {
-                if (areaName.equals(area.getAreaName()) && cityId == area.getCityId()) {
-                    areaId = area.getAreaId();
-                    break;
-                }
-            }
+            int areaId = areaMap.get(cityId).get(spPublishArea.getSelectedItemPosition()).getAreaId();
+            String areaName = areaMap.get(cityId).get(spPublishArea.getSelectedItemPosition()).getAreaName();
 
             // 地址
             String strAddress = cityName + areaName + editPublishAddress.getText().toString().trim();

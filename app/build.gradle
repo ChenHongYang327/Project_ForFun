@@ -65,6 +65,11 @@ dependencies {
     implementation 'com.mikhaellopez:circularimageview:4.3.0'
     //引用數量超過64K
     implementation 'androidx.multidex:multidex:2.0.1'
+    // google 定位
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    // google map
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+
     //--------
     testImplementation 'junit:junit:4.+'
     implementation 'org.jetbrains:annotations:15.0'
