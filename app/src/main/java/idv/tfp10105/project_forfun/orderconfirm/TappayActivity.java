@@ -54,7 +54,7 @@ public class TappayActivity extends AppCompatActivity {
 
     private ImageView btBuy, btCancel, btReturn, btConfirm, imgPic; //button用圖片表示
     private TextView tvAccount, tvNotes, tvCardInfo, tvResult;
-    private TextView tvReturnText, tvConfirmText, tvancelText;
+    private TextView tvReturnText, tvConfirmText, tvCncelText;
     private SharedPreferences sharedPreferences;
     private FirebaseStorage storage;
     private Gson gson = new Gson();
@@ -89,7 +89,7 @@ public class TappayActivity extends AppCompatActivity {
         tvCardInfo = findViewById(R.id.tv_ocrTapPay_cardinfo);
         tvNotes = findViewById(R.id.tv_ocrTapPay_notes);
         tvResult = findViewById(R.id.tv_ocrTapPay_result);
-        tvancelText = findViewById(R.id.tv_ocrTapPay_cancelText);
+        tvCncelText = findViewById(R.id.tv_ocrTapPay_cancelText);
         tvConfirmText = findViewById(R.id.tv_ocrTapPay_confirmText);
         tvReturnText = findViewById(R.id.tv_ocrTapPay_returnText);
 
@@ -107,9 +107,9 @@ public class TappayActivity extends AppCompatActivity {
         handleViews();
 
         //宣告 偏號設定檔位置
-        sharedPreferences = getSharedPreferences("TapPaySharedPre",Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("OrderSharedPre",Context.MODE_PRIVATE);
         // 判斷誰登入 帶id
-        objID = sharedPreferences.getInt("OBJID",-1); //該資訊id
+        objID = sharedPreferences.getInt("ORDERID",-1); //該資訊id
         String str = sharedPreferences.getString("TAB","-1");
 
         switch (str){
@@ -369,6 +369,8 @@ public class TappayActivity extends AppCompatActivity {
                     tvConfirmText.setText("");
                     btReturn.setVisibility(View.GONE);
                     tvReturnText.setText("");
+                    tvCncelText.setText("回首頁");
+
 
                     //成功後修改狀態碼
                     handleStatus();

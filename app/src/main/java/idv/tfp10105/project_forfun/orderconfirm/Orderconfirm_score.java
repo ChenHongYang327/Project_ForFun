@@ -1,7 +1,9 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,8 +36,10 @@ public class Orderconfirm_score extends Fragment {
     private ImageView btConfirm, btCancel; //button
     private TextView tvHOmsg, tvmsg, tvbtConfirmText, tvHouseMsgText, tvHouseTitle, tvTitle;
     private Bundle bundleIn = getArguments() , bundleOut = new Bundle();
-    private int tapNum = -1, orderId = -1;
+    private int tapNum = -1, orderId = -1, signInId = -1;
     private Gson gson = new Gson();
+    private SharedPreferences sharedPreferences, mainsharedPreferences;
+    private String url = Common.URL + "Evaluation";
 
 
 
@@ -43,6 +47,9 @@ public class Orderconfirm_score extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = getActivity();
+        //宣告 偏號設定檔位置
+        sharedPreferences = activity.getSharedPreferences("OrderSharedPre", Context.MODE_PRIVATE); //自設
+        mainsharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE); //共用的
     }
 
     @Override
@@ -66,22 +73,23 @@ public class Orderconfirm_score extends Fragment {
         tvHOmsg = view.findViewById(R.id.tv_ocrScore_HouseMsg);
         tvmsg = view.findViewById(R.id.tv_ocrScore_peopleMsg);
 
+
+        orderId = sharedPreferences.getInt("ORDERID",-1);
+        signInId = mainsharedPreferences.getInt("memberId",-1);
+
         try{
             tapNum =  bundleIn.getInt("SCORE");
-            orderId = bundleIn.getInt("ORDERID");
         }catch (Exception e){
             tapNum = -1;
         }
-        bundleOut.putInt("OCR",tapNum);
-        bundleOut.putInt("ORDERID",orderId);
 
+        bundleOut.putInt("OCR",tapNum);
         //取消按鈕回上頁
         btCancel.setOnClickListener(v->{
             Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot,bundleOut);
         });
 
         // 判斷
-
         switch (tapNum){
             case 5:
                 // 房客
@@ -103,42 +111,32 @@ public class Orderconfirm_score extends Fragment {
     private void handleTenant() {
 
         btConfirm.setOnClickListener(v->{
-
             //檢查網路連線 person % house 需傳到不同地方存
             if(!RemoteAccess.networkCheck(activity)){ Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show(); return; }
 
             // save person
-            String personURL = Common.URL + "PersonEvaluation";
-
             int countStarP = (int) ratingBarP.getRating();
             String msg_P = tvmsg.getText().toString().trim();
-
-            JsonObject presonJson = new JsonObject();
-            presonJson.addProperty("STARS",countStarP);
-            presonJson.addProperty("MSG",msg_P);
-            presonJson.addProperty("ORDERID",orderId);
-            String jsonIn_P = RemoteAccess.getJsonData(personURL,presonJson.toString());
-
-            JsonObject result_P = gson.fromJson(jsonIn_P,JsonObject.class);
-            int resoltcode_P = result_P.get("RESULT").getAsInt();
-
             // save house
-            String houseURL = Common.URL + "Order";
-
             int countStarH = (int) ratingBarH.getRating();
             String msg_H = tvHOmsg.getText().toString().trim();
 
-            JsonObject houseJson = new JsonObject();
-            houseJson.addProperty("STARS",countStarH);
-            houseJson.addProperty("MSG",msg_H);
-            houseJson.addProperty("ORDERID",orderId);
-            String jsonIn_H = RemoteAccess.getJsonData(houseURL,houseJson.toString());
 
-            JsonObject result_H = gson.fromJson(jsonIn_H,JsonObject.class);
-            int resoltcode_H = result_H.get("RESULT").getAsInt();
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("TYPECODE",0); //0->房客 1-> 房東
+            jsonObject.addProperty("STARS_P",countStarP);
+            jsonObject.addProperty("MSG_P",msg_P);
+            jsonObject.addProperty("STARS_H",countStarH);
+            jsonObject.addProperty("MSG_H",msg_H);
+            jsonObject.addProperty("ORDERID",orderId);
+            jsonObject.addProperty("SIGNINID",signInId);
+            String jsonIn_H = RemoteAccess.getJsonData(url,jsonObject.toString());
+
+            JsonObject result = gson.fromJson(jsonIn_H,JsonObject.class);
+            int resoltcode = result.get("RESULT").getAsInt();
 
 
-            if(resoltcode_H == 200 && resoltcode_P == 200){
+            if(resoltcode == 200){
                 //TODO: goto homeFragment
                 //   Navigation.findNavController(v).navigate(R.id.);
             }else{
@@ -163,12 +161,12 @@ public class Orderconfirm_score extends Fragment {
             int countStarP = (int) ratingBarP.getRating();
             String msg_HO = tvmsg.getText().toString().trim();
 
-            String url = Common.URL + "PersonEvaluation";
-
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("STARS",countStarP);
-            jsonObject.addProperty("MSG",msg_HO);
+            jsonObject.addProperty("TYPECODE",1); //0->房客 1-> 房東
+            jsonObject.addProperty("STARS_P",countStarP);
+            jsonObject.addProperty("MSG_P",msg_HO);
             jsonObject.addProperty("ORDERID",orderId);
+            jsonObject.addProperty("SIGNINID",signInId);
             String jsonIn = RemoteAccess.getJsonData(url,jsonObject.toString());
 
             JsonObject result = gson.fromJson(jsonIn,JsonObject.class);
