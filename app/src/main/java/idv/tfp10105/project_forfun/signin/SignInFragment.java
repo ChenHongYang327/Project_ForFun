@@ -116,7 +116,6 @@ public class SignInFragment extends Fragment {
                             .apply();
 
                 } else {
-                    Navigation.findNavController(btSignIn).popBackStack(R.id.signinInFragment,true);
                     Navigation.findNavController(btSignIn)
                             .navigate(R.id.homeFragment);
                 }

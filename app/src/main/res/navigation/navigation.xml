@@ -19,18 +19,6 @@
             app:destination="@id/signinInFragment"
             app:popUpTo="@id/signinInFragment"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_memberCenterFragment_to_meberCenterPersonalInformationFragment"
-            app:destination="@id/meberCenterPersonalInformationFragment" />
-        <action
-            android:id="@+id/action_memberCenterFragment_to_orderconfirm_mainfragment_ho"
-            app:destination="@id/orderconfirm_mainfragment_ho" />
-        <action
-            android:id="@+id/action_memberCenterFragment_to_myFavoriteFragment"
-            app:destination="@id/myFavoriteFragment" />
-        <action
-            android:id="@+id/action_memberCenterFragment_to_myEvaluationnFragment"
-            app:destination="@id/myEvaluationnFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment"

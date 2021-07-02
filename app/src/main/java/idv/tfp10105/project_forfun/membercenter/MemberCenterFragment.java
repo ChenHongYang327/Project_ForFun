@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,21 +76,23 @@ public class MemberCenterFragment extends Fragment {
         tvPersonalInformation.setOnClickListener(v->{
             if(checkAccess()) {
                 Navigation.findNavController(v)
-                        .navigate(R.id.action_memberCenterFragment_to_meberCenterPersonalInformationFragment);
+                        .navigate(R.id.meberCenterPersonalInformationFragment);
+
             }
         });
 
         tvFavoriteList.setOnClickListener(v->{
             if(checkAccess()) {
                 Navigation.findNavController(v)
-                        .navigate(R.id.action_memberCenterFragment_to_myFavoriteFragment);
+                        .navigate(R.id.myFavoriteFragment);
+
             }
         });
 
         tvOrderList.setOnClickListener(v->{
             if(checkAccess()) {
                 Navigation.findNavController(v)
-                        .navigate(R.id.action_memberCenterFragment_to_orderconfirm_mainfragment_ho);
+                        .navigate(R.id.orderconfirm_mainfragment_ho);
             }
         });
 
@@ -102,7 +105,7 @@ public class MemberCenterFragment extends Fragment {
         tvMyRating.setOnClickListener(v->{
             if(checkAccess()) {
                 Navigation.findNavController(v)
-                        .navigate(R.id.action_memberCenterFragment_to_myEvaluationnFragment);
+                        .navigate(R.id.myEvaluationnFragment);
             }
         });
 
@@ -156,4 +159,5 @@ public class MemberCenterFragment extends Fragment {
         }
         return true;
     }
+
 }
