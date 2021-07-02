@@ -93,9 +93,6 @@ public class OcrHO_Publishing extends Fragment {
         }
         rvPublishList.setLayoutManager(new LinearLayoutManager(activity));
         rvPublishList.setAdapter(new PublishlistAdapter(activity, publishes, cityNames, phone));
-        //因item從畫面消失時該viewHolder會被移除
-        //通過此方法設置mCachedViews改變緩存的容器大小 預設為2
-        rvPublishList.setItemViewCacheSize(publishes.size());
 
     }
     //----------------------------
@@ -142,66 +139,73 @@ public class OcrHO_Publishing extends Fragment {
                 holder.cvPublishlist.setForeground(getResources().getDrawable(R.drawable.publishlist_shade));
 
             }
-            //跳轉詳細資訊
-            holder.itemView.setOnClickListener(v -> {
+            else {
+                holder.tvPLStatus.setText("");//合約狀態？
+                holder.cvPublishlist.setEnabled(true);
+                holder.ivPublishMore.setEnabled(true);
+                holder.cvPublishlist.setForeground(null);
+            }
+                //跳轉詳細資訊
+                holder.itemView.setOnClickListener(v -> {
 //                Navigation.findNavController(v).navigate();
-            });
-            //更多選單
-            holder.ivPublishMore.setOnClickListener(v -> {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
-                    popupMenu.inflate(R.menu.publishlist_menu);
-                    popupMenu.setOnMenuItemClickListener(item -> {
-                        int publishId = publish.getPublishId();
-                        if (item.getItemId() == R.id.publishEdit) {
-                            //編輯頁面
+                });
+                //更多選單
+                holder.ivPublishMore.setOnClickListener(v -> {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
+                        popupMenu.inflate(R.menu.publishlist_menu);
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            int publishId = publish.getPublishId();
+                            if (item.getItemId() == R.id.publishEdit) {
+                                //編輯頁面
 
-                        } else if (item.getItemId() == R.id.publishDelete) {
-                            AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
-                            final EditText etinput = new EditText(activity);
-                            etinput.setInputType(InputType.TYPE_CLASS_NUMBER);
-                            deleteDialog.setView(etinput);
-                            deleteDialog.setTitle("刪除");  //設置標題
-                            deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
-                            deleteDialog.setMessage("請輸入您的手機號碼"); //提示訊息
-                            deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
-                                if (etinput.getText().toString().trim().equals("0" + String.valueOf(phone))) {
-                                    JsonObject req = new JsonObject();
-                                    req.addProperty("action", "pubishDelete");
-                                    req.addProperty("publishId", publishId);
-                                    if (RemoteAccess.networkCheck(activity)) {
-                                        JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
-                                        if (resp.get("result").getAsBoolean()) {
-                                            Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing, true);
-                                            Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
+                            } else if (item.getItemId() == R.id.publishDelete) {
+                                AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
+                                final EditText etinput = new EditText(activity);
+                                etinput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                deleteDialog.setView(etinput);
+                                deleteDialog.setTitle("刪除");  //設置標題
+                                deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
+                                deleteDialog.setMessage("請輸入您的手機號碼"); //提示訊息
+                                deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
+                                    if (etinput.getText().toString().trim().equals("0" + String.valueOf(phone))) {
+                                        JsonObject req = new JsonObject();
+                                        req.addProperty("action", "pubishDelete");
+                                        req.addProperty("publishId", publishId);
+                                        if (RemoteAccess.networkCheck(activity)) {
+                                            JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
+                                            if (resp.get("result").getAsBoolean()) {
+                                                Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing, true);
+                                                Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
 //                                            publishes.remove(position);
 //                                            cityNames.remove(position);
 //                                            notifyDataSetChanged();
-                                            Toast.makeText(context, "刪除成功", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "刪除成功", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(context, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                            }
                                         } else {
-                                            Toast.makeText(context, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
-                                        Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "輸入錯誤", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
-                                    Toast.makeText(context, "輸入錯誤", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            deleteDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                                });
+                                deleteDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
 
-                            });
-                            Window window = deleteDialog.show().getWindow();
-                            Button btSure = window.findViewById(android.R.id.button1);
-                            Button btCancel = window.findViewById(android.R.id.button2);
-                            btSure.setTextColor(getResources().getColor(R.color.black));
-                            btCancel.setTextColor(getResources().getColor(R.color.black));
-                        }
-                        return true;
-                    });
-                    popupMenu.show();
-                }
-            });
+                                });
+                                Window window = deleteDialog.show().getWindow();
+                                Button btSure = window.findViewById(android.R.id.button1);
+                                Button btCancel = window.findViewById(android.R.id.button2);
+                                btSure.setTextColor(getResources().getColor(R.color.black));
+                                btCancel.setTextColor(getResources().getColor(R.color.black));
+                            }
+                            return true;
+                        });
+                        popupMenu.show();
+                    }
+                });
+
 
         }
 

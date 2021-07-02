@@ -12,6 +12,7 @@ import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -76,6 +77,7 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         handleClick();
+
     }
 
     private void findViews(View view) {
@@ -96,34 +98,34 @@ public class SignInFragment extends Fragment {
         super.onStart();
         // 檢查電話號碼是否驗證成功過
         FirebaseUser user = auth.getCurrentUser();
-//        if (user != null)
-        if ( sharedPreferences.getInt("memberId",-1)>0){
-            if(sharedPreferences.getBoolean("firstOpen",true)) {
-                //跳轉至導覽頁後跳轉首頁
-            }
-            if(new Date().getTime()-sharedPreferences.getLong("lastlogin",new Date().getTime())>60*60*1000){
-                Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
-                auth.signOut();
-                JsonObject req=new JsonObject();
-                req.addProperty("action","clearToken");
-                req.addProperty("memberId",sharedPreferences.getInt("memberId",-1));
-                RemoteAccess.getJsonData(url,req.toString());//不接回覆
-                sharedPreferences.edit().clear().apply();
-                sharedPreferences.edit()
-                .putBoolean("firstOpen",false)
-                        .apply();
+        if (user != null) {
+            if (sharedPreferences.getInt("memberId", -1) > 0) {
+                if (sharedPreferences.getBoolean("firstOpen", true)) {
+                    //跳轉至導覽頁後跳轉首頁
+                }
+                if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
+                    Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
+                    auth.signOut();
+                    JsonObject req = new JsonObject();
+                    req.addProperty("action", "clearToken");
+                    req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
+                    RemoteAccess.getJsonData(url, req.toString());//不接回覆
+                    sharedPreferences.edit().clear().apply();
+                    sharedPreferences.edit()
+                            .putBoolean("firstOpen", false)
+                            .apply();
 
-            }
-            else{
-              Navigation.findNavController(btSignIn)
+                } else {
+                    Navigation.findNavController(btSignIn).popBackStack(R.id.signinInFragment,true);
+                    Navigation.findNavController(btSignIn)
                             .navigate(R.id.homeFragment);
                 }
-        }
-        else{
-            if(sharedPreferences.getBoolean("firstOpen",true)) {
-                sharedPreferences.edit().putBoolean("firstOpen",false).apply();
-                Toast.makeText(activity, "進入導覽頁", Toast.LENGTH_SHORT).show();
+            } else {
+                if (sharedPreferences.getBoolean("firstOpen", true)) {
+                    sharedPreferences.edit().putBoolean("firstOpen", false).apply();
+                    Toast.makeText(activity, "進入導覽頁", Toast.LENGTH_SHORT).show();
 
+                }
             }
         }
 

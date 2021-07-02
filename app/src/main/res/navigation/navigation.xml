@@ -16,7 +16,21 @@
         tools:layout="@layout/fragment_membercenter">
         <action
             android:id="@+id/action_memberCenterFragment_to_signinInFragment"
-            app:destination="@id/signinInFragment" />
+            app:destination="@id/signinInFragment"
+            app:popUpTo="@id/signinInFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_memberCenterFragment_to_meberCenterPersonalInformationFragment"
+            app:destination="@id/meberCenterPersonalInformationFragment" />
+        <action
+            android:id="@+id/action_memberCenterFragment_to_orderconfirm_mainfragment_ho"
+            app:destination="@id/orderconfirm_mainfragment_ho" />
+        <action
+            android:id="@+id/action_memberCenterFragment_to_myFavoriteFragment"
+            app:destination="@id/myFavoriteFragment" />
+        <action
+            android:id="@+id/action_memberCenterFragment_to_myEvaluationnFragment"
+            app:destination="@id/myEvaluationnFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderconfirm_mainfragment"
@@ -150,6 +164,12 @@
         android:id="@+id/discussionUpdateFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionUpdateFragment"
         android:label="discussionUpdateFragment" />
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="idv.tfp10105.project_forfun.membercenter.Notification.NotificationFragment"
+        android:label="通知"
+        tools:layout="@layout/fragment_notification" />
+
 
 </navigation>
 
