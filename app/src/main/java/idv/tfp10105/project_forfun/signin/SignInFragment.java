@@ -2,11 +2,13 @@ package idv.tfp10105.project_forfun.signin;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -15,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -46,7 +50,7 @@ import idv.tfp10105.project_forfun.common.bean.Member;
 public class SignInFragment extends Fragment {
     private Activity activity;
 
-    private TextView tvSendTheVerificationCode,tvResendCode, tvTourist,tvCode;
+    private TextView tvSendTheVerificationCode,tvResendCode, tvTourist,tvCode,tvTest;
     private EditText etPhone,etVerificationCode;
     private ImageView imageView;//快速登入
     private ImageButton btSignIn, btRegistered, btAssist;
@@ -91,6 +95,7 @@ public class SignInFragment extends Fragment {
         tvResendCode= view.findViewById(R.id.tvResendCode);
         tvCode= view.findViewById(R.id.tvCode); // 驗證碼標題
         imageView= view.findViewById(R.id.imageView); // 快速登入
+        tvTest= view.findViewById(R.id.tvTest); // 快速登入選電話
     }
 
     @Override
@@ -189,6 +194,28 @@ public class SignInFragment extends Fragment {
             etVerificationCode.setText("123456");
             phoneSure();
             return true;
+        });
+
+        //快速登入2
+        tvTest.setOnClickListener(v->{
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("選擇電話號碼");
+            String[] phones = {"0922877662", "0924545884", "0952894963", "0960917393", "0929458421","0921526256","0930362802","0930553563","0916366024"};
+            builder.setSingleChoiceItems(phones,-1,new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    etPhone.setText(phones[which]);
+                    etVerificationCode.setText("123456");
+                }
+            });
+            builder.setPositiveButton("OK", null);
+            builder.setNegativeButton("Cancel", null);
+            Window window = builder.show().getWindow();
+            Button btSure = window.findViewById(android.R.id.button1);
+            Button btCancel = window.findViewById(android.R.id.button2);
+            btSure.setTextColor(getResources().getColor(R.color.black));
+            btCancel.setTextColor(getResources().getColor(R.color.black));
         });
 
         btRegistered.setOnClickListener(v->{
