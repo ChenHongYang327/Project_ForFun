@@ -226,6 +226,7 @@ public class OcrHO_Publishing extends Fragment {
                 llPublishList = itemView.findViewById(R.id.llPublishList);
                 ivPublishMore = itemView.findViewById(R.id.ivPublishMore);
                 cvPublishlist = itemView.findViewById(R.id.cvPublishlist);
+                tvPLName.setSelected(true);
             }
         }
 

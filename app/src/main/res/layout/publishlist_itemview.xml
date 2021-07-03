@@ -5,8 +5,7 @@
     android:id="@+id/cvPublishlist"
     android:layout_width="match_parent"
     android:layout_height="140dp"
-    android:layout_marginBottom="8dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:layout_marginBottom="8dp">
 
     <LinearLayout
         android:id="@+id/llPublishList"
@@ -40,7 +39,11 @@
                     android:layout_weight="1"
                     android:text="TextView"
                     android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"/>
 
                 <ImageView
                     android:id="@+id/ivPublishMore"

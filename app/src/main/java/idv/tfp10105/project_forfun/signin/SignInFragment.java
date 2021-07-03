@@ -266,6 +266,10 @@ public class SignInFragment extends Fragment {
             req.addProperty("action","singIn");
             req.addProperty("phone",phone);
             String resp=RemoteAccess.getJsonData(url,req.toString());
+            if(resp.equals("error")){
+                Toast.makeText(activity, "請檢查伺服器狀態", Toast.LENGTH_SHORT).show();
+             return;
+            }
             JsonObject respJson=new Gson().fromJson(resp,JsonObject.class);
             boolean pass=respJson.get("pass").getAsBoolean();
             if(pass) {

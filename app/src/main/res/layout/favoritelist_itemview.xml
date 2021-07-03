@@ -34,7 +34,11 @@
                 android:layout_marginLeft="8dp"
                 android:text="TextView"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"/>
         </LinearLayout>
 
         <LinearLayout
