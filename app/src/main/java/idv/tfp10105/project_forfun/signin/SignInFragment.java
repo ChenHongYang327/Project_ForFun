@@ -79,6 +79,16 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //TapPay Activity 跳轉過來（TappayActivity 430行），經過此頁跳轉回到首頁
+        String navigate_TAPPAY = sharedPreferences.getString("TappayActivity","");
+        if(navigate_TAPPAY.equals("ToHomeFragment")){
+            //跳轉清除暫存
+            sharedPreferences.edit().remove("TappayActivity");
+            Navigation.findNavController(view).navigate(R.id.homeFragment);
+        }
+
+
         findViews(view);
         handleClick();
 

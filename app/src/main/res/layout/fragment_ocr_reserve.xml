@@ -6,8 +6,16 @@
     android:orientation="vertical"
     tools:context=".orderconfirm.ocf.Ocr_reserve" >
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_ocr_reserve"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleview_ocr_reserve"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </LinearLayout>
