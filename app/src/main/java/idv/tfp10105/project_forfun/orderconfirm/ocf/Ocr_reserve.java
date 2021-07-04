@@ -85,7 +85,7 @@ public class Ocr_reserve extends Fragment {
 
         int role = sharedPreferences.getInt("role",-1);
 
-        //判斷是否為遊客
+        //判斷是否為遊客，要改
         if(role == 2 || role ==1){
 
             sidnInId = sharedPreferences.getInt("memberId", 9);
@@ -232,7 +232,7 @@ public class Ocr_reserve extends Fragment {
             Publish publish = getPublish(publishId);
 
             //圖片
-            String imgPath = publish.getPublishImg1();
+            String imgPath = publish.getTitleImg();
             if (imgPath != null) {
                 setImgFromFireStorage(imgPath, holder.imgPic);
             } else {
