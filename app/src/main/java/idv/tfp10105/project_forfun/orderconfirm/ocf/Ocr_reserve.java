@@ -59,6 +59,7 @@ public class Ocr_reserve extends Fragment {
     private Order order;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView tvHint;
 
 
     @Override
@@ -80,24 +81,60 @@ public class Ocr_reserve extends Fragment {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        sidnInId = sharedPreferences.getInt("memberId", 9);
+        tvHint = view.findViewById(R.id.tv_ocr_reserve_HintText);
 
-        recyclerView = view.findViewById(R.id.recycleview_ocr_reserve);
-        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        int role = sharedPreferences.getInt("role",-1);
 
-        //顯示adapter
-        showAlls();
+        //判斷是否為遊客
+        if(role == 2 || role ==1){
 
-        //更新的功能
-        swipeRefreshLayout = view.findViewById(R.id.swipe_ocr_reserve);
-        //下拉可更新，要配合ui元件
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            //動畫開始
-            swipeRefreshLayout.setRefreshing(true);
+            sidnInId = sharedPreferences.getInt("memberId", 9);
+
+            recyclerView = view.findViewById(R.id.recycleview_ocr_reserve);
+            recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+
+            //顯示adapter
             showAlls();
-            //動畫結束
-            swipeRefreshLayout.setRefreshing(false);
-        });
+
+            //更新的功能
+            swipeRefreshLayout = view.findViewById(R.id.swipe_ocr_reserve);
+            //下拉可更新，要配合ui元件
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                //動畫開始
+                swipeRefreshLayout.setRefreshing(true);
+                showAlls();
+                //動畫結束
+                swipeRefreshLayout.setRefreshing(false);
+            });
+
+        }else{
+            tvHint.setText("尚未有訂單！");
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        showAlls();
+    }
+
+    private void showAlls() {
+        if (!orders.isEmpty()) {
+            orders.clear();
+            orders = getOrderListInfo(OrderStatusNumber, sidnInId);
+            if(orders.isEmpty()){
+                tvHint.setText("尚未有訂單！");
+            }else{
+                setOrderList(orders);
+            }
+        } else {
+            orders = getOrderListInfo(OrderStatusNumber, sidnInId);
+            if(orders.isEmpty()){
+                tvHint.setText("尚未有訂單！");
+            }else{
+                setOrderList(orders);
+            }
+        }
     }
 
     private List<Order> getOrderListInfo(int status, int memberId) {
@@ -126,22 +163,8 @@ public class Ocr_reserve extends Fragment {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        showAlls();
-    }
 
-    private void showAlls() {
-        if (!orders.isEmpty()) {
-            orders.clear();
-            orders = getOrderListInfo(OrderStatusNumber, sidnInId);
-            setOrderList(orders);
-        } else {
-            orders = getOrderListInfo(OrderStatusNumber, sidnInId);
-            setOrderList(orders);
-        }
-    }
+
 
     private void setOrderList(List<Order> orderList) {
         MyAdaptor myAdaptor = (MyAdaptor) recyclerView.getAdapter();
@@ -204,6 +227,7 @@ public class Ocr_reserve extends Fragment {
         public void onBindViewHolder(@NonNull @NotNull Ocr_reserve.MyAdaptor.Holder holder, int position) {
 
             final Order order = orderList.get(position);
+            int orderId = order.getOrderId();
             int publishId = order.getPublishId();
             Publish publish = getPublish(publishId);
 
@@ -215,16 +239,16 @@ public class Ocr_reserve extends Fragment {
                 holder.imgPic.setImageResource(R.drawable.no_image);
             }
 
-
             holder.tvTitle.setText(publish.getTitle());
             holder.tvArea.setText(publish.getAddress());
 
-            holder.tvControlText.setText("待確認");
+            holder.tvControlText.setText("待確認"); //bt上顯示的字
             holder.btClick.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putInt("OCR", TAPNUMBER);
                 bundle.putInt("PUBLISHID",publishId);
                 bundle.putInt("SIGNINID",sidnInId);
+                bundle.putInt("ORDREID",orderId);
 
                 Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);
             });
