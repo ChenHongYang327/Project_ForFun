@@ -6,20 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -32,6 +22,22 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -41,7 +47,11 @@ import com.yalantis.ucrop.UCrop;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
@@ -55,17 +65,17 @@ public class discussionUpdateFragment extends Fragment {
     private FragmentActivity activity;
     private EditText update_context_edtext, update_title_edtext;
     private ImageButton update_bt_save, update_bt_memberhead;
-    private TextView update_memberName_text, update_time_text ;
+    private TextView update_memberName_text, update_time_text;
     private String imagePath;
     private FirebaseStorage storage;
     private byte[] image;
     private File file;
     private Uri contentUri;
     private ImageView update_bt_imageView;
-    private String url = Common.URL ;
-    private SharedPreferences sharedPreferences;
+    private String url = Common.URL;
     private Bundle bundle;
     private Post post;
+    private boolean pictureTaken;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -82,15 +92,14 @@ public class discussionUpdateFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
-        sharedPreferences = activity.getSharedPreferences("PreferencesName", Context.MODE_PRIVATE);
+
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_discussion_update, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_discussion_update, container, false);
     }
 
     @Override
@@ -98,8 +107,8 @@ public class discussionUpdateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         final NavController navController = Navigation.findNavController(view);
-        Bundle bundle = getArguments();
-        if(bundle == null || bundle.getSerializable("post") == null) {
+        bundle = getArguments();
+        if (bundle == null || bundle.getSerializable("post") == null) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
             navController.popBackStack();
             return;
@@ -127,7 +136,7 @@ public class discussionUpdateFragment extends Fragment {
     private void showPost() {
 
         if (imagePath != "") {
-            showImage(post.getPostImg());
+            downloadImage(post.getPostImg());
         } else {
 
             update_bt_imageView.setImageResource(R.drawable.no_image);
@@ -178,7 +187,7 @@ public class discussionUpdateFragment extends Fragment {
             pickPictureLauncher.launch(intent);
         });
 
-        update_bt_imageView.setOnClickListener((v)->{
+        update_bt_imageView.setOnClickListener((v) -> {
             //顯示BottomSheet
             bottomSheetDialog.show();
         });
@@ -191,10 +200,11 @@ public class discussionUpdateFragment extends Fragment {
     }
 
     private void handleFinishInsert() {
+        ActivityResult img = null;
         update_bt_save.setOnClickListener(v -> {
             //取得user輸入的值
             String context = update_context_edtext.getText().toString().trim();
-            if (context.length() <= 0){
+            if (context.length() <= 0) {
                 Toast.makeText(activity, "請輸入內文", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -203,13 +213,32 @@ public class discussionUpdateFragment extends Fragment {
                 Toast.makeText(activity, "請輸入標題", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if(pictureTaken) {
+                imagePath = getString(R.string.app_name) + "/Discussion_update/" + System.currentTimeMillis();
+                storage.getReference().child(imagePath).putFile(contentUri)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG,"圖已上傳");
+                                post.setPostImg(imagePath);
+                                downloadImage(imagePath);
+                            }else {
+                                String message = task.getException() == null ?
+                                        "上傳失敗" :
+                                        task.getException().getMessage();
+                                Log.e(TAG, "message: " + message);
+                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
             if (RemoteAccess.networkCheck(activity)) {
                 //用json傳至後端
                 url += "DiscussionBoardController";
                 int id = post.getPostId();
-                post.setFiles(id, 0, title, context, imagePath);
+                post.setFiles(id, 0, title, context,imagePath );
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("action", "postUpdate");
+                jsonObject.addProperty("postId", id);
                 jsonObject.addProperty("post", new Gson().toJson(post));
                 int count;
                 //執行緒池物件
@@ -220,12 +249,13 @@ public class discussionUpdateFragment extends Fragment {
                 if (count == 0) {
                     Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
                 } else {
+
                     Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
 
 
                     //抽掉頁面
-                    Navigation.findNavController(v).popBackStack(R.id.discussionInsertFragment,true);
-                    Navigation.findNavController(v).navigate(R.id.discussionBoardFragment,bundle);
+                    Navigation.findNavController(v).popBackStack(R.id.discussionUpdateFragment, true);
+                    Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
 
                 }
             } else {
@@ -266,77 +296,50 @@ public class discussionUpdateFragment extends Fragment {
     private void cropPictureResult(ActivityResult result) {
         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
             //取出截完的結果圖
-            Uri resultUri = UCrop.getOutput(result.getData());
-            if (resultUri != null) {
-                uploadImage(resultUri);
+            contentUri = UCrop.getOutput(result.getData());
+            if (contentUri != null) {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = BitmapFactory.decodeStream(
+                            activity.getContentResolver().openInputStream(contentUri));
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+                if (bitmap != null) {
+                    update_bt_imageView.setImageBitmap(bitmap);
+                    pictureTaken = true;
+                } else {
+                    update_bt_imageView.setImageResource(R.drawable.no_image);
+                    pictureTaken = false;
+                }
             }
         }
     }
 
-    private String uploadImage(Uri resultUri) {
 
-        //取得根目錄
-        StorageReference rootRef = storage.getReference();
-        imagePath = getString(R.string.app_name) + "/Discussion_update/" + System.currentTimeMillis();
 
-        //建立當下目錄的子路徑
-        final StorageReference imageRef = rootRef.child(imagePath);
-        //將儲存照片上傳 檔案
-        imageRef.putFile(resultUri)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        String message = "上傳成功";
-                        Log.d(TAG, message);
-                        Toast.makeText(activity, "上傳結果： " + message, Toast.LENGTH_SHORT).show();
-                        //下載剛上傳的照片
-                        showImage(imagePath);
-
-                    } else {
-                        String message = task.getException() == null ? "Upload fail" : task.getException().getMessage();
-                        Log.e(TAG, "message: " + message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        return imagePath;
-    }
-
-//    private void downloadImage(final ImageView imageView, final String path) {
-//        final int ONE_MEGABYTE = 1024 * 1024;
-//        StorageReference imageRef = storage.getReference().child(path);
-//        //最多能暫存記憶體的量
-//        imageRef.getBytes(ONE_MEGABYTE)
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful() && task.getResult() != null) {
-//                        image = task.getResult();
-//                        //轉bitmap呈現前端
-//                        Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-//                        imageView.setImageBitmap(bitmap);
-//                    } else {
-//                        String message  = task.getException() == null ? "Download fail" : task.getException().getMessage();
-//                        Log.e(TAG, "message: " + message);
-//                        imageView.setImageResource(R.drawable.no_image);
-//                        Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
-
-//     下載Firebase storage的照片並顯示在ImageView上
-    private void showImage(final String imagePath) {
+    private void downloadImage(final String imagePath) {
         final int ONE_MEGABYTE = 1024 * 1024;
         StorageReference imageRef = storage.getReference().child(imagePath);
-        imageRef.getBytes(ONE_MEGABYTE)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        byte[] bytes = task.getResult();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        update_bt_imageView.setImageBitmap(bitmap);
-                    } else {
-                        String message = task.getException() == null ?
-                                "Image download Failed" + ": " + imagePath : task.getException().getMessage() + ": " + imagePath;
-                        Log.e(TAG, message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                    }
-                });
+        //最多能暫存記憶體的量
+        if (imagePath == null || imagePath == "0") {
+            update_bt_imageView.setImageResource(R.drawable.no_image);
+        } else {
+            imageRef.getBytes(ONE_MEGABYTE)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            image = task.getResult();
+                            //轉bitmap呈現前端
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                            update_bt_imageView.setImageBitmap(bitmap);
+                        } else {
+                            String message = task.getException() == null ? "Download fail" : task.getException().getMessage();
+                            Log.e(TAG, "message: " + message);
+                            update_bt_imageView.setImageResource(R.drawable.no_image);
+                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
 }

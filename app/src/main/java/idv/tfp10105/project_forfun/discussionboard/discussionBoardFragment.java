@@ -68,6 +68,7 @@ public class discussionBoardFragment extends Fragment {
 
 
         viewPager.setAdapter(new MyAdapter(activity));
+//        viewPager.setOffscreenPageLimit(2);
         TabLayoutMediator tab = new TabLayoutMediator(disTab, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {

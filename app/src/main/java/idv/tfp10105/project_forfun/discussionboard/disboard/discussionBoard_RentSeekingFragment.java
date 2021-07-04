@@ -77,14 +77,10 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         handleRecyclerView();
-
-
         handleBtAdd();
         handleSearchView();
         handleSwipeRefresh();
     }
-
-
 
     @Override
     public void onResume() {
@@ -92,7 +88,10 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         Log.d(TAG,"onResume");
         posts = getPosts();
         showPosts(posts);
+
     }
+
+
 
     private void findViews(View view) {
         searchView = view.findViewById(R.id.searchView_dis);
@@ -153,12 +152,13 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     }
 
 
-    //連線資料庫取資料
+
     private List<Post> getPosts() {
-        List<Post> posts = null;
+        List<Post> posts = new ArrayList<>();
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("boardId","需求單");
             jsonObject.addProperty("action", "getAll");
             String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
             Type listType = new TypeToken<List<Post>>() {
@@ -167,16 +167,15 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             //解析後端傳回資料
             posts = new Gson().fromJson(jsonIn, listType);
         } else {
-            Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
         Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
     }
 
-
     private void showPosts(List<Post> posts) {
         if (posts == null || posts.isEmpty()) {
-            Toast.makeText(activity, "no posts found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
         SeekAdapter seekAdapter = (SeekAdapter) rv_seeking.getAdapter();
@@ -193,7 +192,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     }
 
 
-    private class SeekAdapter extends RecyclerView.Adapter<SeekAdapter.MyViewHolder> {
+    public class SeekAdapter extends RecyclerView.Adapter<SeekAdapter.MyViewHolder> {
         private final LayoutInflater layoutInflater;
         private final int imageSize;
         //內部列表（搜尋後）
@@ -256,13 +255,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             holder.disPostName.setText("6");
             holder.disPostContext.setText(post.getPostContext());
             holder.disPostTime.setText(post.getCreateTime().toString());
-            //設定點擊事件
-            holder.disPostImg.setOnClickListener(v -> {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("post", post);
-                //轉至詳細頁面
-//                Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment3, bundle);
-            });
 
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();
@@ -273,83 +265,103 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             jsonObject.addProperty("postId", postId);
             jsonObject.addProperty("imageSize", imageSize);
             String jsonImg = RemoteAccess.getJsonData(url, jsonObject.toString());
+
+            //設定點擊事件
+            holder.disPostImg.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("post", post);
+                //轉至詳細頁面
+                Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
+            });
             if (jsonImg != null) {
                 showImage(holder.disPostImg, imagePath);
             } else {
                 holder.disPostImg.setImageResource(R.drawable.no_image);
             }
             holder.disPostBtMore.setOnClickListener(v -> {
-                //選單
-                PopupMenu popupMenu = new PopupMenu(activity,v, Gravity.END);
-                popupMenu.inflate(R.menu.popup_menu);
-                popupMenu.setOnMenuItemClickListener(item -> {
-                    int itemId = item.getItemId();
-                    //新增
-                    if (itemId == R.id.update){
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("post",post);
-                        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment,bundle);
-                        //刪除
-                    } else if (itemId == R.id.delete) {
-                        if (RemoteAccess.networkCheck(activity)){
-                            JsonObject jsonDelete = new JsonObject();
-                            jsonDelete.addProperty("action","postDelete");
-                            jsonDelete.addProperty("postId",post.getPostId());
-                            int count;
-                            String result = RemoteAccess.getJsonData(url,jsonDelete.toString());
-                            count = Integer.parseInt(result);
-                            if (count == 0) {
-                                Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
-                            } else {
-                                posts.remove(post);
-                                SeekAdapter.this.notifyDataSetChanged();
-                                // 外面spots也必須移除選取的spot
-                                discussionBoard_RentSeekingFragment.this.posts.remove(post);
-                                storage.getReference().child(post.getPostImg()).delete()
-                                        .addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "照片已刪除");
-                                            } else {
-                                                String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
-                                                        task.getException().getMessage() + ": " + post.getPostImg();
-                                                Log.e(TAG, message);
-                                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
-                                Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
-                            }
-                            //檢舉
-                        } else if (itemId == R.id.report) {
-//                            Navigation.findNavController(v).navigate("路徑");
-                        } else {
-                            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    return true;
-                });
-                popupMenu.show();
-                return;
+                controller(v,post,url);
             });
         }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        public void controller (View v, Post post , String url) {
+            //選單
+            PopupMenu popupMenu = new PopupMenu(activity,v, Gravity.END);
+            popupMenu.inflate(R.menu.popup_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                //新增
+                if (itemId == R.id.update){
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("post",post);
+                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment,bundle);
+                    //刪除
+                } else if (itemId == R.id.delete) {
+                    if (RemoteAccess.networkCheck(activity)){
+                        JsonObject jsonDelete = new JsonObject();
+                        jsonDelete.addProperty("action","postDelete");
+                        jsonDelete.addProperty("postId",post.getPostId());
+                        int count;
+                        String result = RemoteAccess.getJsonData(url,jsonDelete.toString());
+                        count = Integer.parseInt(result);
+                        if (count == 0) {
+                            Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
+                        } else {
+                            posts.remove(post);
+                            SeekAdapter.this.notifyDataSetChanged();
+                            // 外面spots也必須移除選取的spot
+                            discussionBoard_RentSeekingFragment.this.posts.remove(post);
+                            storage.getReference().child(post.getPostImg()).delete()
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "照片已刪除");
+                                        } else {
+                                            String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
+                                                    task.getException().getMessage() + ": " + post.getPostImg();
+                                            Log.e(TAG, message);
+                                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                        }
+                        //檢舉
+                    } else if (itemId == R.id.report) {
+                        //TODO
+//                            Navigation.findNavController(v).navigate("路徑");
+                    } else {
+                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                return true;
+            });
+            popupMenu.show();
+            return;
+        }
+
 
         // 下載Firebase storage的照片並顯示在ImageView上
         private void showImage(final ImageView imageView, final String path) {
             final int ONE_MEGABYTE = 1024 * 1024;
             StorageReference imageRef = storage.getReference().child(path);
-            imageRef.getBytes(ONE_MEGABYTE)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            byte[] bytes = task.getResult();
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            imageView.setImageBitmap(bitmap);
-                        } else {
-                            String message = task.getException() == null ?
-                                    "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
-                            Log.e(TAG, message);
-                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            if (imageRef == null || path == null) {
+                imageView.setImageResource(R.drawable.no_image);
+            } else {
+                imageRef.getBytes(ONE_MEGABYTE)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                byte[] bytes = task.getResult();
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                imageView.setImageBitmap(bitmap);
+                            } else {
+                                String message = task.getException() == null ?
+                                        "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                                imageView.setImageResource(R.drawable.no_image);
+                                Log.e(TAG, message);
+                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
         }
 
     }

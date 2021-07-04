@@ -112,7 +112,7 @@ public class discussionInsertFragment extends Fragment {
         findViews(view);
         handleSpinner();
         handleInsert_bt_picture();
-        handleFinishInsert(view);
+        handleFinishInsert();
     }
 
 
@@ -223,7 +223,7 @@ public class discussionInsertFragment extends Fragment {
 
     }
 
-    private void handleFinishInsert(View view) {
+    private void handleFinishInsert() {
         insert_bt_push.setOnClickListener(v -> {
             //取得user輸入的值
             String title = etTitle.getText().toString().trim();
