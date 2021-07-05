@@ -217,9 +217,25 @@ public class SignInFragment extends Fragment {
                 public void onClick(DialogInterface dialog, int which) {
                     etPhone.setText(phones[which]);
                     etVerificationCode.setText("123456");
+                    JsonObject req=new JsonObject();
+                    req.addProperty("action","checkRole");
+                    req.addProperty("phone",phones[which]);
+                    String resp=RemoteAccess.getJsonData(url,req.toString());
+                    if(resp.equals("error")){
+                        Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(Integer.parseInt(resp)==1){
+                        Toast.makeText(activity, "房客", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(Integer.parseInt(resp)==2){
+                        Toast.makeText(activity, "房東", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(activity, "資料庫中沒有此手機號碼", Toast.LENGTH_SHORT).show();
+                    }
+                    dialog.dismiss();
                 }
             });
-            builder.setPositiveButton("OK", null);
             builder.setNegativeButton("Cancel", null);
             Window window = builder.show().getWindow();
             Button btSure = window.findViewById(android.R.id.button1);
