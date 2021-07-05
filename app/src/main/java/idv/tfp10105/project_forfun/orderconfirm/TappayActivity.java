@@ -54,8 +54,8 @@ public class TappayActivity extends AppCompatActivity {
 
     private ImageView btBuy, btCancel, btReturn, btConfirm, imgPic; //button用圖片表示
     private TextView tvAccount, tvNotes, tvCardInfo, tvResult;
-    private TextView tvReturnText, tvConfirmText, tvancelText;
-    private SharedPreferences sharedPreferences;
+    private TextView tvReturnText, tvConfirmText, tvCncelText;
+    private SharedPreferences sharedPreferences, shardToMainActivity;
     private FirebaseStorage storage;
     private Gson gson = new Gson();
     private String TAPPATACCOUNY; //付款總額
@@ -89,7 +89,7 @@ public class TappayActivity extends AppCompatActivity {
         tvCardInfo = findViewById(R.id.tv_ocrTapPay_cardinfo);
         tvNotes = findViewById(R.id.tv_ocrTapPay_notes);
         tvResult = findViewById(R.id.tv_ocrTapPay_result);
-        tvancelText = findViewById(R.id.tv_ocrTapPay_cancelText);
+        tvCncelText = findViewById(R.id.tv_ocrTapPay_cancelText);
         tvConfirmText = findViewById(R.id.tv_ocrTapPay_confirmText);
         tvReturnText = findViewById(R.id.tv_ocrTapPay_returnText);
 
@@ -107,9 +107,10 @@ public class TappayActivity extends AppCompatActivity {
         handleViews();
 
         //宣告 偏號設定檔位置
-        sharedPreferences = getSharedPreferences("TapPaySharedPre",Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("OrderSharedPre",Context.MODE_PRIVATE);
+        shardToMainActivity = getSharedPreferences( "SharedPreferences",Context.MODE_PRIVATE);
         // 判斷誰登入 帶id
-        objID = sharedPreferences.getInt("OBJID",-1); //該資訊id
+        objID = sharedPreferences.getInt("ORDERID",-1); //該資訊id
         String str = sharedPreferences.getString("TAB","-1");
 
         switch (str){
@@ -369,6 +370,8 @@ public class TappayActivity extends AppCompatActivity {
                     tvConfirmText.setText("");
                     btReturn.setVisibility(View.GONE);
                     tvReturnText.setText("");
+                    tvCncelText.setText("回首頁");
+
 
                     //成功後修改狀態碼
                     handleStatus();
@@ -419,10 +422,13 @@ public class TappayActivity extends AppCompatActivity {
             int resoltcode = result.get("RESULT").getAsInt();
 
             if(resoltcode == 200){
-                //TODO: goto homeFragment
+
                 //delete sharedPreference value
                 sharedPreferences.edit().remove("OBJID").apply();
                 sharedPreferences.edit().remove("TAB").apply();
+                //TODO: goto homeFragment
+                shardToMainActivity.edit().putString("TappayActivity","ToHomeFragment");
+                finish();
             }else{ Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show(); }
 
         }

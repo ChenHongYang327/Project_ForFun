@@ -12,4 +12,5 @@
     <color name="bottom_choose">#B6C2B7</color>
     <color name="ratingStar">#FAFA23</color>
     <color name="gray">#bababa</color>
+    <color name="red">#FF0404</color>
 </resources>

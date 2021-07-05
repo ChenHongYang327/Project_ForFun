@@ -9,263 +9,285 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/img_HSShot_pic1"
-            android:layout_width="match_parent"
-            android:layout_height="190dp"
-            android:src="@drawable/ic_launcher_background" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:orientation="horizontal">
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="315dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_HSShot_Title"
+            <ImageView
+                android:id="@+id/img_HSShot_pic1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Title"
-                android:textSize="20sp" />
+                android:layout_height="200dp"
+                android:src="@drawable/ic_launcher_background" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="30dp"
                 android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="360dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tv_HSShot_Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textView"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_weight="1"
-                    android:text="地區："
-                    android:textSize="20sp" />
+                    android:text="地址："
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@+id/tv_HSShot_Title"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_HSShot_Title" />
 
                 <TextView
                     android:id="@+id/tv_HSShot_Area"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView"
+                    app:layout_constraintStart_toEndOf="@+id/textView" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1"
+                    android:text="房型："
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView3"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_HSShot_Square" />
 
                 <TextView
                     android:id="@+id/textView3"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_weight="1"
                     android:text="坪數："
-                    android:textSize="20sp" />
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_HSShot_Area" />
+
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:text="坪"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_HSShot_Square"
+                    app:layout_constraintStart_toEndOf="@+id/tv_HSShot_Square" />
 
                 <TextView
                     android:id="@+id/tv_HSShot_Square"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="房型："
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                    app:layout_constraintStart_toEndOf="@+id/textView3" />
 
                 <TextView
                     android:id="@+id/tv_HSShot_Type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintStart_toEndOf="@+id/textView4" />
 
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:orientation="horizontal"></LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/img_HSShot_Headshot"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                tools:src="@tools:sample/avatars" />
-
-            <TextView
-                android:id="@+id/tv_HSShot_Name"
-                android:layout_width="122dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:text="李先生"
-                android:textSize="20sp" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/bt_HSShot_ConnLandlore"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/bt_14050blank"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="聯絡房東"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_ConnLandlore"
-                    app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_ConnLandlore"
-                    app:layout_constraintStart_toStartOf="@+id/bt_HSShot_ConnLandlore"
-                    app:layout_constraintTop_toTopOf="@+id/bt_HSShot_ConnLandlore" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:orientation="horizontal"></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_HSShot_Headshot"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    tools:src="@drawable/ic_account_black_48dp" />
+
+                <TextView
+                    android:id="@+id/tv_HSShot_Name"
+                    android:layout_width="122dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="李先生"
+                    android:textSize="20sp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:id="@+id/bt_HSShot_Conn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/bt_14050blank"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/tv_HSShot_ConnLandloreText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="聯絡房東"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_Conn"
+                        app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_Conn"
+                        app:layout_constraintStart_toStartOf="@+id/bt_HSShot_Conn"
+                        app:layout_constraintTop_toTopOf="@+id/bt_HSShot_Conn" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"></LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/bt_HSShot_con0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/bt_36045blank"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_HSShot_con0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="瀏覽房屋資訊"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con0"
+                    app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con0"
+                    app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con0"
+                    app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con0" />
+
+                <ImageView
+                    android:id="@+id/bt_HSShot_con1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/bt_36045blank"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con0" />
+
+                <TextView
+                    android:id="@+id/tv_HSShot_con1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con1"
+                    app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con1"
+                    app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con1"
+                    app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con1" />
+
+                <ImageView
+                    android:id="@+id/bt_HSShot_con2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/bt_36045blank"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.49"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con1" />
+
+                <TextView
+                    android:id="@+id/tv_HSShot_con2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con2"
+                    app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con2"
+                    app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con2"
+                    app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con2" />
+
+                <ImageView
+                    android:id="@+id/bt_HSShot_con3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/bt_36045blank"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con2" />
+
+                <TextView
+                    android:id="@+id/tv_HSShot_con3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con3"
+                    app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con3"
+                    app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con3"
+                    app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con3" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:orientation="horizontal"></LinearLayout>
+
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"></LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/bt_HSShot_con0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bt_36045blank"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_HSShot_con0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="瀏覽房屋資訊"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con0"
-                app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con0"
-                app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con0"
-                app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con0" />
-
-            <ImageView
-                android:id="@+id/bt_HSShot_con1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/bt_36045blank"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con0" />
-
-            <TextView
-                android:id="@+id/tv_HSShot_con1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con1"
-                app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con1"
-                app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con1"
-                app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con1" />
-
-            <ImageView
-                android:id="@+id/bt_HSShot_con2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/bt_36045blank"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.49"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con1" />
-
-            <TextView
-                android:id="@+id/tv_HSShot_con2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con2"
-                app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con2"
-                app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con2"
-                app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con2" />
-
-            <ImageView
-                android:id="@+id/bt_HSShot_con3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/bt_36045blank"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con2" />
-
-            <TextView
-                android:id="@+id/tv_HSShot_con3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con3"
-                app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_con3"
-                app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con3"
-                app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con3" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
-            android:orientation="horizontal"></LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 
 
     </LinearLayout>

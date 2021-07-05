@@ -40,6 +40,10 @@ public class Post implements Serializable {
         this.deleteTime = deleteTime;
     }
 
+    public Post() {
+
+    }
+
     public void setFiles(Integer postId, Integer posterId,String postTitle ,String postContext, String postImg)
     {
         this.postId = postId;

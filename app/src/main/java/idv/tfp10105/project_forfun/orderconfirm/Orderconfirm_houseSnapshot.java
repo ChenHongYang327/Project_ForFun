@@ -1,12 +1,18 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,28 +22,55 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
+import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.Member;
+import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class Orderconfirm_houseSnapshot extends Fragment {
-    private AppCompatActivity activity;
-    //private Button btCon1,btCon2,btCon3;
-    private TextView tvCon1,tvCon2,tvCon3;
-    private TextView tvTitle,tvArea,tvSquare,tvType,tvName;
-    private ImageView imgPic,imgHeadShot;
+    private Activity activity;
+    private ImageView btcon0, btCon1, btCon2, btCon3, btConn;
+    private TextView tvcon0, tvCon1, tvCon2, tvCon3, tvConntText;
+    private TextView tvTitle, tvArea, tvSquare, tvType, tvName;
+    private ImageView imgPic, imgHeadShot;
+    private Gson gson = new Gson();
+    private int sidninId, orderId, publishId, ocrId;
+    private FirebaseStorage storage;
+    private Member member;
+    // BottomSheet
+    private BottomSheetDialog bottomSheetDialog;
+    private View bottomSheetView;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = (AppCompatActivity) getActivity();
+        activity = getActivity();
+        storage = FirebaseStorage.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_orderconfirm_house_snapshot, container, false);
+        View view = inflater.inflate(R.layout.fragment_orderconfirm_house_snapshot, container, false);
+        // BottomSheet
+        bottomSheetDialog = new BottomSheetDialog(activity);
+        bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet, null);
+        bottomSheetDialog.setContentView(bottomSheetView);
+        ViewGroup parent = (ViewGroup) bottomSheetView.getParent();
+        parent.setBackgroundResource(android.R.color.transparent);
+
+
+        return view;
     }
 
     @Override
@@ -52,70 +85,372 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         tvCon1 = view.findViewById(R.id.tv_HSShot_con1);
         tvCon2 = view.findViewById(R.id.tv_HSShot_con2);
         tvCon3 = view.findViewById(R.id.tv_HSShot_con3);
+        tvcon0 = view.findViewById(R.id.tv_HSShot_con0);
+        tvConntText = view.findViewById(R.id.tv_HSShot_ConnLandloreText);
+        btcon0 = view.findViewById(R.id.bt_HSShot_con0);
+        btCon1 = view.findViewById(R.id.bt_HSShot_con1);
+        btCon2 = view.findViewById(R.id.bt_HSShot_con2);
+        btCon3 = view.findViewById(R.id.bt_HSShot_con3);
+        btConn = view.findViewById(R.id.bt_HSShot_Conn);
+        imgPic = view.findViewById(R.id.img_HSShot_pic1);
+        imgHeadShot = view.findViewById(R.id.img_HSShot_Headshot);
 
-        //TODO: 應該還要判斷房東或房客點進來
-        //判斷跳轉頁面來源
+
+        // 拿前頁bundle 來的值
         Bundle bundle = getArguments();
-        switch (bundle.getInt("OCR")){
-            case 1:
-                Toast.makeText(activity,"reserve",Toast.LENGTH_SHORT).show();
-                reserveEvent(view);
-                return;
-            case 2:
-                Toast.makeText(activity,"order",Toast.LENGTH_SHORT).show();
-                return;
-            case 3:
-                Toast.makeText(activity,"pay",Toast.LENGTH_SHORT).show();
-                return;
-            case 4:
-                Toast.makeText(activity,"sign",Toast.LENGTH_SHORT).show();
-                return;
-            case 5:
-                Toast.makeText(activity,"complete",Toast.LENGTH_SHORT).show();
-                completeEvent(view);
-                return;
-            case 6:
-                Toast.makeText(activity,"cancel",Toast.LENGTH_SHORT).show();
-                return;
-            case 7:
-                Toast.makeText(activity,"paid",Toast.LENGTH_SHORT).show();
-                return;
-            case 8:
-                Toast.makeText(activity,"payarrive",Toast.LENGTH_SHORT).show();
-                return;
-            default:
-                Toast.makeText(activity,"TO DO NGEvent",Toast.LENGTH_SHORT).show();
-                return;
+//        sidninId = bundle.getInt("SIGNINID", 3);
+//        publishId = bundle.getInt("PUBLISHID", 9);
+//        orderId = bundle.getInt("ORDERID", 1);
+//        ocrId = bundle.getInt("OCR",1);
 
+        sidninId = 3;
+        publishId = 9;
+        orderId = 1;
+        ocrId = 1;
+
+        //判斷跳轉頁面來源
+        switch (ocrId) {
+            case 1:
+                preloadInfo();
+                ocrReserve1();
+                break;
+            case 2:
+                preloadInfo();
+                ocrOrder2();
+                break;
+            case 3:
+                preloadInfo();
+                ocrSign3();
+                break;
+            case 4:
+                preloadInfo();
+                ocrPay4();
+                break;
+            case 5:
+                preloadInfo();
+                ocrComplete5();
+                break;
+//            case 6:
+//                preloadInfo();
+//                ocrCancel6();
+//                break;
+//            case 7:
+//                preloadInfo();
+//                ocrPaid7();
+//                break;
+            case 11:
+                preloadInfo();
+                ocrHOReserve11();
+                break;
+            case 12:
+                preloadInfo();
+                ocrHOOrder12();
+                break;
+            case 13:
+                preloadInfo();
+                ocrHOSign13();
+                break;
+            case 14:
+                preloadInfo();
+                ocrHOPay14();
+                break;
+            case 15:
+                preloadInfo();
+                ocrHOCompelete15();
+                break;
+            case 16:
+                preloadInfo();
+                ocrHOCancel16();
+                break;
+//            case 17:
+//                preloadInfo();
+//                ocrHOPayarrive17();
+//                break;
+            default:
+                Toast.makeText(activity, "查無資料", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(view).navigate(R.id.homeFragment);
+                break;
         }
     }
 
-    private void reserveEvent(View view) {
+    private void ocrReserve1() {
+        btCon3.setVisibility(View.GONE);
         tvCon1.setText("修改預約");
         tvCon2.setText("取消預約");
-        view.findViewById(R.id.bt_HSShot_con3).setVisibility(View.GONE);
 
-        view.findViewById(R.id.bt_HSShot_con1).setOnClickListener(v->{
-            Toast.makeText(activity,"Click",Toast.LENGTH_SHORT).show();
+        btcon0.setOnClickListener(v -> {
+            // Navigation.findNavController(v).navigate(R.id.homeFragment);
         });
-        view.findViewById(R.id.bt_HSShot_con2).setOnClickListener(v->{
-            Toast.makeText(activity,"Click",Toast.LENGTH_SHORT).show();
+        btCon1.setOnClickListener(v -> {
+            //  Navigation.findNavController(v).navigate();
         });
-
+        btCon2.setOnClickListener(v -> {
+            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void completeEvent(View view) {
+    private void ocrOrder2() {
+        btCon3.setVisibility(View.GONE);
+        tvCon1.setText("確認下訂");
+        tvCon2.setText("取消此次交易");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void ocrSign3() {
+        btCon3.setVisibility(View.GONE);
+        tvCon1.setText("我要簽約");
+        tvCon2.setText("取消此次交易");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void ocrPay4() {
+        tvCon1.setText("我的合約");
+        tvCon2.setText("我要付款");
+        tvCon3.setText("取消此次交易");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+            //帶職＆刪除頁面
+            Intent intent = new Intent(getActivity(), TappayActivity.class);
+            startActivity(intent);
+        });
+        btCon3.setOnClickListener(v -> {
+            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void ocrComplete5() {
         tvCon1.setText("我的合約");
         tvCon2.setText("我要續租");
-        tvCon3.setText("測試寫錯頁後面再改");
-        view.findViewById(R.id.bt_HSShot_con1).setOnClickListener(v->{
-            Toast.makeText(activity,"Click",Toast.LENGTH_SHORT).show();
+        tvCon3.setText("我要評分");
+
+        btcon0.setOnClickListener(v -> {
+
         });
-        view.findViewById(R.id.bt_HSShot_con2).setOnClickListener(v->{
-            Toast.makeText(activity,"Click",Toast.LENGTH_SHORT).show();
+        btCon1.setOnClickListener(v -> {
+
         });
-        view.findViewById(R.id.bt_HSShot_con3).setOnClickListener(v->{
-            Toast.makeText(activity,"Err",Toast.LENGTH_SHORT).show();
+        btCon2.setOnClickListener(v -> {
+
+        });
+        btCon3.setOnClickListener(v -> {
+
         });
     }
+
+//    private void ocrCancel6() {
+//        tvCon1.setText("我的合約");
+//        tvCon2.setText("我要續租");
+//        tvCon3.setText("我要評分");
+//
+//    }
+
+//    private void ocrPaid7() {
+//        tvCon1.setText("我的合約");
+//        tvCon2.setText("我要續租");
+//        tvCon3.setText("我要評分");
+//
+//    }
+
+    private void ocrHOReserve11() {
+        btCon3.setVisibility(View.GONE);
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("確認預約");
+        tvCon2.setText("取消預約");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+
+        });
+
+    }
+
+    private void ocrHOOrder12() {
+        btCon3.setVisibility(View.GONE);
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("確認下定");
+        tvCon2.setText("取消此次交易");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+
+        });
+    }
+
+    private void ocrHOSign13() {
+        btCon3.setVisibility(View.GONE);
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("建立合約");
+        tvCon2.setText("取消此次交易");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+
+        });
+    }
+
+    private void ocrHOPay14() {
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("我的合約");
+        tvCon2.setText("產生付款連結");
+        tvCon3.setText("取消此次交易");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+
+        });
+        btCon3.setOnClickListener(v -> {
+
+        });
+    }
+
+    private void ocrHOCompelete15() {
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("我的合約");
+        tvCon2.setText("我要評分");
+        tvCon3.setText("新增其他款項");
+
+        btcon0.setOnClickListener(v -> {
+
+        });
+        btCon1.setOnClickListener(v -> {
+
+        });
+        btCon2.setOnClickListener(v -> {
+
+        });
+        btCon3.setOnClickListener(v -> {
+
+        });
+    }
+
+    private void ocrHOCancel16() {
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("我的合約");
+        tvCon2.setText("我要評分");
+        tvCon3.setText("新增其他款項");
+
+    }
+
+//    private void ocrHOPayarrive17() {
+//        tvConntText.setText("聯絡房客");
+//        tvCon1.setText("我的合約");
+//        tvCon2.setText("我要評分");
+//        tvCon3.setText("新增其他款項");
+//
+//    }
+
+    //資料預抓
+    private void preloadInfo() {
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "HouseSnapsShot";
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("ORDERID", orderId);
+            jsonObject.addProperty("SIGNINID", sidninId);
+            jsonObject.addProperty("RESULTCODE", 1);
+
+            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
+            JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
+            String memberStr = object.get("MEMBER").getAsString();
+            member = gson.fromJson(memberStr, Member.class);
+            String publishStr = object.get("PUBLISH").getAsString();
+            Publish publish = gson.fromJson(publishStr, Publish.class);
+
+            //set Info
+            String imgPath_House = publish.getTitleImg();
+            if (imgPath_House == null || imgPath_House == "") {
+                imgPic.setImageResource(R.drawable.no_image);
+            } else {
+                setImgFromFireStorage(imgPath_House, imgPic);
+            }
+
+            String imgPath_Head = member.getHeadshot();
+            if (imgPath_Head == null || imgPath_Head == "") {
+                imgHeadShot.setImageResource(R.drawable.ic_account_black_48dp);
+            } else {
+                setImgFromFireStorage(imgPath_Head, imgHeadShot);
+            }
+
+            tvTitle.setText(publish.getTitle());
+            tvArea.setText(publish.getAddress());
+            tvSquare.setText(String.valueOf(publish.getSquare()));
+            tvName.setText(member.getNameL() + member.getNameF());
+
+            switch (publish.getType()) {
+                case 0:
+                    tvType.setText("套房");
+                    break;
+                case 1:
+                    tvType.setText("雅房");
+                    break;
+                default:
+                    tvType.setText("無提供資訊");
+                    break;
+            }
+        } else {
+            Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //下載firebase 照片
+    private void setImgFromFireStorage(final String imgPath, final ImageView showImg) {
+        StorageReference imgRef = storage.getReference().child(imgPath);
+        final int ONE_MEGBYTE = 1024 * 1024;
+        imgRef.getBytes(ONE_MEGBYTE).addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                byte[] bytes = task.getResult();
+                Bitmap bitmapPc = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                showImg.setImageBitmap(bitmapPc);
+            } else {
+                String message = task.getException() == null ?
+                        "ImgDownloadFail" + ": " + imgPath :
+                        task.getException().getMessage() + ": " + imgPath;
+                //Log.e("updateFragment", message);
+            }
+        });
+    }
+
 }

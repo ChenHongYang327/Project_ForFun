@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,7 +64,7 @@ public class OcrHO_Publishing extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ocr_h_o_publishing, container, false);
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
-        phone= sharedPreferences.getInt("phone", -1);
+        phone = sharedPreferences.getInt("phone", -1);
         rvPublishList = view.findViewById(R.id.rvPublishList);
         tvPublishlNote = view.findViewById(R.id.tvPublishlNote);
         return view;
@@ -87,16 +86,15 @@ public class OcrHO_Publishing extends Fragment {
         }.getType();
         publishes = new Gson().fromJson(resp.get("publishes").getAsString(), publishList);
         cityNames = new Gson().fromJson(resp.get("cityNames").getAsString(), cityNamesList);
-        if(publishes.size()==0){
+        if (publishes.size() == 0) {
             rvPublishList.setVisibility(View.GONE);
             tvPublishlNote.setVisibility(View.VISIBLE);
             return;
         }
         rvPublishList.setLayoutManager(new LinearLayoutManager(activity));
-        rvPublishList.setAdapter(new PublishlistAdapter(activity, publishes, cityNames,phone));
+        rvPublishList.setAdapter(new PublishlistAdapter(activity, publishes, cityNames, phone));
 
     }
-
     //----------------------------
     // Adapter
     public class PublishlistAdapter extends RecyclerView.Adapter<PublishlistAdapter.PublishlistHolder> {
@@ -129,18 +127,24 @@ public class OcrHO_Publishing extends Fragment {
         public void onBindViewHolder(@NonNull PublishlistHolder holder, int position) {
             Publish publish = publishes.get(position);
             String city = cityNames.get(position);
-            getImage(holder.ivPublishList, publish.getTitleImg()==null?"/":publish.getTitleImg());
+            getImage(holder.ivPublishList, publish.getTitleImg() == null ? "/" : publish.getTitleImg());
             holder.tvPLName.setText(publish.getTitle());
             holder.tvPLArea.setText("地區:" + city);
             holder.tvPLPing.setText("坪數:" + publish.getSquare() + "坪");
             holder.tvPLMoney.setText("$" + publish.getRent() + "/月");
-            if(publish.getDeleteTime()!=null) {
+            if (publish.getDeleteTime() != null) {
                 holder.tvPLStatus.setText("刊登單已刪除");//合約狀態？
-                holder.cvPublishlist.setEnabled(true);
+                holder.cvPublishlist.setEnabled(false);
+                holder.ivPublishMore.setEnabled(false);
                 holder.cvPublishlist.setForeground(getResources().getDrawable(R.drawable.publishlist_shade));
 
             }
             else {
+                holder.tvPLStatus.setText("");//合約狀態？
+                holder.cvPublishlist.setEnabled(true);
+                holder.ivPublishMore.setEnabled(true);
+                holder.cvPublishlist.setForeground(null);
+            }
                 //跳轉詳細資訊
                 holder.itemView.setOnClickListener(v -> {
 //                Navigation.findNavController(v).navigate();
@@ -157,42 +161,40 @@ public class OcrHO_Publishing extends Fragment {
 
                             } else if (item.getItemId() == R.id.publishDelete) {
                                 AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
-                                final EditText etinput=new EditText(activity);
+                                final EditText etinput = new EditText(activity);
                                 etinput.setInputType(InputType.TYPE_CLASS_NUMBER);
                                 deleteDialog.setView(etinput);
                                 deleteDialog.setTitle("刪除");  //設置標題
                                 deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
                                 deleteDialog.setMessage("請輸入您的手機號碼"); //提示訊息
                                 deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
-                                    if(etinput.getText().toString().trim().equals("0"+String.valueOf(phone))){
-                                    JsonObject req = new JsonObject();
-                                    req.addProperty("action", "pubishDelete");
-                                    req.addProperty("publishId", publishId);
-                                    if (RemoteAccess.networkCheck(activity)) {
-                                        JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
-                                        if (resp.get("result").getAsBoolean()) {
-                                            Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing,true);
-                                            Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
+                                    if (etinput.getText().toString().trim().equals("0" + String.valueOf(phone))) {
+                                        JsonObject req = new JsonObject();
+                                        req.addProperty("action", "pubishDelete");
+                                        req.addProperty("publishId", publishId);
+                                        if (RemoteAccess.networkCheck(activity)) {
+                                            JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
+                                            if (resp.get("result").getAsBoolean()) {
+                                                Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing, true);
+                                                Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
 //                                            publishes.remove(position);
 //                                            cityNames.remove(position);
 //                                            notifyDataSetChanged();
-                                            Toast.makeText(context, "刪除成功", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "刪除成功", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(context, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                            }
                                         } else {
-                                            Toast.makeText(context, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
-                                        Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
-                                    }
-                                    return;
-                                    }
-                                    else{
                                         Toast.makeText(context, "輸入錯誤", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                                 deleteDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                                 });
-                                Window window =  deleteDialog.show().getWindow();
+                                Window window = deleteDialog.show().getWindow();
                                 Button btSure = window.findViewById(android.R.id.button1);
                                 Button btCancel = window.findViewById(android.R.id.button2);
                                 btSure.setTextColor(getResources().getColor(R.color.black));
@@ -203,14 +205,15 @@ public class OcrHO_Publishing extends Fragment {
                         popupMenu.show();
                     }
                 });
-            }
+
+
         }
 
         class PublishlistHolder extends RecyclerView.ViewHolder {
             CardView cvPublishlist;
             LinearLayout llPublishList;
-            TextView tvPLName, tvPLArea, tvPLMoney, tvPLPing,tvPLStatus;
-            ImageView ivPublishList,ivPublishMore;
+            TextView tvPLName, tvPLArea, tvPLMoney, tvPLPing, tvPLStatus;
+            ImageView ivPublishList, ivPublishMore;
 
             public PublishlistHolder(@NonNull View itemView) {
                 super(itemView);
@@ -223,6 +226,7 @@ public class OcrHO_Publishing extends Fragment {
                 llPublishList = itemView.findViewById(R.id.llPublishList);
                 ivPublishMore = itemView.findViewById(R.id.ivPublishMore);
                 cvPublishlist = itemView.findViewById(R.id.cvPublishlist);
+                tvPLName.setSelected(true);
             }
         }
 

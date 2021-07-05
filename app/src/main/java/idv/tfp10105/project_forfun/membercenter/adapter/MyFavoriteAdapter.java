@@ -106,6 +106,7 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
             ivFPublish=itemView.findViewById(R.id.ivFPublish);
             ivFFavorite=itemView.findViewById(R.id.ivFFavorite);
             tvFPulishName=itemView.findViewById(R.id.tvFPulishName);
+            tvFPulishName.setSelected(true);
             tvFPulishArea=itemView.findViewById(R.id.tvFPulishArea);
             tvFPulishPing=itemView.findViewById(R.id.tvFPulishPing);
             tvFPulishMoney=itemView.findViewById(R.id.tvFPulishMoney);

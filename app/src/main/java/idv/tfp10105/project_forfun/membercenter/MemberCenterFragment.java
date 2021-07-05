@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +77,7 @@ public class MemberCenterFragment extends Fragment {
             if(checkAccess()) {
                 Navigation.findNavController(v)
                         .navigate(R.id.meberCenterPersonalInformationFragment);
+
             }
         });
 
@@ -83,13 +85,14 @@ public class MemberCenterFragment extends Fragment {
             if(checkAccess()) {
                 Navigation.findNavController(v)
                         .navigate(R.id.myFavoriteFragment);
+
             }
         });
 
         tvOrderList.setOnClickListener(v->{
             if(checkAccess()) {
                 Navigation.findNavController(v)
-                        .navigate(R.id.orderconfirm_mainfragment);
+                        .navigate(R.id.orderconfirm_mainfragment_ho);
             }
         });
 
@@ -109,8 +112,8 @@ public class MemberCenterFragment extends Fragment {
         tvLogOut.setOnClickListener(v->{
             if(role==3) {
                 Navigation.findNavController(tvLogOut)
-                        .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
-            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
+                        .navigate(R.id.signinInFragment);
+//            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
                 return;
             }
             AlertDialog.Builder logOutDialog = new AlertDialog.Builder(activity);
@@ -118,7 +121,6 @@ public class MemberCenterFragment extends Fragment {
             logOutDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
             logOutDialog.setMessage(R.string.log_out_dialog); //提示訊息
             logOutDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
-                auth.signOut();
                 JsonObject req=new JsonObject();
                 req.addProperty("action","clearToken");
                 req.addProperty("memberId",sharedPreferences.getInt("memberId",-1));
@@ -128,9 +130,10 @@ public class MemberCenterFragment extends Fragment {
                 sharedPreferences.edit()
                         .putBoolean("firstOpen",false)
                         .apply();
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
-                Navigation.findNavController(v).popBackStack(R.id.memberCenterFragment,true);
+                auth.signOut();
+                Navigation.findNavController(v).navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+
+
 
             });
             logOutDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
@@ -150,10 +153,11 @@ public class MemberCenterFragment extends Fragment {
         if(role==3){
             Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(tvLogOut)
-                    .navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+                    .navigate(R.id.signinInFragment);
 //            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
             return false;
         }
         return true;
     }
+
 }

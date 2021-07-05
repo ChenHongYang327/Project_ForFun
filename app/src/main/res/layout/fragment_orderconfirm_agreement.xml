@@ -348,7 +348,7 @@
                     app:layout_constraintVertical_bias="0.0" />
 
                 <TextView
-                    android:id="@+id/textView39"
+                    android:id="@+id/tv_ocrAgreement_cancelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="取消"
@@ -368,7 +368,7 @@
                     app:layout_constraintTop_toTopOf="@+id/bt_ocrAgreement_cancel" />
 
                 <TextView
-                    android:id="@+id/textView40"
+                    android:id="@+id/tv_ocrAgreement_confirmText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="確認"
