@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
@@ -191,11 +192,25 @@ public class HomeFragment extends Fragment {
             showMyLocation();
         });
 
-//        while (userLocation == null || googleMap == null) {
+        // 1. 想做個Loading....畫面，但用下面的方式會完全卡死，感覺要用thread
+        // 先抓位置另存，activity先取得使用者位置存到偏好設定檔，先使用存好的去呈現，後續再去抓新的
+        // 主執行緒執行ＬＯＡＤＩＮＧ畫面，另開執行緒去抓資料hostdelay?
+        // ProgressDialog 或 ProgressBar
+//        while (googleMap == null) {
 //            Log.d("home", "Loading....");
 //        }
 //
 //        Log.d("home", "OK!!!");
+
+        // 2. 經緯度轉地址只會有一段，如何從中取出縣市和行政區資料去轉換成自定義的ID
+        // 目前解法跑回圈比對縣市(行政區)名稱是否存在於地址中，有的話就可以找出對應的ID
+        // 但在行政區的部分，不同縣市卻有一樣的行政區名稱，導致實作的複雜度提高，想問看看有沒有好的方法可以解決
+//        for (City city : cityList) {
+//            if ("使用者地址".contains(city.getCityName())) {
+//                city.getCityId();
+//                break;
+//            }
+//        }
 
         // 搜尋頁面
         View bottomSheetView = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet_search,null);
@@ -289,6 +304,8 @@ public class HomeFragment extends Fragment {
                 drawCircle(userLatLng);
                 addMapPeople(userLatLng);
                 moveCamera(userLatLng);
+
+//                latLngToName(userLatLng.latitude, userLatLng.longitude);
             }
         });
     }
@@ -492,7 +509,11 @@ public class HomeFragment extends Fragment {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(activity, "跳到詳細頁面", Toast.LENGTH_SHORT).show();
+                        // 把ID帶到詳細頁面
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("publishId", publishHome.getPublish().getPublishId());
+
+                        Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_publishDetailFragment, bundle);
                     }
                 });
 
@@ -706,6 +727,34 @@ public class HomeFragment extends Fragment {
             if (addressList != null && addressList.size() > 0) {
                 return addressList.get(0);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 緯經度 轉 地名/地址
+     */
+    private String latLngToName(final double lat, final double lng) {
+        try {
+            if (!Geocoder.isPresent()) {
+                return null;
+            }
+            List<Address> addressList = geocoder.getFromLocation(lat, lng, 1);
+            StringBuilder name = new StringBuilder();
+            Address address = addressList.get(0);
+            if (address != null) {
+//                Log.d("home", "getAdminArea = "+address.getAdminArea()+address.getSubAdminArea());
+
+                for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                    name.append(address.getAddressLine(i))
+                            .append("\n");
+
+                    Log.d("home", "user address = " + address.getAddressLine(i));
+                }
+            }
+            return name.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }

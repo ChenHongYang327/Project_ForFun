@@ -8,7 +8,11 @@
         android:id="@+id/homeFragment"
         android:name="idv.tfp10105.project_forfun.home.HomeFragment"
         android:label="首頁"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_publishDetailFragment"
+            app:destination="@id/publishDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/memberCenterFragment"
         android:name="idv.tfp10105.project_forfun.membercenter.MemberCenterFragment"
@@ -150,6 +154,20 @@
         android:id="@+id/discussionUpdateFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionUpdateFragment"
         android:label="discussionUpdateFragment" />
+    <fragment
+        android:id="@+id/publishDetailFragment"
+        android:name="idv.tfp10105.project_forfun.publish.PublishDetailFragment"
+        android:label="刊登詳細"
+        tools:layout="@layout/fragment_publish_detail" >
+        <action
+            android:id="@+id/action_publishDetailFragment_to_appointmentFragment"
+            app:destination="@id/appointmentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/appointmentFragment"
+        android:name="idv.tfp10105.project_forfun.appointment.AppointmentFragment"
+        android:label="預約看房"
+        tools:layout="@layout/fragment_appointment" />
 
 </navigation>
 

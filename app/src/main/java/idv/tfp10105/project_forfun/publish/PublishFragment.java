@@ -1,6 +1,8 @@
 package idv.tfp10105.project_forfun.publish;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -57,6 +59,8 @@ import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.CityAreaUtil;
 import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.Gender;
+import idv.tfp10105.project_forfun.common.HouseType;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Area;
 import idv.tfp10105.project_forfun.common.bean.City;
@@ -72,6 +76,7 @@ public class PublishFragment extends Fragment {
     private Geocoder geocoder;
     private Uri uriPicture;
     private FirebaseStorage storage;
+    private SharedPreferences sharedPreferences;
 
     // UI元件
     private TextInputEditText editPublishTitle, editPublishInfo, editPublishAddress, editPublishRent, editPublishDeposit, editPublishSquare;
@@ -88,12 +93,13 @@ public class PublishFragment extends Fragment {
 
 
     // 變動資料
-    int publishId = 0;
+    private int userId = 0;
+    private int publishId = 0;
     private int uploadImgViewId;
-    String[] furnished = new String[9];
-    List<City> cityList;
-    List<Area> areaList;
-    Map<Integer, List<Area>> areaMap;
+    private String[] furnished = new String[9];
+    private List<City> cityList;
+    private List<Area> areaList;
+    private Map<Integer, List<Area>> areaMap;
 
     ActivityResultLauncher<Intent> takePicLauncher =registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -153,10 +159,12 @@ public class PublishFragment extends Fragment {
         gson = new Gson();
         geocoder = new Geocoder(activity);
         storage = FirebaseStorage.getInstance();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
 
         cityList = CityAreaUtil.getInstance().getCityList();
         areaList = CityAreaUtil.getInstance().getAreaList();
         areaMap = CityAreaUtil.getInstance().getAreaMap();
+        userId = sharedPreferences.getInt("memberId",-1);
 
         return inflater.inflate(R.layout.fragment_publish, container, false);
     }
@@ -579,27 +587,27 @@ public class PublishFragment extends Fragment {
             }
 
             // 性別
-            int gender = 0;
+            Gender gender = Gender.BOTH;
             switch (radioPublishGender.getCheckedRadioButtonId()) {
                 case R.id.radioPublishGender0:
-                    gender = 0;
+                    gender = Gender.BOTH;
                     break;
                 case R.id.radioPublishGender1:
-                    gender = 1;
+                    gender = Gender.MALE;
                     break;
                 case R.id.radioPublishGender2:
-                    gender = 2;
+                    gender = Gender.FEMALE;
                     break;
             }
 
             // 房型
-            int type = 0;
+            HouseType type = HouseType.WITH_BATH;
             switch (radioPublishType.getCheckedRadioButtonId()) {
                 case R.id.radioPublishType0:
-                    type = 0;
+                    type = HouseType.WITH_BATH;
                     break;
                 case R.id.radioPublishType1:
-                    type = 1;
+                    type = HouseType.NO_BATH;
                     break;
             }
 
@@ -632,7 +640,7 @@ public class PublishFragment extends Fragment {
             // 把資料作成Publish物件
             Publish publish = new Publish();
             publish.setPublishId(publishId);
-            publish.setOwnerId(3); // TODO : 後續串接再看怎麼取值
+            publish.setOwnerId(userId);
             publish.setTitle(editPublishTitle.getText().toString().trim());
             publish.setTitleImg("");
             publish.setPublishInfo(editPublishInfo.getText().toString().trim());
@@ -647,8 +655,8 @@ public class PublishFragment extends Fragment {
             publish.setRent(Integer.parseInt(editPublishRent.getText().toString()));
             publish.setDeposit(deposit);
             publish.setSquare(Integer.parseInt(editPublishSquare.getText().toString().trim()));
-            publish.setGender(gender);
-            publish.setType(type);
+            publish.setGender(gender.toInt());
+            publish.setType(type.toInt());
             publish.setFurnished(strFurnished);
 
             // 2. 多張圖片時，如何等待圖片上傳完進行資料庫更新 -> 分段做， 先更新資料，上傳圖片後再更新圖片路徑
