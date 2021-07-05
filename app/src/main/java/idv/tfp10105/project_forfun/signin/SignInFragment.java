@@ -2,18 +2,23 @@ package idv.tfp10105.project_forfun.signin;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -45,7 +50,7 @@ import idv.tfp10105.project_forfun.common.bean.Member;
 public class SignInFragment extends Fragment {
     private Activity activity;
 
-    private TextView tvSendTheVerificationCode,tvResendCode, tvTourist,tvCode;
+    private TextView tvSendTheVerificationCode,tvResendCode, tvTourist,tvCode,tvTest;
     private EditText etPhone,etVerificationCode;
     private ImageView imageView;//快速登入
     private ImageButton btSignIn, btRegistered, btAssist;
@@ -74,8 +79,19 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //TapPay Activity 跳轉過來（TappayActivity 430行），經過此頁跳轉回到首頁
+        String navigate_TAPPAY = sharedPreferences.getString("TappayActivity","");
+        if(navigate_TAPPAY.equals("ToHomeFragment")){
+            //跳轉清除暫存
+            sharedPreferences.edit().remove("TappayActivity");
+            Navigation.findNavController(view).navigate(R.id.homeFragment);
+        }
+
+
         findViews(view);
         handleClick();
+
     }
 
     private void findViews(View view) {
@@ -89,6 +105,7 @@ public class SignInFragment extends Fragment {
         tvResendCode= view.findViewById(R.id.tvResendCode);
         tvCode= view.findViewById(R.id.tvCode); // 驗證碼標題
         imageView= view.findViewById(R.id.imageView); // 快速登入
+        tvTest= view.findViewById(R.id.tvTest); // 快速登入選電話
     }
 
     @Override
@@ -96,34 +113,33 @@ public class SignInFragment extends Fragment {
         super.onStart();
         // 檢查電話號碼是否驗證成功過
         FirebaseUser user = auth.getCurrentUser();
-//        if (user != null)
-        if ( sharedPreferences.getInt("memberId",-1)>0){
-            if(sharedPreferences.getBoolean("firstOpen",true)) {
-                //跳轉至導覽頁後跳轉首頁
-            }
-            if(new Date().getTime()-sharedPreferences.getLong("lastlogin",new Date().getTime())>60*60*1000){
-                Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
-                auth.signOut();
-                JsonObject req=new JsonObject();
-                req.addProperty("action","clearToken");
-                req.addProperty("memberId",sharedPreferences.getInt("memberId",-1));
-                RemoteAccess.getJsonData(url,req.toString());//不接回覆
-                sharedPreferences.edit().clear().apply();
-                sharedPreferences.edit()
-                .putBoolean("firstOpen",false)
-                        .apply();
+        if (user != null) {
+            if (sharedPreferences.getInt("memberId", -1) > 0) {
+                if (sharedPreferences.getBoolean("firstOpen", true)) {
+                    //跳轉至導覽頁後跳轉首頁
+                }
+                if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
+                    Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
+                    auth.signOut();
+                    JsonObject req = new JsonObject();
+                    req.addProperty("action", "clearToken");
+                    req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
+                    RemoteAccess.getJsonData(url, req.toString());//不接回覆
+                    sharedPreferences.edit().clear().apply();
+                    sharedPreferences.edit()
+                            .putBoolean("firstOpen", false)
+                            .apply();
 
-            }
-            else{
-              Navigation.findNavController(btSignIn)
+                } else {
+                    Navigation.findNavController(btSignIn)
                             .navigate(R.id.homeFragment);
                 }
-        }
-        else{
-            if(sharedPreferences.getBoolean("firstOpen",true)) {
-                sharedPreferences.edit().putBoolean("firstOpen",false).apply();
-                Toast.makeText(activity, "進入導覽頁", Toast.LENGTH_SHORT).show();
+            } else {
+                if (sharedPreferences.getBoolean("firstOpen", true)) {
+                    sharedPreferences.edit().putBoolean("firstOpen", false).apply();
+                    Toast.makeText(activity, "進入導覽頁", Toast.LENGTH_SHORT).show();
 
+                }
             }
         }
 
@@ -188,6 +204,44 @@ public class SignInFragment extends Fragment {
             etVerificationCode.setText("123456");
             phoneSure();
             return true;
+        });
+
+        //快速登入2
+        tvTest.setOnClickListener(v->{
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("選擇電話號碼");
+            String[] phones = {"0922877662", "0924545884", "0952894963", "0960917393", "0929458421","0921526256","0930362802","0930553563","0916366024"};
+            builder.setSingleChoiceItems(phones,-1,new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    etPhone.setText(phones[which]);
+                    etVerificationCode.setText("123456");
+                    JsonObject req=new JsonObject();
+                    req.addProperty("action","checkRole");
+                    req.addProperty("phone",phones[which]);
+                    String resp=RemoteAccess.getJsonData(url,req.toString());
+                    if(resp.equals("error")){
+                        Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(Integer.parseInt(resp)==1){
+                        Toast.makeText(activity, "房客", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(Integer.parseInt(resp)==2){
+                        Toast.makeText(activity, "房東", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(activity, "資料庫中沒有此手機號碼", Toast.LENGTH_SHORT).show();
+                    }
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("Cancel", null);
+            Window window = builder.show().getWindow();
+            Button btSure = window.findViewById(android.R.id.button1);
+            Button btCancel = window.findViewById(android.R.id.button2);
+            btSure.setTextColor(getResources().getColor(R.color.black));
+            btCancel.setTextColor(getResources().getColor(R.color.black));
         });
 
         btRegistered.setOnClickListener(v->{
@@ -265,6 +319,10 @@ public class SignInFragment extends Fragment {
             req.addProperty("action","singIn");
             req.addProperty("phone",phone);
             String resp=RemoteAccess.getJsonData(url,req.toString());
+            if(resp.equals("error")){
+                Toast.makeText(activity, "請檢查伺服器狀態", Toast.LENGTH_SHORT).show();
+             return;
+            }
             JsonObject respJson=new Gson().fromJson(resp,JsonObject.class);
             boolean pass=respJson.get("pass").getAsBoolean();
             if(pass) {

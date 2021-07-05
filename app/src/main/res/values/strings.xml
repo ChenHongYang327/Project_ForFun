@@ -36,4 +36,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!--客服頁面-->
+    <string name="textedNameRequired">姓名不可空白</string>
+    <string name="textedMailRequired">信箱不可空白</string>
+    <string name="textedPhoneRequired">手機號碼不可空白</string>
+    <string name="textMessageRequired">留言不可空白</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="textNoNetwork">沒有網路</string>
+
 </resources>
