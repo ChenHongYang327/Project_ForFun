@@ -61,8 +61,7 @@ public class PersonalSnapshotFragment extends Fragment {
         activity=getActivity();
         //傳值
         selectUser=getArguments()!=null?(Member)getArguments().getSerializable("SelectUser"):null;
-        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
-        userId = sharedPreferences.getInt("memberId", -1);
+
     }
 
     @Override
@@ -70,6 +69,17 @@ public class PersonalSnapshotFragment extends Fragment {
                              Bundle savedInstanceState) {
        View view=inflater.inflate(R.layout.fragment_personalsnapshot, container, false);
        findView(view);
+       sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+       userId = sharedPreferences.getInt("memberId", -1);
+      if(selectUser!=null) {
+          if (userId == selectUser.getMemberId()) {
+                btPSMessage.setEnabled(false);
+                //使用mutate()方法使該控件狀態不定，這樣不定狀態的控件就不會共享自己的狀態了
+                btPSMessage.getBackground().mutate().setAlpha(120);
+                btPSReport.setEnabled(false);
+                btPSReport.getBackground().mutate().setAlpha(120);
+          }
+      }
        return view;
     }
 
@@ -128,9 +138,9 @@ public class PersonalSnapshotFragment extends Fragment {
             Member member=new Gson().fromJson(resp,Member.class);
             // 此頁面的用戶
             String name=member.getNameL()+member.getNameF();
-            if(member.getRole()==2){
-                tvRole2.setVisibility(View.VISIBLE);
-            }
+//            if(member.getRole()==2){
+//                tvRole2.setVisibility(View.VISIBLE);
+//            }
             tvPSName.setText("姓名:"+name);
             if(member.getGender()==1){
                 tvPSGender.setText("性別:男");
@@ -144,16 +154,12 @@ public class PersonalSnapshotFragment extends Fragment {
             getImage(ivPSHS,member.getHeadshot());
             //私訊跳轉bundle
             btPSMessage.setOnClickListener(v->{
-                if(userId==selectUser.getMemberId()){
-                    Toast.makeText(activity, "你想私訊自己?", Toast.LENGTH_SHORT).show();
-                }
+
             });
 
             //檢舉跳轉bundle
             btPSReport.setOnClickListener(v->{
-                if(userId==selectUser.getMemberId()){
-                    Toast.makeText(activity, "你要檢舉自己?", Toast.LENGTH_SHORT).show();
-                }
+
 
             });
 

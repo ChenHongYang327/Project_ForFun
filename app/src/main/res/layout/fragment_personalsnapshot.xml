@@ -12,7 +12,7 @@
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         app:civ_shadow="true"
         app:civ_shadow_radius="10dp"
         tools:src="@tools:sample/avatars" />
@@ -30,7 +30,8 @@
             android:background="#1CF8F8"
             android:gravity="center"
             android:text="房客"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvRole2"
@@ -121,6 +122,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        app:tabIndicatorColor="#000000"
         app:tabMaxWidth="0dp"
         app:tabMode="fixed"
         app:tabTextColor="@color/black" />

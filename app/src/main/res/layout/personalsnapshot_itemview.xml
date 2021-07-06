@@ -20,8 +20,8 @@
                 android:id="@+id/ivCommentByPS"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="2dp"
                 app:civ_shadow_radius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -63,16 +63,16 @@
             android:id="@+id/tvCommentPS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/tvCommentTimePS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:text="TextView"
             android:textSize="12sp" />
     </LinearLayout>

@@ -36,7 +36,7 @@ import idv.tfp10105.project_forfun.membercenter.adapter.PersonnalAdapter;
 
 public class MyLandlordFragment extends Fragment {
     private Activity activity;
-    private int memberId;
+    private final int memberId;
     private TextView tvMylandScore,tvMylandNote;
     private RecyclerView rvMyland;
     private RatingBar rbMyland;

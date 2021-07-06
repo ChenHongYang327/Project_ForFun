@@ -95,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 //隱藏actionbar的頁面
                 if (navController.getCurrentDestination().getId() == R.id.signinInFragment ||
                         navController.getCurrentDestination().getId() == R.id.registIntroductionFragment ||
-                        navController.getCurrentDestination().getId() == R.id.registerFragment
+                        navController.getCurrentDestination().getId() == R.id.registerFragment||
+                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment
                 ) {
                     getSupportActionBar().hide();
 

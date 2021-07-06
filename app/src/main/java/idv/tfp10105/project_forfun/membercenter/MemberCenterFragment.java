@@ -98,7 +98,8 @@ public class MemberCenterFragment extends Fragment {
 
 
         tvFunctionTour.setOnClickListener(v->{
-
+            Navigation.findNavController(v)
+                    .navigate(R.id.signin_Guided_Tour_Fragment);
 
         });
 

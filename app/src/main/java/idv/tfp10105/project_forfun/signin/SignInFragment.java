@@ -5,16 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -24,6 +16,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
@@ -85,10 +83,8 @@ public class SignInFragment extends Fragment {
         if(navigate_TAPPAY.equals("ToHomeFragment")){
             //跳轉清除暫存
             sharedPreferences.edit().remove("TappayActivity");
-            Navigation.findNavController(view).navigate(R.id.homeFragment);
+//            Navigation.findNavController(view).navigate(R.id.homeFragment);
         }
-
-
         findViews(view);
         handleClick();
 
@@ -98,6 +94,8 @@ public class SignInFragment extends Fragment {
         etPhone = view.findViewById(R.id.ed_phone); // 手機號碼輸入欄位
         etVerificationCode = view.findViewById(R.id.ed_Verification_code); // 驗證碼輸入欄位
         btSignIn = view.findViewById(R.id.signin_bt_Sign_in); // 按鈕 會員登入
+        btSignIn.getBackground().mutate().setAlpha(125);
+        btSignIn.setEnabled(false);
         btRegistered = view.findViewById(R.id.signin_bt_registered); // 按鈕 註冊
         btAssist = view.findViewById(R.id.signin_assist); // 按鈕 協助（右上角的問號）
         tvSendTheVerificationCode = view.findViewById(R.id.signin_tv_Send_the_verification_code); // 弱按鈕 發送驗證碼
@@ -111,13 +109,16 @@ public class SignInFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        if (sharedPreferences.getBoolean("firstOpen", true)) {
+            Navigation.findNavController(btSignIn)
+                    .navigate(R.id.signin_Guided_Tour_Fragment);
+            sharedPreferences.edit().putBoolean("firstOpen", false).apply();
+            return;
+        }
         // 檢查電話號碼是否驗證成功過
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             if (sharedPreferences.getInt("memberId", -1) > 0) {
-                if (sharedPreferences.getBoolean("firstOpen", true)) {
-                    //跳轉至導覽頁後跳轉首頁
-                }
                 if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
                     Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
                     auth.signOut();
@@ -132,13 +133,14 @@ public class SignInFragment extends Fragment {
 
                 } else {
                     Navigation.findNavController(btSignIn)
-                            .navigate(R.id.homeFragment);
+                        .navigate(R.id.homeFragment);
+
                 }
             } else {
                 if (sharedPreferences.getBoolean("firstOpen", true)) {
                     sharedPreferences.edit().putBoolean("firstOpen", false).apply();
-                    Toast.makeText(activity, "進入導覽頁", Toast.LENGTH_SHORT).show();
-
+                    Navigation.findNavController(btSignIn)
+                            .navigate(R.id.signin_Guided_Tour_Fragment);
                 }
             }
         }
@@ -160,7 +162,8 @@ public class SignInFragment extends Fragment {
             tvCode.setVisibility(View.VISIBLE);
             etVerificationCode.setVisibility(View.VISIBLE);
             tvResendCode.setVisibility(View.VISIBLE);
-            btSignIn.setVisibility(View.VISIBLE);
+            btSignIn.getBackground().mutate().setAlpha(255);
+            btSignIn.setEnabled(true);
             requestVerificationCode("+886" + phone);
         });
         //重新發送
@@ -242,6 +245,11 @@ public class SignInFragment extends Fragment {
             Button btCancel = window.findViewById(android.R.id.button2);
             btSure.setTextColor(getResources().getColor(R.color.black));
             btCancel.setTextColor(getResources().getColor(R.color.black));
+        });
+
+        btAssist.setOnClickListener(v->{
+//            Navigation.findNavController(v)
+//                    .navigate();
         });
 
         btRegistered.setOnClickListener(v->{
@@ -360,9 +368,7 @@ public class SignInFragment extends Fragment {
                         .putString("idImgf", member.getIdImgf())
                         .putString("idImgd",member.getIdImgf())
                         .putString("citizen",citizen)
-                        .putBoolean("firstOpen",false)//第一次開啟
                         .putLong("lastlogin",new Date().getTime())//登入時間
-
                         .apply();
                 Navigation.findNavController(btSignIn)
                         .navigate(R.id.homeFragment);
