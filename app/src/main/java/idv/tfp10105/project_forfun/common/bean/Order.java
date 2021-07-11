@@ -1,6 +1,10 @@
 package idv.tfp10105.project_forfun.common.bean;
 
+import android.os.Build;
+
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Order {
 
@@ -115,4 +119,20 @@ public class Order {
         this.deleteTime = deleteTime;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return orderId.intValue() == order.getOrderId().intValue();
+    }
+
+    @Override
+    public int hashCode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return Objects.hash(orderId);
+        } else {
+            return Arrays.hashCode(new Integer[]{orderId});
+        }
+    }
 }
