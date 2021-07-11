@@ -259,7 +259,7 @@ public class discussionDetailFragment extends Fragment {
         private final LayoutInflater layoutInflater;
         private List<Comment> comments;
 
-        private CommentAdapter(Context context, List<Comment> comments) {
+        public CommentAdapter(Context context, List<Comment> comments) {
             layoutInflater = LayoutInflater.from(context);
             this.comments = comments;
         }

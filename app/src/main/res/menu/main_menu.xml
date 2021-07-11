@@ -17,6 +17,7 @@
         android:orderInCategory="3"
         android:title="@string/publish" />
     <item
+        android:id="@+id/chatRoomFragment"
         android:icon="@drawable/ic_message_black_48dp"
         android:orderInCategory="4"
         android:title="@string/message" />

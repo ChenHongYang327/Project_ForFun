@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_discussionBoardFragment_to_discussionUpdateFragment"
             app:destination="@id/discussionUpdateFragment" />
+        <action
+            android:id="@+id/action_discussionBoardFragment_to_reportFragment"
+            app:destination="@id/reportFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderconfirm_houseSnapshot"
@@ -180,6 +183,25 @@
         android:name="idv.tfp10105.project_forfun.signin.Guided_Tour.Signin_Guided_Tour_Fragment"
         android:label="fragment_signin_guided_tour"
         tools:layout="@layout/fragment_signin_guided_tour" />
+    <fragment
+        android:id="@+id/chatRoomFragment"
+        android:name="idv.tfp10105.project_forfun.chatroom.chatRoomFragment"
+        android:label="fragment_chat_room_message"
+        tools:layout="@layout/fragment_chat_room_message" >
+        <action
+            android:id="@+id/action_chatRoomFragment_to_chatMessageFragment"
+            app:destination="@id/chatMessageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="idv.tfp10105.project_forfun.signin.Report_page.ReportFragment"
+        android:label="fragment_report"
+        tools:layout="@layout/fragment_report" />
+    <fragment
+        android:id="@+id/chatMessageFragment"
+        android:name="idv.tfp10105.project_forfun.chatroom.chatMessageFragment"
+        android:label="chatMessageFragment" />
+
 </navigation>
 
 

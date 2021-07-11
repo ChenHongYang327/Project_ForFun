@@ -152,7 +152,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     }
 
 
-
+    // 抓資料
     private List<Post> getPosts() {
         List<Post> posts = new ArrayList<>();
         if (RemoteAccess.networkCheck(activity)) {
@@ -327,8 +327,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
                         }
                         //檢舉
                     } else if (itemId == R.id.report) {
-                        //TODO
-//                            Navigation.findNavController(v).navigate("路徑");
+                            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
                     } else {
                         Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                     }

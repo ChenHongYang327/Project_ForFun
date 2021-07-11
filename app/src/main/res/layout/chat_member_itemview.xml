@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/other_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="right"
+            android:paddingBottom="10dp">
+
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/chatRoomMemberImg"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                tools:src="@tools:sample/avatars" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chatmassage_other"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chatRoom_message_context"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="memberName"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/chatRoom_message_CreatTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                tools:text="18:00" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/self_message"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="right"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/chatmassage_self"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chatRoom_message_context_self"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:hint="memberName"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/chatRoom_message_CreatTime_self"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="14sp"
+                tools:text="18:00" />
+
+            <TextView
+                android:id="@+id/chatRoom_message_ReadStatus_self"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:textSize="14sp"
+                tools:text="未讀" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
+
