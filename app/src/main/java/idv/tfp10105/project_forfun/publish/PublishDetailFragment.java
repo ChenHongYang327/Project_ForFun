@@ -1,15 +1,26 @@
 package idv.tfp10105.project_forfun.publish;
 
+import android.Manifest;
 import android.app.ActivityManager;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Geocoder;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,15 +28,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.mikhaellopez.circularimageview.CircularImageView;
 import com.youth.banner.Banner;
 import com.youth.banner.adapter.BannerAdapter;
 import com.youth.banner.adapter.BannerImageAdapter;
@@ -33,9 +64,11 @@ import com.youth.banner.holder.BannerImageHolder;
 import com.youth.banner.indicator.CircleIndicator;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
@@ -46,31 +79,47 @@ import idv.tfp10105.project_forfun.common.HouseType;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Area;
 import idv.tfp10105.project_forfun.common.bean.City;
+import idv.tfp10105.project_forfun.common.bean.Member;
+import idv.tfp10105.project_forfun.common.bean.Order;
 import idv.tfp10105.project_forfun.common.bean.Publish;
+import idv.tfp10105.project_forfun.common.bean.PublishHome;
 
 public class PublishDetailFragment extends Fragment {
     private MainActivity activity;
     private Gson gson;
     private Geocoder geocoder;
     private FirebaseStorage storage;
+    private RatingAdapter ratingAdapter;
 
     // UI
     // 刊登相關
     private Banner<Bitmap, BannerImageAdapter<Bitmap>> banner;
     private TextView publishDetailTitle, publishDetailRent, publishDetailArea, publishDetailSquare, publishDetailGender, publishDetailType, publishDetailDeposit, publishDetailInfo;
     private TextView publishDetailFurnished0, publishDetailFurnished1, publishDetailFurnished2, publishDetailFurnished3, publishDetailFurnished4, publishDetailFurnished5, publishDetailFurnished6, publishDetailFurnished7, publishDetailFurnished8;
-    private Button publishDetailBtnCall, publishDetailBtnAppoint;
+    private Button publishDetailBtnAppoint;
     private MapView publishDetailMap;
 
     // 房東相關
+    private CircularImageView publishDetailHead;
+    private TextView publishDetailOwnerName;
+    private Button publishDetailBtnCall;
 
     // 評價相關
+    private TextView publishDetailRating;
+    private RatingBar publishDetailRatingBar;
+    private RecyclerView publishDetailRatingView;
 
     private Publish publish;
     private List<Bitmap> publishImg;
     private List<City> cityList;
     private List<Area> areaList;
     private TextView[] furnishedArray;
+    private Member owner;
+    private List<Order> orderList;
+
+    // 地圖相關
+    private GoogleMap googleMap;
+    private LatLng userLatLng;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +132,18 @@ public class PublishDetailFragment extends Fragment {
         gson = new Gson();
         geocoder = new Geocoder(activity);
         storage = FirebaseStorage.getInstance();
+
+        ratingAdapter = new RatingAdapter(new DiffUtil.ItemCallback<Order>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Order oldItem, @NonNull Order newItem) {
+                return oldItem.getOrderId().intValue() == newItem.getOrderId().intValue();
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull Order oldItem, @NonNull Order newItem) {
+                return oldItem.equals(newItem);
+            }
+        });
 
         publishImg = new ArrayList<>();
         cityList = CityAreaUtil.getInstance().getCityList();
@@ -100,6 +161,9 @@ public class PublishDetailFragment extends Fragment {
 //        Log.d("home", "publishId = " + publishId);
         publish = getPublishDataById(publishId);
 //        Log.d("home", "publish = " + gson.toJson(publish));
+        owner = getMemberByOwnerId(publish.getOwnerId());
+//        Log.d("home", "owner = " + gson.toJson(owner));
+        orderList = getOrdersByPublishId(publishId);
 
         banner = view.findViewById(R.id.bannerPublishDetail);
 
@@ -122,17 +186,55 @@ public class PublishDetailFragment extends Fragment {
         furnishedArray[7] = publishDetailFurnished7 = view.findViewById(R.id.publishDetailFurnished7);
         furnishedArray[8] = publishDetailFurnished8 = view.findViewById(R.id.publishDetailFurnished8);
 
-        publishDetailBtnCall = view.findViewById(R.id.publishDetailBtnCall);
         publishDetailBtnAppoint = view.findViewById(R.id.publishDetailBtnAppoint);
-
 
         publishDetailMap = view.findViewById(R.id.publishDetailMap);
 
+        // 房東相關
+        publishDetailHead = view.findViewById(R.id.publishDetailHead);
+        publishDetailOwnerName = view.findViewById(R.id.publishDetailOwnerName);
+        publishDetailBtnCall = view.findViewById(R.id.publishDetailBtnCall);
+
+        // 評價相關
+        publishDetailRating = view.findViewById(R.id.publishDetailRating);
+        publishDetailRatingBar = view.findViewById(R.id.publishDetailRatingBar);
+        publishDetailRatingView = view.findViewById(R.id.publishDetailRatingView);
+
+        // 檢查手機設定中定位功能是否開啟
+        checkPositioning();
+
+        // 初始化地圖
+        publishDetailMap.onCreate(savedInstanceState);
+        publishDetailMap.onStart();
+        publishDetailMap.getMapAsync(googleMap -> {
+            this.googleMap = googleMap;
+            // 取消所有手勢，讓地圖不能移動
+            this.googleMap.getUiSettings().setAllGesturesEnabled(false);
+
+            // 點擊地圖或marker就開啟導航
+            this.googleMap.setOnMapClickListener(latLng -> goNavigation());
+            this.googleMap.setOnMarkerClickListener(marker -> {
+                goNavigation();
+                return true;
+            });
+
+            LatLng latLng = new LatLng(publish.getLatitude(), publish.getLongitude());
+            addMarker(latLng);
+            moveCamera(latLng);
+        });
+
+        // 抓取使用者位置，之後導航會用到
+        getUserLocation();
+
+        // 設定刊登資訊
         setPublishData(publish);
+        // 設定房東資訊
+        setOwnerData(owner);
+        // 設定評價資訊
+        setRatingData(orderList);
+
         handleButton();
     }
-
-
 
     private Publish getPublishDataById(int publishId) {
         Publish publish = null;
@@ -153,11 +255,51 @@ public class PublishDetailFragment extends Fragment {
         return publish;
     }
 
+    private Member getMemberByOwnerId (int ownerId) {
+        Member member = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/memberCenterPersonalInformation";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMember");
+            request.addProperty("member_id", ownerId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+
+            member = gson.fromJson(jsonResule, Member.class);
+        }
+
+        return  member;
+    }
+
+    private List<Order> getOrdersByPublishId(int publishId) {
+        List<Order> orderList = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/getPublishData";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getOrderList");
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            String orderJson = response.get("orderList").getAsString();
+
+            Type listOrder = new TypeToken<List<Order>>() {}.getType();
+            orderList = gson.fromJson(orderJson, listOrder);
+
+//            Log.d("publish", jsonResule);
+        }
+
+        return orderList;
+    }
+
     private void setPublishData(Publish publish) {
         // 圖片輪播
-        getImage(publish.getPublishImg1());
-        getImage(publish.getPublishImg2());
-        getImage(publish.getPublishImg3());
+        getBannerImage(publish.getPublishImg1());
+        getBannerImage(publish.getPublishImg2());
+        getBannerImage(publish.getPublishImg3());
 
         // 基本資料
         publishDetailTitle.setText(publish.getTitle());
@@ -168,14 +310,14 @@ public class PublishDetailFragment extends Fragment {
 
         String cityName = "";
         for (City city : cityList) {
-            if (city.getCityId() == publish.getCityId()) {
+            if (city.getCityId().equals(publish.getCityId())) {
                 cityName = city.getCityName();
                 break;
             }
         }
         String areaName = "";
         for (Area area : areaList) {
-            if (area.getAreaId() == publish.getAreaId()) {
+            if (area.getAreaId().equals(publish.getAreaId())) {
                 areaName = area.getAreaName();
                 break;
             }
@@ -213,21 +355,81 @@ public class PublishDetailFragment extends Fragment {
         }
     }
 
+    private void setOwnerData(Member owner) {
+        String gender = "";
+        switch (Gender.toEnum(owner.getGender())){
+            case MALE:
+                gender = "先生";
+                break;
+            case FEMALE:
+                gender = "小姐";
+                break;
+        }
+        publishDetailOwnerName.setText(owner.getNameL() + gender);
+        publishDetailBtnCall.setText("0" + owner.getPhone());
+
+        // 房東頭像
+        getImage(publishDetailHead, owner.getHeadshot());
+    }
+
+    private void setRatingData(List<Order> orderList) {
+
+        if (orderList.size() == 0) {
+            // 沒資料，不顯示
+            publishDetailRating.setVisibility(View.GONE);
+            publishDetailRatingBar.setVisibility(View.GONE);
+            publishDetailRatingView.setVisibility(View.GONE);
+            return;
+        }
+        publishDetailRating.setVisibility(View.VISIBLE);
+        publishDetailRatingBar.setVisibility(View.VISIBLE);
+        publishDetailRatingView.setVisibility(View.VISIBLE);
+
+        // 計算平均分數
+        int sum = 0;
+        for (Order order : orderList) {
+            sum += order.getPublishStar();
+        }
+        int rating = sum / orderList.size();
+        
+        publishDetailRating.setText(String.format(Locale.TAIWAN, "平均分：%d", rating));
+        publishDetailRatingBar.setRating(rating);
+
+        // 處理評價清單
+        publishDetailRatingView.setLayoutManager(new LinearLayoutManager(activity));
+        publishDetailRatingView.setAdapter(ratingAdapter);
+
+        ratingAdapter.submitList(new ArrayList<>(orderList));
+    }
+
     private void handleButton() {
-        publishDetailBtnAppoint.setOnClickListener(new View.OnClickListener() {
+        publishDetailBtnCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 把ID帶到預約頁面
-                Bundle bundle = new Bundle();
-                bundle.putInt("publishId", publish.getPublishId());
+                String phone = publishDetailBtnCall.getText().toString();
+                if (phone.isEmpty()) {
+                    Toast.makeText(activity, "無電話資訊", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                Navigation.findNavController(v).navigate(R.id.action_publishDetailFragment_to_appointmentFragment, bundle);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + phone));
+                if (isIntentAvailable(intent)) {
+                    startActivity(intent);
+                }
             }
+        });
+
+        publishDetailBtnAppoint.setOnClickListener(v -> {
+            // 把ID帶到預約頁面
+            Bundle bundle = new Bundle();
+            bundle.putInt("publishId", publish.getPublishId());
+
+            Navigation.findNavController(v).navigate(R.id.action_publishDetailFragment_to_appointmentFragment, bundle);
         });
     }
 
     //下載Firebase storage的照片
-    public void getImage(final String path) {
+    public void getBannerImage(final String path) {
         final int ONE_MEGABYTE = 1024 * 1024 * 6; //設定上限
         StorageReference imageRef = storage.getReference().child(path);
         imageRef.getBytes(ONE_MEGABYTE)
@@ -257,5 +459,190 @@ public class PublishDetailFragment extends Fragment {
                     }
                 });
 
+    }
+
+    //下載Firebase storage的照片
+    public void getImage(final ImageView imageView, final String path) {
+        FirebaseStorage storage;
+        storage = FirebaseStorage.getInstance();
+        final int ONE_MEGABYTE = 1024 * 1024 * 6; //設定上限
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
+                        Toast.makeText(activity, "圖片取得錯誤", Toast.LENGTH_SHORT).show();
+                        Log.d("顯示Firebase取得圖片的錯誤", errorMessage);
+
+                    }
+                });
+
+    }
+
+    // 檢查手機設定中定位功能是否開啟
+    private void checkPositioning() {
+        // 建立定位請求物件
+        LocationRequest locationRequest = LocationRequest.create();
+
+        // 建立定位設定物件
+        LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+                .build();
+
+        // 抓取手機的設定
+        SettingsClient settingsClient = LocationServices.getSettingsClient(activity);
+
+        // 檢查是否開啟定位設定
+        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(locationSettingsRequest);
+
+        // 加入失敗監聽器，當定位功能沒開啟時，讓其跳至設定畫面
+        task.addOnFailureListener(e -> {
+            if (e instanceof ResolvableApiException) {
+                try {
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(activity, 0);
+                } catch (IntentSender.SendIntentException sendIntentException) {
+                    sendIntentException.printStackTrace();
+                }
+            }
+        });
+    }
+
+    // 加入地圖標記
+    private void addMarker(LatLng latLng) {
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(latLng)
+                .title("marker")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker));
+
+        googleMap.addMarker(markerOptions);
+    }
+
+    // 移動攝影機
+    private void moveCamera(LatLng latLng) {
+        double lat = latLng.latitude;
+        double lnt = latLng.longitude;
+
+        // 建立CameraPosition和CameraUpdate
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(lat, lnt))
+                .zoom(17.5f)
+                .build();
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+
+        googleMap.moveCamera(cameraUpdate);
+    }
+
+    private void getUserLocation() {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        // 取得現在位置
+        FusedLocationProviderClient fusedLocationProviderClient =
+                LocationServices.getFusedLocationProviderClient(activity);
+
+        // 取得最新位置
+        Task<Location> task = fusedLocationProviderClient.getCurrentLocation(
+                LocationRequest.PRIORITY_HIGH_ACCURACY,
+                new CancellationTokenSource().getToken());
+
+        task.addOnSuccessListener(location -> {
+            if (location != null) {
+                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        });
+    }
+
+    // 檢查是否有內建的App
+    private boolean isIntentAvailable (Intent intent) {
+        PackageManager packageManager = activity.getPackageManager();
+        return intent.resolveActivity(packageManager) != null;
+    }
+
+    // 使用google map APP 進行導航
+    private void goNavigation() {
+        // intent，打開google map app
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setPackage("com.google.android.apps.maps");
+
+        String uriString = String.format(Locale.TAIWAN,
+                "https://www.google.com/maps/dir/?api=1&origin=%f,%f&destination=%f,%f",
+                userLatLng.latitude, userLatLng.longitude,
+                publish.getLatitude(), publish.getLongitude());
+        Uri uri = Uri.parse(uriString);
+        intent.setData(uri);
+        if (isIntentAvailable(intent)) {
+            startActivity(intent);
+        }
+    }
+
+    // 評價list
+    private class RatingAdapter extends ListAdapter<Order, RatingAdapter.RatingViewHolder> {
+
+        protected RatingAdapter(@NonNull DiffUtil.ItemCallback<Order> diffCallback) {
+            super(diffCallback);
+        }
+
+        @NonNull
+        @Override
+        public RatingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.publish_detail_rating_itemview,parent,false);
+
+            return new RatingViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RatingViewHolder holder, int position) {
+            holder.onBind(getItem(position));
+        }
+
+        private class RatingViewHolder extends RecyclerView.ViewHolder {
+            ImageView ivPdCommentByPS;
+            TextView tvPdCommentByPS;
+            TextView tvPdCommentPS;
+            TextView tvPdCommentTimePS;
+            RatingBar ratingPdPS;
+
+            public RatingViewHolder(@NonNull View itemView) {
+                super(itemView);
+                ivPdCommentByPS = itemView.findViewById(R.id.ivPdCommentByPS);
+                tvPdCommentByPS = itemView.findViewById(R.id.tvPdCommentByPS);
+
+                tvPdCommentPS = itemView.findViewById(R.id.tvPdCommentPS);
+                ratingPdPS = itemView.findViewById(R.id.ratingPdPS);
+                tvPdCommentTimePS = itemView.findViewById(R.id.tvPdCommentTimePS);
+            }
+
+            public void onBind(Order order) {
+                // 取得使用者資料
+                Member member = getMemberByOwnerId(order.getTenantId());
+                getImage(ivPdCommentByPS, member.getHeadshot());
+
+                String gender = "";
+                switch (Gender.toEnum(member.getGender())){
+                    case MALE:
+                        gender = "先生";
+                        break;
+                    case FEMALE:
+                        gender = "小姐";
+                        break;
+                }
+                tvPdCommentByPS.setText(member.getNameL() + gender);
+
+                // 評論內容
+                tvPdCommentPS.setText(order.getPublishComment());
+                ratingPdPS.setRating(order.getPublishStar());
+
+                // 評論時間
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss",Locale.TAIWAN);
+                tvPdCommentTimePS.setText(sdf.format(order.getCreateTime()));
+            }
+        }
     }
 }

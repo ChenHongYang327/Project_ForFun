@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Locale;
 
 import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
@@ -150,7 +151,7 @@ public class AppointmentFragment extends Fragment {
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     activity,
                     (view1, year, month, dayOfMonth) -> {
-                        editAppointmentDate.setText(String.format("%d-%02d-%02d", year, (month + 1), dayOfMonth));
+                        editAppointmentDate.setText(String.format(Locale.TAIWAN, "%d-%02d-%02d", year, (month + 1), dayOfMonth));
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
@@ -180,7 +181,7 @@ public class AppointmentFragment extends Fragment {
             TimePickerDialog timePickerDialog = new TimePickerDialog(
                     activity,
                     (view12, hourOfDay, minute) -> {
-                        editAppointmentTime.setText(String.format("%02d:%02d:00", hourOfDay, minute));
+                        editAppointmentTime.setText(String.format(Locale.TAIWAN, "%02d:%02d:00", hourOfDay, minute));
                     },
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),

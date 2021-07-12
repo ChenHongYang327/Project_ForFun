@@ -398,8 +398,8 @@ public class HomeFragment extends Fragment {
 
             JsonObject response = gson.fromJson(jsonIn, JsonObject.class);
             String publishJson = response.get("publishList").getAsString();
-            Type listCity = new TypeToken<List<Publish>>() {}.getType();
-            publishList = gson.fromJson(publishJson, listCity);
+            Type listPublish = new TypeToken<List<Publish>>() {}.getType();
+            publishList = gson.fromJson(publishJson, listPublish);
 
 //            Log.d("publish", publishJson);
         }

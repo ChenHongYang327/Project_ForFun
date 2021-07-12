@@ -117,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
                         navController.getCurrentDestination().getId() == R.id.orderconfirm_mainfragment||
                         navController.getCurrentDestination().getId() == R.id.myEvaluationnFragment||
                         navController.getCurrentDestination().getId() == R.id.ocrHO_Publishing||
+                        navController.getCurrentDestination().getId() == R.id.publishDetailFragment ||
+                        navController.getCurrentDestination().getId() == R.id.appointmentFragment ||
                         navController.getCurrentDestination().getId() == R.id.personalSnapshotFragment)
                 {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
