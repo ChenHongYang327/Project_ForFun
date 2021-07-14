@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 
 import androidx.annotation.NonNull;
@@ -51,7 +51,7 @@ public class Customer_Service_Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_customer__service_, container, false);
+        View view = inflater.inflate(R.layout.fragment_customer_service, container, false);
         return view;
     }
 

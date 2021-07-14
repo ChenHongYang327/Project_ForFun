@@ -23,14 +23,21 @@ public class Publish {
     private Integer gender;
     private Integer type;
     private String furnished;
-    private Timestamp createTime;
-    private Timestamp updateTime;
+    private Integer status;
+    private Timestamp createTime; 
+	private Timestamp updateTime;
     private Timestamp deleteTime;
+
+	
+	public Publish() {
+
+	}
 
 	public Publish(Integer publishId, Integer ownerId, String title, String titleImg, String publishInfo,
 			String publishImg1, String publishImg2, String publishImg3, Integer cityId, Integer areaId, String address,
 			Double latitude, Double longitude, Integer rent, Integer deposit, Integer square, Integer gender,
-			Integer type, String furnished, Timestamp createTime, Timestamp updateTime, Timestamp deleteTime) {
+			Integer type, String furnished, Integer status, Timestamp createTime, Timestamp updateTime,
+			Timestamp deleteTime) {
 		super();
 		this.publishId = publishId;
 		this.ownerId = ownerId;
@@ -51,14 +58,12 @@ public class Publish {
 		this.gender = gender;
 		this.type = type;
 		this.furnished = furnished;
+		this.status = status;
 		this.createTime = createTime;
 		this.updateTime = updateTime;
 		this.deleteTime = deleteTime;
 	}
 
-	public Publish() {
-
-	}
 
 	public Integer getPublishId() {
 		return publishId;
@@ -211,6 +216,15 @@ public class Publish {
 	public void setFurnished(String furnished) {
 		this.furnished = furnished;
 	}
+	
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
 
 	public Timestamp getCreateTime() {
 		return createTime;

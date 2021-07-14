@@ -7,4 +7,10 @@
     <item
         android:id="@+id/publishDelete"
         android:title="刪除" />
+    <item
+        android:id="@+id/publishOpen"
+        android:title="開啟刊登單" />
+    <item
+        android:id="@+id/publishClose"
+        android:title="關閉刊登單" />
 </menu>

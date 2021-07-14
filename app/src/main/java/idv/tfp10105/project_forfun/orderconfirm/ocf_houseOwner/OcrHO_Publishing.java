@@ -2,14 +2,17 @@ package idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
@@ -46,7 +50,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class OcrHO_Publishing extends Fragment {
     private Activity activity;
-    private final String url = Common.URL + "publishManage";
+    private final String url = Common.URL + "publishListController";
     private SharedPreferences sharedPreferences;
     private RecyclerView rvPublishList;
     private TextView tvPublishlNote;
@@ -95,6 +99,7 @@ public class OcrHO_Publishing extends Fragment {
         rvPublishList.setAdapter(new PublishlistAdapter(activity, publishes, cityNames, phone));
 
     }
+
     //----------------------------
     // Adapter
     public class PublishlistAdapter extends RecyclerView.Adapter<PublishlistAdapter.PublishlistHolder> {
@@ -123,6 +128,7 @@ public class OcrHO_Publishing extends Fragment {
             return publishes == null ? 0 : publishes.size();
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void onBindViewHolder(@NonNull PublishlistHolder holder, int position) {
             Publish publish = publishes.get(position);
@@ -132,79 +138,160 @@ public class OcrHO_Publishing extends Fragment {
             holder.tvPLArea.setText("地區:" + city);
             holder.tvPLPing.setText("坪數:" + publish.getSquare() + "坪");
             holder.tvPLMoney.setText("$" + publish.getRent() + "/月");
-            if (publish.getDeleteTime() != null) {
-                holder.tvPLStatus.setText("刊登單已刪除");//合約狀態？
-                holder.cvPublishlist.setEnabled(false);
-                holder.ivPublishMore.setEnabled(false);
-                holder.cvPublishlist.setForeground(getResources().getDrawable(R.drawable.publishlist_shade));
+            PopupMenu popupMenu = new PopupMenu(activity, holder.ivPublishMore, Gravity.END);
+            popupMenu.inflate(R.menu.publishlist_menu);
+            if (publish.getStatus() == 2) {
+                popupMenu.getMenu().getItem(3).setVisible(false);//close
+                popupMenu.getMenu().getItem(2).setVisible(true);//open
+                popupMenu.getMenu().getItem(1).setVisible(true);//delete
+                popupMenu.getMenu().getItem(0).setVisible(true);//edit
+                holder.tvPLStatus.setText("下架中");
+                holder.tvPLStatus.setTextColor(getResources().getColor(R.color.black));
+                holder.llPublishList.setAlpha((float) 0.5);
+            } else if (publish.getStatus() == 3) {
+                popupMenu.getMenu().getItem(3).setVisible(true);//close
+                popupMenu.getMenu().getItem(2).setVisible(false);//open
+                popupMenu.getMenu().getItem(1).setVisible(true);//delete
+                popupMenu.getMenu().getItem(0).setVisible(true);//edit
+                holder.tvPLStatus.setText("刊登中");
+                holder.tvPLStatus.setTextColor(getResources().getColor(R.color.red));
+                holder.llPublishList.setAlpha(1);
+            } else if (publish.getStatus() == 1) {
+                popupMenu.getMenu().getItem(3).setVisible(false);//close
+                popupMenu.getMenu().getItem(2).setVisible(true);//open
+                popupMenu.getMenu().getItem(1).setVisible(false);//delete
+                popupMenu.getMenu().getItem(0).setVisible(false);//edit
+                holder.tvPLStatus.setText("出租中");
+                holder.tvPLStatus.setTextColor(getResources().getColor(R.color.red));
+                holder.llPublishList.setAlpha((float) 0.5);
 
+            } else if (publish.getStatus() == 0) {
+                popupMenu.getMenu().getItem(3).setVisible(true);//close
+                popupMenu.getMenu().getItem(2).setVisible(false);//open
+                popupMenu.getMenu().getItem(1).setVisible(true);//delete
+                popupMenu.getMenu().getItem(0).setVisible(false);//edit
+                holder.tvPLStatus.setText("停權");
+                holder.tvPLStatus.setTextColor(getResources().getColor(R.color.black));
+                holder.llPublishList.setAlpha((float) 0.5);
             }
-            else {
-                holder.tvPLStatus.setText("");//合約狀態？
-                holder.cvPublishlist.setEnabled(true);
-                holder.ivPublishMore.setEnabled(true);
-                holder.cvPublishlist.setForeground(null);
-            }
-                //跳轉詳細資訊
-                holder.itemView.setOnClickListener(v -> {
+
+            //跳轉詳細資訊
+            holder.itemView.setOnClickListener(v -> {
 //                Navigation.findNavController(v).navigate();
-                });
-                //更多選單
-                holder.ivPublishMore.setOnClickListener(v -> {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                        PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
-                        popupMenu.inflate(R.menu.publishlist_menu);
-                        popupMenu.setOnMenuItemClickListener(item -> {
-                            int publishId = publish.getPublishId();
-                            if (item.getItemId() == R.id.publishEdit) {
-                                //編輯頁面
+            });
+            //更多選單
+            holder.ivPublishMore.setOnClickListener(v -> {
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    //點擊的publishId
+                    int publishId = publish.getPublishId();
+                    if (item.getItemId() == R.id.publishEdit) {
+                        //編輯頁面
 
-                            } else if (item.getItemId() == R.id.publishDelete) {
-                                AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
-                                final EditText etinput = new EditText(activity);
-                                etinput.setInputType(InputType.TYPE_CLASS_NUMBER);
-                                deleteDialog.setView(etinput);
-                                deleteDialog.setTitle("刪除");  //設置標題
-                                deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
-                                deleteDialog.setMessage("請輸入您的手機號碼"); //提示訊息
-                                deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
-                                    if (etinput.getText().toString().trim().equals("0" + String.valueOf(phone))) {
-                                        JsonObject req = new JsonObject();
-                                        req.addProperty("action", "pubishDelete");
-                                        req.addProperty("publishId", publishId);
-                                        if (RemoteAccess.networkCheck(activity)) {
-                                            JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
-                                            if (resp.get("result").getAsBoolean()) {
-                                                Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing, true);
-                                                Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
-//                                            publishes.remove(position);
-//                                            cityNames.remove(position);
-//                                            notifyDataSetChanged();
-                                                Toast.makeText(context, "刪除成功", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(context, "刪除失敗", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } else {
-                                            Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
-                                        }
+                    } else if (item.getItemId() == R.id.publishDelete) {
+                        AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
+                        final EditText etinput = new EditText(activity);
+                        etinput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        deleteDialog.setView(etinput);
+                        deleteDialog.setTitle("刪除");  //設置標題
+                        deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
+                        deleteDialog.setMessage("請輸入您的手機號碼"); //提示訊息
+                        deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
+                            if (etinput.getText().toString().trim().equals("0" + String.valueOf(phone))) {
+                                JsonObject req = new JsonObject();
+                                req.addProperty("action", "pubishDelete");
+                                req.addProperty("publishId", publishId);
+                                if (RemoteAccess.networkCheck(activity)) {
+                                    JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
+                                    if (resp.get("result").getAsBoolean()) {
+                                        Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing, true);
+                                        Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
+                                        publishes.remove(position);
+                                        cityNames.remove(position);
+                                        notifyDataSetChanged();
+                                        Toast.makeText(context, "刪除成功", Toast.LENGTH_SHORT).show();
+
                                     } else {
-                                        Toast.makeText(context, "輸入錯誤", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                else {
+                                    Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(context, "輸入錯誤", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        deleteDialog.setNegativeButton(R.string.cancel, null);
+                        Window window = deleteDialog.show().getWindow();
+                        Button btSure = window.findViewById(android.R.id.button1);
+                        Button btCancel = window.findViewById(android.R.id.button2);
+                        btSure.setTextColor(getResources().getColor(R.color.black));
+                        btCancel.setTextColor(getResources().getColor(R.color.black));
+                    } else if (item.getItemId() == R.id.publishOpen) {
+                        if (RemoteAccess.networkCheck(activity)) {
+                            JsonObject req = new JsonObject();
+                            req.addProperty("action", "updateStatus");
+                            req.addProperty("publishId", publishId);
+                            req.addProperty("status", "open");
+                            if (publish.getStatus() == 1){
+                                AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
+                                deleteDialog.setTitle("開啟刊登單");  //設置標題
+                                deleteDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
+                                deleteDialog.setMessage("請確認此刊登單合約是否已結束？"); //提示訊息
+                                deleteDialog.setPositiveButton(R.string.sure, (dialog, which) -> {
+                                    JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
+                                    if (resp.get("result").getAsBoolean()) {
+                                        Toast.makeText(context, "刊登單已開啟", Toast.LENGTH_SHORT).show();
+                                        publish.setStatus(3);
+                                        notifyDataSetChanged();
+                                    } else {
+                                        Toast.makeText(context, "刊登單開啟失敗", Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                deleteDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
-
-                                });
+                                deleteDialog.setNegativeButton(R.string.cancel, null);
                                 Window window = deleteDialog.show().getWindow();
                                 Button btSure = window.findViewById(android.R.id.button1);
                                 Button btCancel = window.findViewById(android.R.id.button2);
                                 btSure.setTextColor(getResources().getColor(R.color.black));
                                 btCancel.setTextColor(getResources().getColor(R.color.black));
                             }
-                            return true;
-                        });
-                        popupMenu.show();
+                            else{
+                                JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
+                                if (resp.get("result").getAsBoolean()) {
+                                    Toast.makeText(context, "刊登單已開啟", Toast.LENGTH_SHORT).show();
+                                    publish.setStatus(3);
+                                    notifyDataSetChanged();
+                                } else {
+                                    Toast.makeText(context, "刊登單開啟失敗", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                        else {
+                            Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (item.getItemId() == R.id.publishClose) {
+                        if (RemoteAccess.networkCheck(activity)) {
+                            JsonObject req = new JsonObject();
+                            req.addProperty("action", "updateStatus");
+                            req.addProperty("publishId", publishId);
+                            req.addProperty("status", "close");
+                            JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
+                            if (resp.get("result").getAsBoolean()) {
+                                Toast.makeText(context, "刊登單已關閉", Toast.LENGTH_SHORT).show();
+                                publish.setStatus(2);
+                                notifyDataSetChanged();
+                            } else {
+                                Toast.makeText(context, "刊登單關閉失敗", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else {
+                            Toast.makeText(context, "請檢察網路狀態", Toast.LENGTH_SHORT).show();
+                        }
                     }
+                    return true;
                 });
+                popupMenu.show();
+            });
 
 
         }

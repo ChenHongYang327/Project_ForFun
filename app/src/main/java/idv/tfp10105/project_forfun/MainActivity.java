@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
                 if (navController.getCurrentDestination().getId() == R.id.signinInFragment ||
                         navController.getCurrentDestination().getId() == R.id.registIntroductionFragment ||
                         navController.getCurrentDestination().getId() == R.id.registerFragment||
-                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment
+                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment||
+                        navController.getCurrentDestination().getId() == R.id.customerServiceFragment
                 ) {
                     getSupportActionBar().hide();
 
