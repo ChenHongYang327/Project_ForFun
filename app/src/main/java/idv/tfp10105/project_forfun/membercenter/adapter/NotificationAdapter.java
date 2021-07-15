@@ -53,7 +53,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull NotificationHodler holder, int position) {
         Notification notification=notifications.get(position);
-        String headShot=customersHeadShot.get(position);
+        String headShot=customersHeadShot.get(position)==null?"/Project_ForFun/no image.jpg":customersHeadShot.get(position);
         //提醒者的頭像
         getImage(holder.ivNotification,headShot);
         //設定提醒內容
