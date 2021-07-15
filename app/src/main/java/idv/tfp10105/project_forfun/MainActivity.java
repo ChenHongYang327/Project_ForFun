@@ -1,12 +1,15 @@
 package idv.tfp10105.project_forfun;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
@@ -40,19 +43,43 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView tvNotification;
     private SharedPreferences sharedPreferences;
-    private int notify=0;
+    private int notify = 0;
     private ImageButton btBell;//actionbar 中的ImageButton
+    public static Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        toolbar=findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         handleView();
         sharedPreferences = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        handleNotificationCount();
+        handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == 1) {
+                    int notifyAdd = (int) msg.obj;
+                    if(notifyAdd>0) {
+                        notify += notifyAdd;
+                        if (notify > 0) {
+                            tvNotification.setVisibility(View.VISIBLE);
+                            tvNotification.setText(notify + "");
+                        }
+                    }
+                    else{
+                        handleNotificationCount();
+                    }
+
+                }
+                return true;
+            }
+        });
         //開一個新執行緒控制小鈴鐺通知
-        handleNotification();
+//        handleNotification();
+
     }
 
     @Override
@@ -72,9 +99,9 @@ public class MainActivity extends AppCompatActivity {
             tvNotification = findViewById(R.id.tvNotification);
             //點擊通知
             btBell.setOnClickListener(v -> {
-                        tvNotification.setVisibility(View.GONE);
-                        notify = 0;
-                        navController.navigate(R.id.notificationFragment);
+                tvNotification.setVisibility(View.GONE);
+                notify = 0;
+                navController.navigate(R.id.notificationFragment);
 
             });
             //navController監聽器
@@ -95,8 +122,9 @@ public class MainActivity extends AppCompatActivity {
                 //隱藏actionbar的頁面
                 if (navController.getCurrentDestination().getId() == R.id.signinInFragment ||
                         navController.getCurrentDestination().getId() == R.id.registIntroductionFragment ||
-                        navController.getCurrentDestination().getId() == R.id.registerFragment||
-                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment
+                        navController.getCurrentDestination().getId() == R.id.registerFragment ||
+                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment ||
+                        navController.getCurrentDestination().getId() == R.id.customerServiceFragment
                 ) {
                     getSupportActionBar().hide();
 
@@ -104,28 +132,24 @@ public class MainActivity extends AppCompatActivity {
                     getSupportActionBar().show();
                 }
                 //設定顯示返回鍵
-                if (navController.getCurrentDestination().getId() == R.id.notificationFragment)
-                {
+                if (navController.getCurrentDestination().getId() == R.id.notificationFragment) {
                     btBell.setVisibility(View.INVISIBLE);//隱藏通知按鈕
                     tvNotification.setVisibility(View.INVISIBLE);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);//顯示返回鍵
 
-                }
-                else if(navController.getCurrentDestination().getId() == R.id.meberCenterPersonalInformationFragment||
-                        navController.getCurrentDestination().getId() == R.id.myFavoriteFragment||
-                        navController.getCurrentDestination().getId() == R.id.orderconfirm_mainfragment_ho||
-                        navController.getCurrentDestination().getId() == R.id.orderconfirm_mainfragment||
-                        navController.getCurrentDestination().getId() == R.id.myEvaluationnFragment||
-                        navController.getCurrentDestination().getId() == R.id.ocrHO_Publishing||
+                } else if (navController.getCurrentDestination().getId() == R.id.meberCenterPersonalInformationFragment ||
+                        navController.getCurrentDestination().getId() == R.id.myFavoriteFragment ||
+                        navController.getCurrentDestination().getId() == R.id.orderconfirm_mainfragment_ho ||
+                        navController.getCurrentDestination().getId() == R.id.orderconfirm_mainfragment ||
+                        navController.getCurrentDestination().getId() == R.id.myEvaluationnFragment ||
+                        navController.getCurrentDestination().getId() == R.id.ocrHO_Publishing ||
                         navController.getCurrentDestination().getId() == R.id.publishDetailFragment ||
                         navController.getCurrentDestination().getId() == R.id.appointmentFragment ||
-                        navController.getCurrentDestination().getId() == R.id.personalSnapshotFragment)
-                {
+                        navController.getCurrentDestination().getId() == R.id.personalSnapshotFragment) {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                }
-                else {
+                } else {
                     btBell.setVisibility(View.VISIBLE);
-                    if(notify!=0) {
+                    if (notify != 0) {
                         tvNotification.setVisibility(View.VISIBLE);
                     }
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -139,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         //返回鍵
         if (item.getItemId() == android.R.id.home) {
             //popBackStack(getCurrentDestination().getId(), true);
-           navController.popBackStack();
+            navController.popBackStack();
         }
         return true;
     }
@@ -192,20 +216,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 int memberId;
-                final String url= Common.URL+"NotificationController";
-                JsonObject req=new JsonObject();
+                final String url = Common.URL + "NotificationController";
+                JsonObject req = new JsonObject();
                 while (true) {
-                    memberId=sharedPreferences.getInt("memberId",-1);
+                    memberId = sharedPreferences.getInt("memberId", -1);
                     //如果不是遊客
-                    if(memberId!=-1){
+                    if (memberId != -1) {
                         //對伺服器發請求
-                        req.addProperty("action","getNotificationCouunt");
-                        req.addProperty("memberId",memberId);
-                        String resq= RemoteAccess.getJsonData(url,req.toString());
-                        if(!resq.equals("error")) {
+                        req.addProperty("action", "getNotificationCouunt");
+                        req.addProperty("memberId", memberId);
+                        String resq = RemoteAccess.getJsonData(url, req.toString());
+                        if (!resq.equals("error")) {
                             notify = Integer.parseInt(resq);
                         }
-                        if(notify>0) {
+                        if (notify > 0) {
                             //修改UI
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -220,11 +244,11 @@ public class MainActivity extends AppCompatActivity {
                     //等待防止連續發請求
                     try {
                         //1000為1秒
-                        Thread.sleep(15*1000);
-                        Log.d("顯示通知服務","通知服務執行中");
+                        Thread.sleep(10 * 1000);
+                        Log.d("顯示通知服務", "通知服務執行中");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        Log.d("顯示通知服務","通知服務已停止");
+                        Log.d("顯示通知服務", "通知服務已停止");
                         return;
                     }
                 }
@@ -232,4 +256,25 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    private void handleNotificationCount() {
+        int memberId;
+        final String url = Common.URL + "NotificationController";
+        JsonObject req = new JsonObject();
+        memberId = sharedPreferences.getInt("memberId", -1);
+        //如果不是遊客
+        if (memberId != -1) {
+            //對伺服器發請求
+            req.addProperty("action", "getNotificationCouunt");
+            req.addProperty("memberId", memberId);
+            String resq = RemoteAccess.getJsonData(url, req.toString());
+            if (!resq.equals("error")) {
+                notify = Integer.parseInt(resq);
+            }
+            if (notify > 0) {
+                tvNotification.setVisibility(View.VISIBLE);
+                tvNotification.setText(notify + "");
+            }
+        }
+
+    }
 }

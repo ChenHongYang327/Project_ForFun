@@ -201,7 +201,11 @@
         android:id="@+id/chatMessageFragment"
         android:name="idv.tfp10105.project_forfun.chatroom.chatMessageFragment"
         android:label="chatMessageFragment" />
-
+    <fragment
+        android:id="@+id/customerServiceFragment"
+        android:name="idv.tfp10105.project_forfun.signin.Customer_Service_Page.Customer_Service_Fragment"
+        android:label="檢舉"
+        tools:layout="@layout/fragment_customer_service" />
 </navigation>
 
 

@@ -248,8 +248,8 @@ public class SignInFragment extends Fragment {
         });
 
         btAssist.setOnClickListener(v->{
-//            Navigation.findNavController(v)
-//                    .navigate();
+            Navigation.findNavController(v)
+                    .navigate(R.id.customerServiceFragment);
         });
 
         btRegistered.setOnClickListener(v->{
