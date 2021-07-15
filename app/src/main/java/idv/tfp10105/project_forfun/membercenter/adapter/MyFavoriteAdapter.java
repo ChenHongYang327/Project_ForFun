@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -72,7 +74,10 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
             holder.tvFPulishPing.setText("坪數:"+publish.getSquare()+"坪");
             holder.tvFPulishMoney.setText("$"+publish.getRent()+"/月");
             holder.itemView.setOnClickListener(v->{
-                Toast.makeText(context, "詳細資訊", Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putInt("publishId", publish.getPublishId());
+
+                Navigation.findNavController(v).navigate(R.id.publishDetailFragment, bundle);
             });
             holder.ivFFavorite.setOnClickListener(v->{
                 JsonObject req=new JsonObject();
@@ -81,7 +86,7 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
                 JsonObject resp=new Gson().fromJson(RemoteAccess.getJsonData(url,req.toString()),JsonObject.class);
                 if(resp.get("pass").getAsBoolean()){
 //                  holder.ivFFavorite.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_cancelfavorite));
-                    Toast.makeText(context, "已移除收藏", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "已取消收藏", Toast.LENGTH_SHORT).show();
                     favorites.remove(position);
                     cityNames.remove(position);
                     publishes.remove(position);

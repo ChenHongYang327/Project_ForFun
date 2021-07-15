@@ -108,8 +108,8 @@
 
                     <ImageView
                         android:id="@+id/homePublishLike"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_weight="0.3"
                         app:srcCompat="@drawable/icon_unfavorite" />
                 </LinearLayout>

@@ -1,13 +1,13 @@
 package idv.tfp10105.project_forfun.publish;
 
 import android.Manifest;
-import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +46,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.Task;
@@ -58,7 +56,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.youth.banner.Banner;
-import com.youth.banner.adapter.BannerAdapter;
 import com.youth.banner.adapter.BannerImageAdapter;
 import com.youth.banner.holder.BannerImageHolder;
 import com.youth.banner.indicator.CircleIndicator;
@@ -66,7 +63,6 @@ import com.youth.banner.indicator.CircleIndicator;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -79,17 +75,17 @@ import idv.tfp10105.project_forfun.common.HouseType;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Area;
 import idv.tfp10105.project_forfun.common.bean.City;
+import idv.tfp10105.project_forfun.common.bean.Favorite;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Order;
 import idv.tfp10105.project_forfun.common.bean.Publish;
-import idv.tfp10105.project_forfun.common.bean.PublishHome;
 
 public class PublishDetailFragment extends Fragment {
     private MainActivity activity;
     private Gson gson;
-    private Geocoder geocoder;
     private FirebaseStorage storage;
     private RatingAdapter ratingAdapter;
+    private SharedPreferences sharedPreferences;
 
     // UI
     // 刊登相關
@@ -98,6 +94,7 @@ public class PublishDetailFragment extends Fragment {
     private TextView publishDetailFurnished0, publishDetailFurnished1, publishDetailFurnished2, publishDetailFurnished3, publishDetailFurnished4, publishDetailFurnished5, publishDetailFurnished6, publishDetailFurnished7, publishDetailFurnished8;
     private Button publishDetailBtnAppoint;
     private MapView publishDetailMap;
+    private ImageView publishDetailLike;
 
     // 房東相關
     private CircularImageView publishDetailHead;
@@ -109,6 +106,7 @@ public class PublishDetailFragment extends Fragment {
     private RatingBar publishDetailRatingBar;
     private RecyclerView publishDetailRatingView;
 
+    private int userId;
     private Publish publish;
     private List<Bitmap> publishImg;
     private List<City> cityList;
@@ -116,6 +114,7 @@ public class PublishDetailFragment extends Fragment {
     private TextView[] furnishedArray;
     private Member owner;
     private List<Order> orderList;
+    private Favorite favorite;
 
     // 地圖相關
     private GoogleMap googleMap;
@@ -130,8 +129,8 @@ public class PublishDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = (MainActivity) getActivity();
         gson = new Gson();
-        geocoder = new Geocoder(activity);
         storage = FirebaseStorage.getInstance();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
 
         ratingAdapter = new RatingAdapter(new DiffUtil.ItemCallback<Order>() {
             @Override
@@ -158,14 +157,23 @@ public class PublishDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         int publishId = getArguments() != null ? getArguments().getInt("publishId") : 0;
+        userId = sharedPreferences.getInt("memberId",-1);
+
 //        Log.d("home", "publishId = " + publishId);
+        // 刊登資料
         publish = getPublishDataById(publishId);
 //        Log.d("home", "publish = " + gson.toJson(publish));
+        // 房東資料
         owner = getMemberByOwnerId(publish.getOwnerId());
 //        Log.d("home", "owner = " + gson.toJson(owner));
+        // 評價資料
         orderList = getOrdersByPublishId(publishId);
+        // 收藏資料
+        favorite = getMyFavoriteByPublishId(userId, publish.getPublishId());
 
+        // 刊登相關
         banner = view.findViewById(R.id.bannerPublishDetail);
+        publishDetailLike = view.findViewById(R.id.publishDetailLike);
 
         publishDetailTitle = view.findViewById(R.id.publishDetailTitle);
         publishDetailRent = view.findViewById(R.id.publishDetailRent);
@@ -232,6 +240,8 @@ public class PublishDetailFragment extends Fragment {
         setOwnerData(owner);
         // 設定評價資訊
         setRatingData(orderList);
+        // 設定收藏資訊
+        setFavoriteData(favorite);
 
         handleButton();
     }
@@ -295,6 +305,69 @@ public class PublishDetailFragment extends Fragment {
         return orderList;
     }
 
+    private Favorite getMyFavoriteByPublishId (int userId, int publishId) {
+        Favorite favorite = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/favoriteController";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMyFavoriteByPublishId");
+            request.addProperty("userId", userId);
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            String favoriteJson = response.get("favorite").getAsString();
+
+            favorite = gson.fromJson(favoriteJson, Favorite.class);
+        }
+
+        return favorite;
+    }
+
+    private Favorite addMyFavorite (int userId, int publishId) {
+        Favorite favorite = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/favoriteController";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "addMyFavorite");
+            request.addProperty("userId", userId);
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            String favoriteJson = response.get("favorite").getAsString();
+
+            favorite = gson.fromJson(favoriteJson, Favorite.class);
+        }
+
+        return favorite;
+    }
+
+    private boolean deleteMyFavorite (int favoriteId) {
+        boolean result = false;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/favoriteController";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "remove");
+            request.addProperty("removeId", favoriteId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            result = response.get("pass").getAsBoolean();
+        }
+
+        return result;
+    }
+
     private void setPublishData(Publish publish) {
         // 圖片輪播
         getBannerImage(publish.getPublishImg1());
@@ -307,6 +380,24 @@ public class PublishDetailFragment extends Fragment {
         publishDetailSquare.setText(publish.getSquare() + "坪");
         publishDetailDeposit.setText(publish.getDeposit() + "個月");
         publishDetailInfo.setText(publish.getPublishInfo());
+
+        // 收藏
+        publishDetailLike.setOnClickListener(v -> {
+            if (favorite == null) {
+                favorite = addMyFavorite(userId, publish.getPublishId());
+                publishDetailLike.setImageResource(R.drawable.icon_favorite);
+                Toast.makeText(activity, "已加入收藏", Toast.LENGTH_SHORT).show();
+            } else {
+                if (deleteMyFavorite(favorite.getFavoriteId())) {
+                    favorite = null;
+                    publishDetailLike.setImageResource(R.drawable.icon_unfavorite);
+                    Toast.makeText(activity, "已取消收藏", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(activity, "取消收藏失敗", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         String cityName = "";
         for (City city : cityList) {
@@ -349,9 +440,9 @@ public class PublishDetailFragment extends Fragment {
         }
         publishDetailType.setText(type);
 
-        String[] purnished = publish.getFurnished().split("\\|");
-        for (int i = 0; i < purnished.length; i++) {
-            furnishedArray[i].setEnabled("1".equals(purnished[i]));
+        String[] furnished = publish.getFurnished().split("\\|");
+        for (int i = 0; i < furnished.length; i++) {
+            furnishedArray[i].setEnabled("1".equals(furnished[i]));
         }
     }
 
@@ -370,6 +461,11 @@ public class PublishDetailFragment extends Fragment {
 
         // 房東頭像
         getImage(publishDetailHead, owner.getHeadshot());
+        publishDetailHead.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("SelectUser", owner);
+            Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle);
+        });
     }
 
     private void setRatingData(List<Order> orderList) {
@@ -400,6 +496,10 @@ public class PublishDetailFragment extends Fragment {
         publishDetailRatingView.setAdapter(ratingAdapter);
 
         ratingAdapter.submitList(new ArrayList<>(orderList));
+    }
+
+    private void setFavoriteData(Favorite favorite){
+        publishDetailLike.setImageResource(favorite == null ? R.drawable.icon_unfavorite : R.drawable.icon_favorite);
     }
 
     private void handleButton() {
@@ -642,6 +742,12 @@ public class PublishDetailFragment extends Fragment {
                 // 評論時間
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss",Locale.TAIWAN);
                 tvPdCommentTimePS.setText(sdf.format(order.getCreateTime()));
+
+                itemView.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("SelectUser", member);
+                    Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment,bundle);
+                });
             }
         }
     }

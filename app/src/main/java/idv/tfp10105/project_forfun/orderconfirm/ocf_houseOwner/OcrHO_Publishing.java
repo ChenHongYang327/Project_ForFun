@@ -147,7 +147,11 @@ public class OcrHO_Publishing extends Fragment {
             }
                 //跳轉詳細資訊
                 holder.itemView.setOnClickListener(v -> {
-//                Navigation.findNavController(v).navigate();
+                    // 把ID帶到詳細頁面
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("publishId", publish.getPublishId());
+
+                    Navigation.findNavController(v).navigate(R.id.publishDetailFragment, bundle);
                 });
                 //更多選單
                 holder.ivPublishMore.setOnClickListener(v -> {
@@ -158,7 +162,10 @@ public class OcrHO_Publishing extends Fragment {
                             int publishId = publish.getPublishId();
                             if (item.getItemId() == R.id.publishEdit) {
                                 //編輯頁面
+                                Bundle bundle = new Bundle();
+                                bundle.putInt("publishId", publish.getPublishId());
 
+                                Navigation.findNavController(v).navigate(R.id.publishFragment, bundle);
                             } else if (item.getItemId() == R.id.publishDelete) {
                                 AlertDialog.Builder deleteDialog = new AlertDialog.Builder(activity);
                                 final EditText etinput = new EditText(activity);

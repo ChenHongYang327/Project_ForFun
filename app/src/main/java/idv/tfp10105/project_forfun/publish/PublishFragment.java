@@ -1,6 +1,8 @@
 package idv.tfp10105.project_forfun.publish;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -26,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -100,6 +104,7 @@ public class PublishFragment extends Fragment {
     private List<City> cityList;
     private List<Area> areaList;
     private Map<Integer, List<Area>> areaMap;
+    private boolean isEditMode = false;
 
     ActivityResultLauncher<Intent> takePicLauncher =registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -165,6 +170,7 @@ public class PublishFragment extends Fragment {
         areaList = CityAreaUtil.getInstance().getAreaList();
         areaMap = CityAreaUtil.getInstance().getAreaMap();
         userId = sharedPreferences.getInt("memberId",-1);
+        publishId = getArguments() != null ? getArguments().getInt("publishId") : 0;
 
         return inflater.inflate(R.layout.fragment_publish, container, false);
     }
@@ -172,6 +178,20 @@ public class PublishFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        int role = sharedPreferences.getInt("role",-1);
+        if (role != 2) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+            dialog.setMessage("請先申請成為房東");
+            dialog.setCancelable(false);
+            dialog.setPositiveButton("確定", (dialog1, which) -> {
+                Navigation.findNavController(view).popBackStack();
+            });
+            Window window = dialog.show().getWindow();
+            // 修改按鈕顏色
+            Button btnOK = window.findViewById(android.R.id.button1);
+            btnOK.setTextColor(getResources().getColor(R.color.black));
+        }
 
         // UI元件
         // 編輯文字
@@ -236,7 +256,8 @@ public class PublishFragment extends Fragment {
         btnPublishSubmit = view.findViewById(R.id.btnPublishSubmit);
         handleButton();
 
-        view.findViewById(R.id.btnPublishDebug).setOnClickListener(v -> {
+        Button btnDebug = view.findViewById(R.id.btnPublishDebug);
+        btnDebug.setOnClickListener(v -> {
             editPublishTitle.setText("大坪數高級公寓");
             editPublishInfo.setText("搶手貨，不租可惜\n鄰近捷運站，交通便利");
             spPublishCity.setSelection(0, true);
@@ -247,6 +268,20 @@ public class PublishFragment extends Fragment {
             editPublishSquare.setText("100");
             cbPublishFurnishedAll.setChecked(true);
         });
+
+        // 編輯模式
+        if (publishId != 0) {
+            isEditMode = true;
+
+            // 設定action bar
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            // 設定bottom navigation
+            activity.findViewById(R.id.bottomNavigationView).setVisibility(View.GONE);
+            // 隱藏Debug按鈕
+            btnDebug.setVisibility(View.GONE);
+            editMode(publishId);
+            btnPublishSubmit.setText("修改");
+        }
     }
 
     /*
@@ -695,7 +730,18 @@ public class PublishFragment extends Fragment {
 
                 JsonObject response = gson.fromJson(jsonIn, JsonObject.class);
                 if ("1".equals(response.get("result_code").getAsString())) {
-                    Toast.makeText(activity, "資料新增/修改成功", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                    dialog.setMessage("新增/修改成功");
+                    dialog.setCancelable(false);
+                    dialog.setPositiveButton("確定", (dialog1, which) -> {
+                        if (isEditMode) {
+                            Navigation.findNavController(v).popBackStack();
+                        }
+                    });
+                    Window window = dialog.show().getWindow();
+                    // 修改按鈕顏色
+                    Button btnOK = window.findViewById(android.R.id.button1);
+                    btnOK.setTextColor(getResources().getColor(R.color.black));
                 } else {
                     Toast.makeText(activity, "資料新增/修改失敗", Toast.LENGTH_SHORT).show();
                 }
@@ -716,5 +762,138 @@ public class PublishFragment extends Fragment {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Publish getPublishDataById(int publishId) {
+        Publish publish = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/getPublishData";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getByPublishId");
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            String publishJson = response.get("publish").getAsString();
+            publish = gson.fromJson(publishJson, Publish.class);
+        }
+
+        return publish;
+    }
+
+    private void editMode(int publishId) {
+        Publish publish = getPublishDataById(publishId);
+        
+        if (publish == null) {
+            Toast.makeText(activity, "查無刊登資料", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (publish.getOwnerId() != userId) {
+            Toast.makeText(activity, "非本人刊登資料", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 整理地址資訊
+        // 縣市ID -> index
+        List<Area> areaList = null;
+        String address = publish.getAddress();
+        for (int i = 0; i < cityList.size(); i++) {
+            if (cityList.get(i).getCityId().equals(publish.getCityId())) {
+                spPublishCity.setSelection(i, true);
+                areaList = areaMap.get(cityList.get(i).getCityId());
+                // 把地址內的縣市名稱清掉
+                address = address.replace(cityList.get(i).getCityName(), "");
+                break;
+            }
+        }
+
+        // 行政區ID -> index
+        if (areaList != null) {
+            for (int j = 0; j < areaList.size(); j++) {
+                if (areaList.get(j).getAreaId().equals(publish.getAreaId())) {
+                    spPublishArea.setSelection(j, true);
+                    // 把地址內的行政區名稱清掉
+                    address = address.replace(areaList.get(j).getAreaName(), "");
+                }
+            }
+        }
+
+        // 文字
+        editPublishTitle.setText(publish.getTitle());
+        editPublishInfo.setText(publish.getPublishInfo());
+        editPublishAddress.setText(address);
+        editPublishRent.setText(String.valueOf(publish.getRent()));
+        editPublishDeposit.setText(String.valueOf(publish.getDeposit()));
+        editPublishSquare.setText(String.valueOf(publish.getSquare()));
+
+        // 圖片
+        getImage(imgPublishTitle, publish.getTitleImg());
+        getImage(imgPublishInfo1, publish.getPublishImg1());
+        getImage(imgPublishInfo2, publish.getPublishImg2());
+        getImage(imgPublishInfo3, publish.getPublishImg3());
+
+        // 性別限制
+        int genderId = 0;
+        switch (Gender.toEnum(publish.getGender())){
+            case BOTH:
+                genderId = R.id.radioPublishGender0;
+                break;
+            case MALE:
+                genderId = R.id.radioPublishGender1;
+                break;
+            case FEMALE:
+                genderId = R.id.radioPublishGender2;
+                break;
+        }
+        radioPublishGender.check(genderId);
+
+        // 房屋類型
+        int typeId = 0;
+        switch (HouseType.toEnum(publish.getType())) {
+            case WITH_BATH:
+                typeId = R.id.radioPublishType0;
+                break;
+            case NO_BATH:
+                typeId = R.id.radioPublishType1;
+                break;
+        }
+        radioPublishType.check(typeId);
+
+        // 提供設備
+        String[] furnished = publish.getFurnished().split("\\|");
+        cbPublishFurnished0.setChecked("1".equals(furnished[0]));
+        cbPublishFurnished1.setChecked("1".equals(furnished[1]));
+        cbPublishFurnished2.setChecked("1".equals(furnished[2]));
+        cbPublishFurnished3.setChecked("1".equals(furnished[3]));
+        cbPublishFurnished4.setChecked("1".equals(furnished[4]));
+        cbPublishFurnished5.setChecked("1".equals(furnished[5]));
+        cbPublishFurnished6.setChecked("1".equals(furnished[6]));
+        cbPublishFurnished7.setChecked("1".equals(furnished[7]));
+        cbPublishFurnished8.setChecked("1".equals(furnished[8]));
+    }
+
+    //下載Firebase storage的照片
+    public void getImage(final ImageView imageView, final String path) {
+        FirebaseStorage storage;
+        storage = FirebaseStorage.getInstance();
+        final int ONE_MEGABYTE = 1024 * 1024 * 6; //設定上限
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String errorMessage = task.getException() == null ? "" : task.getException().getMessage();
+                        Toast.makeText(activity, "圖片取得錯誤", Toast.LENGTH_SHORT).show();
+                        Log.d("顯示Firebase取得圖片的錯誤", errorMessage);
+
+                    }
+                });
+
     }
 }

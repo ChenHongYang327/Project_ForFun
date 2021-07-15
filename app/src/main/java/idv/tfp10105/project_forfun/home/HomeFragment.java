@@ -1,7 +1,9 @@
 package idv.tfp10105.project_forfun.home;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -76,6 +79,7 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Area;
 import idv.tfp10105.project_forfun.common.bean.City;
+import idv.tfp10105.project_forfun.common.bean.Favorite;
 import idv.tfp10105.project_forfun.common.bean.Publish;
 import idv.tfp10105.project_forfun.common.bean.PublishHome;
 
@@ -87,12 +91,14 @@ public class HomeFragment extends Fragment {
     private Geocoder geocoder;
     private FirebaseStorage storage;
     private PublishAdapter publishAdapter;
+    private SharedPreferences sharedPreferences;
 
     // UI元件
     private MapView mapView;
     private GoogleMap googleMap;
     private Button homeBtnDistanceSort, homeBtnRentSort, homeBtnSearch;
     private RecyclerView homePublishListView;
+    private FrameLayout homeLoading;
 
     // 搜尋頁面
     private BottomSheetDialog bottomSheetDialog;
@@ -105,10 +111,11 @@ public class HomeFragment extends Fragment {
 
 
     // 變動資料
-    List<PublishHome> publishHomeList;
-    List<City> cityList;
-    List<Area> areaList;
-    Map<Integer, List<Area>> areaMap;
+    private int userId;
+    private List<PublishHome> publishHomeList;
+    private List<City> cityList;
+    private List<Area> areaList;
+    private Map<Integer, List<Area>> areaMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,6 +129,7 @@ public class HomeFragment extends Fragment {
         gson = new Gson();
         geocoder = new Geocoder(activity);
         storage = FirebaseStorage.getInstance();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
 
         cityList = CityAreaUtil.getInstance().getCityList();
         areaList = CityAreaUtil.getInstance().getAreaList();
@@ -146,31 +154,18 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        userId = sharedPreferences.getInt("memberId",-1);
+
         // 按鈕
         homeBtnDistanceSort = view.findViewById(R.id.homeBtnDistanceSort);
         homeBtnRentSort = view.findViewById(R.id.homeBtnRentSort);
         homeBtnSearch = view.findViewById(R.id.homeBtnSearch);
 
-        homeBtnDistanceSort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortByDistance(publishHomeList);
-            }
-        });
+        homeBtnDistanceSort.setOnClickListener(v -> sortByDistance(publishHomeList));
 
-        homeBtnRentSort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortByRent(publishHomeList);
-            }
-        });
+        homeBtnRentSort.setOnClickListener(v -> sortByRent(publishHomeList));
 
-        homeBtnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.show();
-            }
-        });
+        homeBtnSearch.setOnClickListener(v -> bottomSheetDialog.show());
 
         // RecyclerView
         homePublishListView = view.findViewById(R.id.homePublishListView);
@@ -179,6 +174,9 @@ public class HomeFragment extends Fragment {
 
         // 地圖
         mapView = view.findViewById(R.id.homeMap);
+        homeLoading = view.findViewById(R.id.homeLoading);
+        // 顯示loading畫面
+        homeLoading.setVisibility(View.VISIBLE);
 
         // 檢查手機設定中定位功能是否開啟
         checkPositioning();
@@ -306,6 +304,9 @@ public class HomeFragment extends Fragment {
                 moveCamera(userLatLng);
 
 //                latLngToName(userLatLng.latitude, userLatLng.longitude);
+
+                // 隱藏loading畫面
+                homeLoading.setVisibility(View.GONE);
             }
         });
     }
@@ -448,6 +449,69 @@ public class HomeFragment extends Fragment {
         return publishList;
     }
 
+    private Favorite getMyFavoriteByPublishId (int userId, int publishId) {
+        Favorite favorite = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/favoriteController";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMyFavoriteByPublishId");
+            request.addProperty("userId", userId);
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            String favoriteJson = response.get("favorite").getAsString();
+
+            favorite = gson.fromJson(favoriteJson, Favorite.class);
+        }
+
+        return favorite;
+    }
+
+    private Favorite addMyFavorite (int userId, int publishId) {
+        Favorite favorite = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/favoriteController";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "addMyFavorite");
+            request.addProperty("userId", userId);
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            String favoriteJson = response.get("favorite").getAsString();
+
+            favorite = gson.fromJson(favoriteJson, Favorite.class);
+        }
+
+        return favorite;
+    }
+
+    private boolean deleteMyFavorite (int favoriteId) {
+        boolean result = false;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/favoriteController";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "remove");
+            request.addProperty("removeId", favoriteId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            result = response.get("pass").getAsBoolean();
+        }
+
+        return result;
+    }
+
     private class PublishAdapter extends ListAdapter<PublishHome, PublishAdapter.PublishViewHolder> {
 
         protected PublishAdapter(@NonNull DiffUtil.ItemCallback<PublishHome> diffCallback) {
@@ -470,6 +534,8 @@ public class HomeFragment extends Fragment {
         private class PublishViewHolder extends RecyclerView.ViewHolder {
             final private ImageView homePublishImg, homePublishLike;
             final private TextView homePublishName, homePublishArea, homePublishSquare, homePublishRent;
+
+            private Favorite favorite;
 
             public PublishViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -506,21 +572,32 @@ public class HomeFragment extends Fragment {
 
                 getImage(homePublishImg, publishHome.getPublish().getTitleImg());
 
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // 把ID帶到詳細頁面
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("publishId", publishHome.getPublish().getPublishId());
+                itemView.setOnClickListener(v -> {
+                    // 把ID帶到詳細頁面
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("publishId", publishHome.getPublish().getPublishId());
 
-                        Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_publishDetailFragment, bundle);
-                    }
+                    Navigation.findNavController(v).navigate(R.id.publishDetailFragment, bundle);
                 });
 
-                homePublishLike.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(activity, "收藏成功", Toast.LENGTH_SHORT).show();
+                // 取得收藏資料
+                favorite = getMyFavoriteByPublishId(userId, publishHome.getPublish().getPublishId());
+
+                homePublishLike.setImageResource(favorite == null ? R.drawable.icon_unfavorite : R.drawable.icon_favorite);
+                homePublishLike.setOnClickListener(v -> {
+                    if (favorite == null) {
+                        favorite = addMyFavorite(userId, publishHome.getPublish().getPublishId());
+                        homePublishLike.setImageResource(R.drawable.icon_favorite);
+                        Toast.makeText(activity, "已加入收藏", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (deleteMyFavorite(favorite.getFavoriteId())) {
+                            favorite = null;
+                            homePublishLike.setImageResource(R.drawable.icon_unfavorite);
+                            Toast.makeText(activity, "已取消收藏", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(activity, "取消收藏失敗", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 });
             }

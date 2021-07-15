@@ -66,9 +66,9 @@
                         android:textSize="20sp" />
 
                     <ImageView
-                        android:id="@+id/imageView8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:id="@+id/publishDetailLike"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_unfavorite" />
                 </LinearLayout>
