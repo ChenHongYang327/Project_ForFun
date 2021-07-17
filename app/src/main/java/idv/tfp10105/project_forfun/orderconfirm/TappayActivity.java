@@ -1,9 +1,5 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.Navigation;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,6 +13,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.wallet.AutoResolveHelper;
@@ -61,7 +59,7 @@ public class TappayActivity extends AppCompatActivity {
     private String TAPPATACCOUNY; //付款總額
     private String notes, getImgPath;
     private Bitmap bitmapPic;
-    private int objID, resultcode;
+    private int payObjID;
     private Boolean isorder = false, isotherPay = false;
 
 
@@ -96,8 +94,8 @@ public class TappayActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
 
         //隱藏 action bar
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.hide();
 
         // bt 初始設定
         btConfirm.setVisibility(View.GONE);
@@ -110,17 +108,19 @@ public class TappayActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("OrderSharedPre",Context.MODE_PRIVATE);
         shardToMainActivity = getSharedPreferences( "SharedPreferences",Context.MODE_PRIVATE);
         // 判斷誰登入 帶id
-        objID = sharedPreferences.getInt("ORDERID",-1); //該資訊id
+        payObjID = sharedPreferences.getInt("ORDERID",-1); //該資訊id ,orderid OR otherpayId
         String str = sharedPreferences.getString("TAB","-1");
 
         switch (str){
             case "order":
                 prepareGooglePay();
+                //set order Info
                 orderEvent();
                 break;
 
             case "otherpay":
                 prepareGooglePay();
+                //set otherpay Info
                 otherPayEvent();
                 break;
 
@@ -131,6 +131,50 @@ public class TappayActivity extends AppCompatActivity {
         }
     }
 
+    private void handleViews() {
+
+        TPDSetup.initInstance(this,
+                Integer.parseInt(getString(R.string.TapPay_AppID)),
+                getString(R.string.TapPay_AppKey),
+                TPDServerType.Sandbox);
+
+        btBuy.setOnClickListener(v->{
+            // 跳出user資訊視窗讓user確認，確認後會呼叫onActivityResult()
+            tpdGooglePay.requestPayment(TransactionInfo.newBuilder()
+                    .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                    // 消費總金額
+                    .setTotalPrice(TAPPATACCOUNY)
+                    // 設定幣別
+                    .setCurrencyCode("TWD")
+                    .build(), LOAD_PAYMENT_DATA_REQUEST_CODE);
+        });
+
+        //確認按鈕事件
+        btConfirm.setOnClickListener(v->{
+            getPrimeFromTapPay(paymentData);
+            btBuy.setEnabled(false);
+        });
+
+        // TODO: 退回按鈕事件 修改狀態碼 先隱藏有空再來改
+        btReturn.setVisibility(View.GONE);
+        tvReturnText.setText("");
+        btReturn.setOnClickListener(v->{
+            //delete sharedPreference value
+            sharedPreferences.edit().remove("ORDERID").apply();
+            sharedPreferences.edit().remove("TAB").apply();
+
+            finish();
+        });
+
+        //取消按鈕事件
+        btCancel.setOnClickListener(v->{
+            //delete sharedPreference value
+            sharedPreferences.edit().remove("ORDERID").apply();
+            sharedPreferences.edit().remove("TAB").apply();
+            finish();
+        });
+    }
+
     //set order Info
     private void orderEvent() {
 
@@ -139,7 +183,7 @@ public class TappayActivity extends AppCompatActivity {
             String url = Common.URL + "Order";
 
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("ORDER",objID);
+            jsonObject.addProperty("ORDER", payObjID);
             jsonObject.addProperty("RESULTCODE",0);
             //用其他執行序，傳資料拿資料！！！
             String jsonIn = RemoteAccess.getJsonData(url,jsonObject.toString());
@@ -184,7 +228,7 @@ public class TappayActivity extends AppCompatActivity {
             String url = Common.URL + "OtherPay";
 
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("OTHERPAYID",objID);
+            jsonObject.addProperty("OTHERPAYID", payObjID);
             jsonObject.addProperty("RESULTCODE",0);
             //用其他執行序，傳資料拿資料！！！
             String jsonIn = RemoteAccess.getJsonData(url,jsonObject.toString());
@@ -221,50 +265,6 @@ public class TappayActivity extends AppCompatActivity {
         }
     }
 
-    private void handleViews() {
-
-        TPDSetup.initInstance(this,
-                Integer.parseInt(getString(R.string.TapPay_AppID)),
-                getString(R.string.TapPay_AppKey),
-                TPDServerType.Sandbox);
-
-        btBuy.setOnClickListener(v->{
-            // 跳出user資訊視窗讓user確認，確認後會呼叫onActivityResult()
-            tpdGooglePay.requestPayment(TransactionInfo.newBuilder()
-                    .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                    // 消費總金額
-                    .setTotalPrice(TAPPATACCOUNY)
-                    // 設定幣別
-                    .setCurrencyCode("TWD")
-                    .build(), LOAD_PAYMENT_DATA_REQUEST_CODE);
-        });
-
-        //確認按鈕事件
-        btConfirm.setOnClickListener(v->{
-            getPrimeFromTapPay(paymentData);
-            btBuy.setEnabled(false);
-        });
-
-        // TODO: 退回按鈕事件 修改狀態碼 先隱藏有空再來改
-        btReturn.setVisibility(View.GONE);
-        tvReturnText.setText("");
-        btReturn.setOnClickListener(v->{
-            //delete sharedPreference value
-            sharedPreferences.edit().remove("OBJID").apply();
-            sharedPreferences.edit().remove("TAB").apply();
-
-            finish();
-        });
-
-
-        //取消按鈕事件
-        btCancel.setOnClickListener(v->{
-            //delete sharedPreference value
-            sharedPreferences.edit().remove("OBJID").apply();
-            sharedPreferences.edit().remove("TAB").apply();
-            finish();
-        });
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -300,6 +300,7 @@ public class TappayActivity extends AppCompatActivity {
         }
     }
 
+    //設定googlepay
     private void prepareGooglePay() {
         TPDMerchant tpdMerchant = new TPDMerchant();
         // 設定商店名稱
@@ -372,7 +373,6 @@ public class TappayActivity extends AppCompatActivity {
                     tvReturnText.setText("");
                     tvCncelText.setText("回首頁");
 
-
                     //成功後修改狀態碼
                     handleStatus();
                 },
@@ -383,7 +383,7 @@ public class TappayActivity extends AppCompatActivity {
                     hideProgressDialog();
                     String text = "TapPay getPrime failed. status: " + status + ", message: " + reportMsg;
                     Log.d(TAG, text);
-                    tvResult.setText(text);
+                   // tvResult.setText(text);
                 });
     }
 
@@ -391,9 +391,28 @@ public class TappayActivity extends AppCompatActivity {
     private void handleStatus() {
 
         if(isotherPay = true){
+            //otherpay 狀態改1，已付款
             String url = Common.URL + "OtherPay";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("OTHERPAYID",objID);
+            jsonObject.addProperty("OTHERPAYID", payObjID);
+            jsonObject.addProperty("RESULTCODE",2);
+            //用其他執行序，傳資料拿資料！！！
+            String jsonIn = RemoteAccess.getJsonData(url,jsonObject.toString());
+
+            JsonObject result = gson.fromJson(jsonIn,JsonObject.class);
+            int resoltcode = result.get("RESULT").getAsInt();
+
+            if(resoltcode == 200){
+                sharedPreferences.edit().remove("ORDERID").apply();
+                sharedPreferences.edit().remove("TAB").apply();
+                shardToMainActivity.edit().putString("TappayActivity","ToHomeFragment");
+            }else{ Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show(); }
+        }
+        if(isorder = true){
+            //order 改狀態->5
+            String url = Common.URL + "Order";
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("ORDER", payObjID);
             jsonObject.addProperty("RESULTCODE",1);
             //用其他執行序，傳資料拿資料！！！
             String jsonIn = RemoteAccess.getJsonData(url,jsonObject.toString());
@@ -402,33 +421,10 @@ public class TappayActivity extends AppCompatActivity {
             int resoltcode = result.get("RESULT").getAsInt();
 
             if(resoltcode == 200){
-                //TODO: goto homeFragment
                 //delete sharedPreference value
-                sharedPreferences.edit().remove("OBJID").apply();
+                sharedPreferences.edit().remove("ORDERID").apply();
                 sharedPreferences.edit().remove("TAB").apply();
-            }else{ Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show(); }
-
-
-
-        }else if(isorder = true){
-            String url = Common.URL + "Order";
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("ORDER",objID);
-            jsonObject.addProperty("RESULTCODE",5);
-            //用其他執行序，傳資料拿資料！！！
-            String jsonIn = RemoteAccess.getJsonData(url,jsonObject.toString());
-
-            JsonObject result = gson.fromJson(jsonIn,JsonObject.class);
-            int resoltcode = result.get("RESULT").getAsInt();
-
-            if(resoltcode == 200){
-
-                //delete sharedPreference value
-                sharedPreferences.edit().remove("OBJID").apply();
-                sharedPreferences.edit().remove("TAB").apply();
-                //TODO: goto homeFragment
                 shardToMainActivity.edit().putString("TappayActivity","ToHomeFragment");
-                finish();
             }else{ Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show(); }
 
         }

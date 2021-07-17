@@ -25,7 +25,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="20dp"
                 android:orientation="horizontal">
 
             </LinearLayout>
@@ -138,12 +138,15 @@
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <ImageView
+                <com.mikhaellopez.circularimageview.CircularImageView
                     android:id="@+id/img_HSShot_Headshot"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1"
-                    tools:src="@drawable/ic_account_black_48dp" />
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="4dp"
+                    app:civ_shadow="true"
+                    app:civ_shadow_radius="10dp"
+                    tools:src="@tools:sample/avatars" />
 
                 <TextView
                     android:id="@+id/tv_HSShot_Name"
@@ -151,6 +154,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
+                    android:gravity="center_horizontal"
                     android:text="李先生"
                     android:textSize="20sp" />
 
@@ -188,7 +192,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="20dp"
                 android:orientation="horizontal"></LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

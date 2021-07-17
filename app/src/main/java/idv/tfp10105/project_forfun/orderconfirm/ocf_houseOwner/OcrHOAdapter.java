@@ -8,14 +8,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_cancel;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_complete;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_order;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_paid;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_pay;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_reserve;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_sign;
-
 public class OcrHOAdapter extends FragmentStateAdapter {
     public OcrHOAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
@@ -36,15 +28,13 @@ public class OcrHOAdapter extends FragmentStateAdapter {
                 return new OcrHO_pay();
             case 4:
                 return new OcrHO_complete();
-            case 5:
-                return new OcrHO_cancel();
             default:
-                return new OcrHO_payarrive();
+                return new OcrHO_cancel();
         }
     }
 
     @Override
     public int getItemCount() {
-        return 7;
+        return 6;
     }
 }

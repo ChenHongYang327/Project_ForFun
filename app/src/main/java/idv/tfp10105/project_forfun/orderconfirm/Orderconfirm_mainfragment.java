@@ -1,7 +1,9 @@
 package idv.tfp10105.project_forfun.orderconfirm;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,12 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -67,7 +63,7 @@ public class Orderconfirm_mainfragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("待付款"));
         tabLayout.addTab(tabLayout.newTab().setText("已完成"));
         tabLayout.addTab(tabLayout.newTab().setText("已取消"));
-        tabLayout.addTab(tabLayout.newTab().setText("已繳費"));
+        //tabLayout.addTab(tabLayout.newTab().setText("已繳費"));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

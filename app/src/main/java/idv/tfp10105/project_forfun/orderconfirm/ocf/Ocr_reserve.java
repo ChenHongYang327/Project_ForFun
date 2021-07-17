@@ -2,29 +2,25 @@ package idv.tfp10105.project_forfun.orderconfirm.ocf;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,15 +33,12 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Order;
 import idv.tfp10105.project_forfun.common.bean.Publish;
-import idv.tfp10105.project_forfun.orderconfirm.TappayActivity;
 
 public class Ocr_reserve extends Fragment {
     private int TAPNUMBER = 1; //頁面編號
@@ -55,7 +48,7 @@ public class Ocr_reserve extends Fragment {
     private FirebaseStorage storage;
     private SharedPreferences sharedPreferences;
     private List<Order> orders;
-    private int sidnInId;
+    private int signInId;
     private Order order;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -83,12 +76,7 @@ public class Ocr_reserve extends Fragment {
 
         tvHint = view.findViewById(R.id.tv_ocr_reserve_HintText);
 
-        int role = sharedPreferences.getInt("role",-1);
-
-        //判斷是否為遊客，要改
-        if(role == 2 || role ==1){
-
-            sidnInId = sharedPreferences.getInt("memberId", 9);
+            signInId = sharedPreferences.getInt("memberId", -1);
 
             recyclerView = view.findViewById(R.id.recycleview_ocr_reserve);
             recyclerView.setLayoutManager(new LinearLayoutManager(activity));
@@ -107,9 +95,6 @@ public class Ocr_reserve extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
             });
 
-        }else{
-            tvHint.setText("尚未有訂單！");
-        }
     }
 
     @Override
@@ -121,14 +106,14 @@ public class Ocr_reserve extends Fragment {
     private void showAlls() {
         if (!orders.isEmpty()) {
             orders.clear();
-            orders = getOrderListInfo(OrderStatusNumber, sidnInId);
+            orders = getOrderListInfo(OrderStatusNumber, signInId);
             if(orders.isEmpty()){
                 tvHint.setText("尚未有訂單！");
             }else{
                 setOrderList(orders);
             }
         } else {
-            orders = getOrderListInfo(OrderStatusNumber, sidnInId);
+            orders = getOrderListInfo(OrderStatusNumber, signInId);
             if(orders.isEmpty()){
                 tvHint.setText("尚未有訂單！");
             }else{
@@ -247,7 +232,7 @@ public class Ocr_reserve extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putInt("OCR", TAPNUMBER);
                 bundle.putInt("PUBLISHID",publishId);
-                bundle.putInt("SIGNINID",sidnInId);
+                bundle.putInt("SIGNINID", signInId);
                 bundle.putInt("ORDREID",orderId);
 
                 Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);

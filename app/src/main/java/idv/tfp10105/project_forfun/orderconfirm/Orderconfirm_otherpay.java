@@ -11,16 +11,6 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,14 +22,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.yalantis.ucrop.UCrop;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,7 +47,6 @@ import java.util.Date;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
-import idv.tfp10105.project_forfun.common.bean.OtherPay;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -61,7 +57,7 @@ public class Orderconfirm_otherpay extends Fragment {
     private Bundle bundleIn = getArguments();
     private Gson gson = new Gson();
     private Activity activity;
-    private int signInId;
+    private int signInId, tapNum;
     private FirebaseStorage storage;
     // BottomSheet
     private BottomSheetDialog bottomSheetDialog;
@@ -98,7 +94,7 @@ public class Orderconfirm_otherpay extends Fragment {
         View view = inflater.inflate(R.layout.fragment_orderconfirm_otherpay, container, false);
         // BottomSheet
         bottomSheetDialog = new BottomSheetDialog(activity);
-        bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet,null);
+        bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet, null);
         bottomSheetDialog.setContentView(bottomSheetView);
         ViewGroup parent = (ViewGroup) bottomSheetView.getParent();
         parent.setBackgroundResource(android.R.color.transparent);
@@ -117,16 +113,16 @@ public class Orderconfirm_otherpay extends Fragment {
         btConfirm = view.findViewById(R.id.bt_ocrOtherPay_confirm);
 
         //bottomsheet
-        btTakePic_sheet = bottomSheetView.findViewById(R.id. btTakepic);
+        btTakePic_sheet = bottomSheetView.findViewById(R.id.btTakepic);
         btPick_sheet = bottomSheetView.findViewById(R.id.btPickpic);
         btCancel_sheet = bottomSheetView.findViewById(R.id.btCancel);
 
         signInId = sharedPreferences.getInt("memberId", -1);
 
-        int tapNum = bundleIn.getInt("OCR");
+        tapNum = bundleIn.getInt("OCR");
 
         if (tapNum == 15) {
-            handleViews();
+            handleViews(); //無限新增
 
         } else {
             Bundle bundleOut = new Bundle();
@@ -134,12 +130,6 @@ public class Orderconfirm_otherpay extends Fragment {
             Toast.makeText(activity, "查無內容", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
         }
-
-        btCancel.setOnClickListener(v -> {
-            Bundle bundleOut = new Bundle();
-            bundleOut.putInt("OCR", tapNum);
-            Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
-        });
     }
 
 
@@ -152,45 +142,45 @@ public class Orderconfirm_otherpay extends Fragment {
         btConfirm.setOnClickListener(v -> {
 
             //檢查網路連線
-            if (!RemoteAccess.networkCheck(activity)) {
-                Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            if (RemoteAccess.networkCheck(activity)) {
 
-            String url = Common.URL + "OtherPay";
 
-            // take value
-            String msg = tvMsg.getText().toString().trim();
-            String acc = tvAccount.getText().toString().trim();
-            //轉型態int
-            int account = Integer.parseInt(acc);
-            int agreementID = bundleIn.getInt("AGREEMENTID");
+                String url = Common.URL + "OtherPay";
 
-            // 上傳圖片給firebase，路徑存回db
+                // take value
+                String msg = tvMsg.getText().toString().trim();
+                String acc = tvAccount.getText().toString().trim();
+                //轉型態int
+                int account = Integer.parseInt(acc);
+                int agreementID = bundleIn.getInt("AGREEMENTID");
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            byte[] imgbyte = out.toByteArray();
-            String imgPath = getImgPath(imgbyte);
+                // 上傳圖片給firebase，路徑存回db
 
-            // 存回db
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("ACCOUNT", account);
-            jsonObject.addProperty("NOTE", msg);
-            jsonObject.addProperty("SIGNINID", signInId);
-            jsonObject.addProperty("AGREEMENTID", agreementID);
-            jsonObject.addProperty("RESULTCODE", 1);
-            jsonObject.addProperty("IMGPATH", imgPath);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                byte[] imgbyte = out.toByteArray();
+                String imgPath = getImgPath(imgbyte);
 
-            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
+                // 存回db
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("ACCOUNT", account);
+                jsonObject.addProperty("NOTE", msg);
+                jsonObject.addProperty("SIGNINID", signInId);
+                jsonObject.addProperty("AGREEMENTID", agreementID);
+                jsonObject.addProperty("RESULTCODE", 1);
+                jsonObject.addProperty("IMGPATH", imgPath);
 
-            JsonObject result = gson.fromJson(jsonIn, JsonObject.class);
-            int resoltcode = result.get("RESULT").getAsInt();
+                String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
 
-            if (resoltcode == 200) {
-                //TODO: goto homeFragment
-                //   Navigation.findNavController(v).navigate(R.id.);
+                JsonObject result = gson.fromJson(jsonIn, JsonObject.class);
+                int resoltcode = result.get("RESULT").getAsInt();
 
+                if (resoltcode == 200) {
+                    Navigation.findNavController(v).navigate(R.id.homeFragment);
+                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
             }
@@ -199,14 +189,14 @@ public class Orderconfirm_otherpay extends Fragment {
 
         // bottomsheet
         //相簿
-        btPick_sheet.setOnClickListener(view->{
+        btPick_sheet.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             pickPictureLauncher.launch(intent);
             bottomSheetDialog.dismiss();
         });
         //拍照
-        btTakePic_sheet.setOnClickListener(view->{
+        btTakePic_sheet.setOnClickListener(view -> {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             File file = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             file = new File(file, "tmp.jpg");
@@ -218,12 +208,19 @@ public class Orderconfirm_otherpay extends Fragment {
                 takePictureLauncher.launch(intent);
                 bottomSheetDialog.dismiss();
             } catch (ActivityNotFoundException e) {
-                Toast.makeText(activity,"找不到相機應用程式", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "找不到相機應用程式", Toast.LENGTH_SHORT).show();
             }
         });
         //取消
-        btCancel_sheet.setOnClickListener(view->{
+        btCancel_sheet.setOnClickListener(view -> {
             bottomSheetDialog.dismiss();
+        });
+
+        //取消按鈕
+        btCancel.setOnClickListener(v -> {
+            Bundle bundleOut = new Bundle();
+            bundleOut.putInt("OCR", tapNum);
+            Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
         });
 
     }

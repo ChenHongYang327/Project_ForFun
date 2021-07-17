@@ -2,25 +2,22 @@ package idv.tfp10105.project_forfun.orderconfirm;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.orderconfirm.ocf.OcrAdapter;
 import idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner.OcrHOAdapter;
 
 public class Orderconfirm_mainfragment_ho extends Fragment {
@@ -67,7 +64,7 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("待付款"));
         tabLayout.addTab(tabLayout.newTab().setText("已完成"));
         tabLayout.addTab(tabLayout.newTab().setText("已取消"));
-        tabLayout.addTab(tabLayout.newTab().setText("已收款"));
+       // tabLayout.addTab(tabLayout.newTab().setText("已收款"));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

@@ -9,24 +9,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,7 +31,6 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -124,7 +118,7 @@ public class Orderconfirm_agreement extends Fragment {
                 break;
 
             case 5:
-                //瀏覽模式
+                //瀏覽模式（房東房客都簽完名了）
                 btConfirm.setVisibility(View.GONE);
                 tvConfirmText.setText("");
 
@@ -145,27 +139,27 @@ public class Orderconfirm_agreement extends Fragment {
                 tvAddress.setText(getAddress(orderId));
                 break;
 
-            case 15:
-                //瀏覽模式
-                btConfirm.setVisibility(View.GONE);
-                tvConfirmText.setText("");
-
-                Agreement agmtH = getAgreementInfo(agreementId);
-                tvDateStart.setText(sdf.format(agmtH.getStartDate()));
-                tvDateEnd.setText(sdf.format(agmtH.getEndDate()));
-                tvRent.setText(String.valueOf(agmtH.getAgreementMoney()));
-                String igPathHO = agmtH.getLandlordSign();
-                String igPath = agmtH.getTenantSign();
-
-                //set img
-                setImgFromFireStorage(igPathHO, imgSignHO);
-                setImgFromFireStorage(igPath, imgSignCus);
-                tvSignHO.setText("");
-                tvSignCus.setText("");
-
-                //set Address
-                tvAddress.setText(getAddress(orderId));
-                break;
+//            case 15:
+//                //房東 瀏覽模式
+//                btConfirm.setVisibility(View.GONE);
+//                tvConfirmText.setText("");
+//
+//                Agreement agmtH = getAgreementInfo(agreementId);
+//                tvDateStart.setText(sdf.format(agmtH.getStartDate()));
+//                tvDateEnd.setText(sdf.format(agmtH.getEndDate()));
+//                tvRent.setText(String.valueOf(agmtH.getAgreementMoney()));
+//                String igPathHO = agmtH.getLandlordSign();
+//                String igPath = agmtH.getTenantSign();
+//
+//                //set img
+//                setImgFromFireStorage(igPathHO, imgSignHO);
+//                setImgFromFireStorage(igPath, imgSignCus);
+//                tvSignHO.setText("");
+//                tvSignCus.setText("");
+//
+//                //set Address
+//                tvAddress.setText(getAddress(orderId));
+//                break;
 
             default:
                 Bundle bundleOut = new Bundle();
@@ -288,9 +282,8 @@ public class Orderconfirm_agreement extends Fragment {
                 resultcode = jsonIn_H.get("RESULT").getAsInt();
 
                 if (resultcode == 200) {
-                    Navigation.findNavController(v).navigate(R.id.orderconfirm_score);
-
-                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "合約建立成功", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(v).navigate(R.id.homeFragment);
                 } else {
                     Toast.makeText(activity, "更新失敗", Toast.LENGTH_SHORT).show();
                 }
@@ -372,7 +365,8 @@ public class Orderconfirm_agreement extends Fragment {
                 resultcode = object.get("RESULT").getAsInt();
 
                 if (resultcode == 200) {
-
+                    Toast.makeText(activity, "合約已完成，請記得付款", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(v).navigate(R.id.homeFragment);
                 } else {
                     Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
                 }
