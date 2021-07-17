@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageButton
+        <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/comment_bt_membetHead"
             android:layout_width="40dp"
             android:layout_height="40dp"

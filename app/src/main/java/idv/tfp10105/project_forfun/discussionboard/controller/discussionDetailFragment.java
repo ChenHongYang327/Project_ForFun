@@ -37,6 +37,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,7 +59,8 @@ public class discussionDetailFragment extends Fragment {
     private TextView detailTitle, detailContext, detailMemberName, detailTime;
     private ImageView detailImageView;
     private Post post;
-    private ImageButton detailBtMore,detailBtMemberHead,detailBtSent;
+    private ImageButton detailBtMore, detailBtSent;
+    private CircularImageView detailBtMemberHead;
     private RecyclerView rvDetail;
     private EditText detail_et_comment;
     private String imagePath;
@@ -68,6 +70,7 @@ public class discussionDetailFragment extends Fragment {
     private List<Comment> comments;
     private List<Post> posts;
     private String url = Common.URL;
+    private String name, headshot;
 
 
 
@@ -79,6 +82,8 @@ public class discussionDetailFragment extends Fragment {
         storage = FirebaseStorage.getInstance();
         //取bundle資料
         post = (Post) (getArguments() != null ? getArguments().getSerializable("post") : null);
+        name = getArguments() != null ? getArguments().getString("name") : null;
+        headshot = getArguments() != null ? getArguments().getString("headshot") : null;
 
     }
 
@@ -122,7 +127,7 @@ public class discussionDetailFragment extends Fragment {
 
     //顯示貼文內容
     private void showPost() {
-
+        downloadImage(detailBtMemberHead,headshot);
         if (imagePath != "") {
             showImage(post.getPostImg());
             Log.d("post","post: " + post.toString());
@@ -132,7 +137,7 @@ public class discussionDetailFragment extends Fragment {
         detailTitle.setText(post.getPostTitle());
         detailContext.setText(post.getPostContext());
         detailTime.setText(post.getCreateTime().toString());
-        detailMemberName.setText("Bob");
+        detailMemberName.setText(name);
     }
 
     private void handleRecyclerView() {
@@ -212,10 +217,10 @@ public class discussionDetailFragment extends Fragment {
                                         posts.remove(post);
 
                                         //刪除當前Fragment
-                                        FragmentManager fm = activity.getFragmentManager();
-                                        android.app.Fragment fragment = fm.findFragmentById(R.id.discussionDetailFragment);
-                                        FragmentTransaction ft = fm.beginTransaction();
-                                        ft.remove(fragment);
+//                                        FragmentManager fm = activity.getFragmentManager();
+//                                        android.app.Fragment fragment = fm.findFragmentById(R.id.discussionDetailFragment);
+//                                        FragmentTransaction ft = fm.beginTransaction();
+//                                        ft.remove(fragment);
 
                                         // 外面post也必須移除選取的spot
                                         storage.getReference().child(post.getPostImg()).delete()
@@ -244,14 +249,13 @@ public class discussionDetailFragment extends Fragment {
                             // 顯示對話框
                             .show();
                 } else if (itemId == R.id.report) {
-//                            Navigation.findNavController(v).navigate("路徑");
+                            Navigation.findNavController(v).navigate(R.id.reportFragment);
                 } else {
                     Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             });
             popupMenu.show();
-            return;
         });
     }
 
@@ -270,8 +274,9 @@ public class discussionDetailFragment extends Fragment {
 
 
         private class MyViewHolder extends RecyclerView.ViewHolder {
-            ImageButton comment_bt_membetHead, comment_bt_report, comment_bt_more;
+            ImageButton comment_bt_report, comment_bt_more;
             TextView comment_memberName, comment_text;
+            CircularImageView comment_bt_membetHead;
 
             public MyViewHolder(@NonNull @NotNull View itemView) {
                 super(itemView);
@@ -300,12 +305,11 @@ public class discussionDetailFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull @NotNull discussionDetailFragment.CommentAdapter.MyViewHolder holder, int position) {
             Comment comment = comments.get(position);
-            holder.comment_text.setText(comment.getCommentMsg() + comment.getCommentId());
-            holder.comment_memberName.setText("bob");
-            holder.comment_bt_membetHead.setImageResource(R.drawable.post_memberhead);
-
+            holder.comment_text.setText(comment.getCommentMsg());
+            holder.comment_memberName.setText(name);
+            downloadImage(holder.comment_bt_membetHead, headshot);
             holder.comment_bt_report.setOnClickListener(v -> {
-//                    Navigation.findNavController(v).navigate(檢舉頁面);
+                    Navigation.findNavController(v).navigate(R.id.reportFragment);
             });
 
             holder.comment_bt_more.setOnClickListener(v -> {
@@ -372,7 +376,6 @@ public class discussionDetailFragment extends Fragment {
                     return true;
                 });
                 popupComment.show();
-                return;
             });
         }
     }
@@ -447,6 +450,26 @@ public class discussionDetailFragment extends Fragment {
                         String message = task.getException() == null ? "Download fail" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
                         detailImageView.setImageResource(R.drawable.no_image);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // 下載Firebase storage的照片並顯示在ImageView上
+    private void downloadImage(final ImageView imageView, final String path) {
+        final int ONE_MEGABYTE = 1024 * 1024;
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                        imageView.setImageResource(R.drawable.no_image);
+                        Log.e(TAG, message);
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });

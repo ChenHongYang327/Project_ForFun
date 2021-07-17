@@ -2,6 +2,7 @@ package idv.tfp10105.project_forfun.discussionboard.disboard;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -34,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,12 +60,18 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     private List<Post> posts;
     private SearchView searchView;
     private FloatingActionButton bt_Add;
+    private SharedPreferences sharedPreferences;
+    private String name, headshot;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
+        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
+        name = sharedPreferences.getString("name","");
+        headshot = sharedPreferences.getString("headshot", "");
+
     }
 
     @Override
@@ -215,8 +223,9 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             TextView disPostName, disPostTitle, disPostContext, disPostTime;
-            ImageButton disPostBtMore, disPostMemberImg;
+            ImageButton disPostBtMore;
             ImageView disPostImg;
+            CircularImageView disPostMemberImg;
 
             MyViewHolder(@NonNull @NotNull View itemView) {
                 super(itemView);
@@ -252,9 +261,10 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             final Post post = posts.get(position);
             holder.disPostTitle.setText(post.getPostTitle());
             //TODO
-            holder.disPostName.setText("6");
+            holder.disPostName.setText(name);
             holder.disPostContext.setText(post.getPostContext());
             holder.disPostTime.setText(post.getCreateTime().toString());
+            showImage(holder.disPostMemberImg, headshot);
 
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();
@@ -269,6 +279,8 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             //設定點擊事件
             holder.disPostImg.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
+                bundle.putString("name", name);
+                bundle.putString("headshot", headshot);
                 bundle.putSerializable("post", post);
                 //轉至詳細頁面
                 Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
@@ -294,6 +306,8 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
                 if (itemId == R.id.update){
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("post",post);
+                    bundle.putString("name", name);
+                    bundle.putString("headshot", headshot);
                     Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment,bundle);
                     //刪除
                 } else if (itemId == R.id.delete) {
@@ -326,16 +340,15 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
                             Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
                         }
                         //檢舉
-                    } else if (itemId == R.id.report) {
-                            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
-                    } else {
-                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                     }
+                }else if (itemId == R.id.report) {
+                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
+                } else {
+                    Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             });
             popupMenu.show();
-            return;
         }
 
 
@@ -343,9 +356,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         private void showImage(final ImageView imageView, final String path) {
             final int ONE_MEGABYTE = 1024 * 1024;
             StorageReference imageRef = storage.getReference().child(path);
-            if (imageRef == null || path == null) {
-                imageView.setImageResource(R.drawable.no_image);
-            } else {
                 imageRef.getBytes(ONE_MEGABYTE)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult() != null) {
@@ -364,4 +374,3 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         }
 
     }
-}

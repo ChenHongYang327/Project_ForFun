@@ -37,7 +37,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageButton
+        <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/detail_bt_memberHead"
             android:layout_width="40dp"
             android:layout_height="40dp"

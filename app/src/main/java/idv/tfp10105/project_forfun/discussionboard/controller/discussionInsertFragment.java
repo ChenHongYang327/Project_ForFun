@@ -43,6 +43,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mikhaellopez.circularimageview.CircularImageView;
 import com.yalantis.ucrop.UCrop;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,10 +65,11 @@ public class discussionInsertFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
     private FragmentActivity activity;
     private EditText etTitle, etContext;
-    private ImageButton insert_bt_push, insert_bt_memberHead;
+    private ImageButton insert_bt_push;
+    private CircularImageView insert_bt_memberHead;
     private TextView insert_MemberName, insert_board;
     private Spinner insert_spinner;
-    private String imagePath;
+    private String imagePath = "Project_ForFun/Discussion_insert/no_image.jpg";
     private FirebaseStorage storage;
     private byte[] image;
     private File file;
@@ -76,6 +78,7 @@ public class discussionInsertFragment extends Fragment {
     private boolean pictureTaken;
     private String url = Common.URL ;
     private SharedPreferences sharedPreferences;
+    private String name, headshot;
     private Bundle bundle;
 
 
@@ -93,7 +96,9 @@ public class discussionInsertFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
-        sharedPreferences = activity.getSharedPreferences("PreferencesName", Context.MODE_PRIVATE);
+        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        name = sharedPreferences.getString("name","");
+        headshot = sharedPreferences.getString("headshot", "");
 
     }
 
@@ -108,11 +113,13 @@ public class discussionInsertFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         findViews(view);
         handleSpinner();
         handleInsert_bt_picture();
         handleFinishInsert();
+        insert_MemberName.setText(name);
+        showImage(insert_bt_memberHead ,headshot);
+
     }
 
 
@@ -228,12 +235,12 @@ public class discussionInsertFragment extends Fragment {
             //取得user輸入的值
             String title = etTitle.getText().toString().trim();
             if (title.length() <= 0) {
-                Toast.makeText(activity, "Title is invalid", Toast.LENGTH_SHORT).show();
+                etTitle.setError("請輸入標題");
                 return;
             }
             String context = etContext.getText().toString().trim();
             if (context.length() <= 0){
-                Toast.makeText(activity, "context is invalid", Toast.LENGTH_SHORT).show();
+                etContext.setError("請輸入內文");
                 return;
             }
             if (RemoteAccess.networkCheck(activity)) {
@@ -350,6 +357,26 @@ public class discussionInsertFragment extends Fragment {
                         Log.e(TAG, "message: " + message);
                         insert_bt_picture.setImageResource(R.drawable.no_image);
                         Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // 下載Firebase storage的照片並顯示在ImageView上
+    private void showImage(final ImageView imageView, final String path) {
+        final int ONE_MEGABYTE = 1024 * 1024;
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                        imageView.setImageResource(R.drawable.no_image);
+                        Log.e(TAG, message);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -39,7 +39,7 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:ignore="MissingConstraints" />
 
-            <ImageButton
+            <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/insert_bt_memberHead"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
