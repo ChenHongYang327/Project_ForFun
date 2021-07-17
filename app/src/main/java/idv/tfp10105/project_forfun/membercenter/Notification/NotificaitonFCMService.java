@@ -15,19 +15,28 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        String title = "";
-        int body = 0;
-        if (notification != null) {
-            title = notification.getTitle();
-            body =  Integer.parseInt(notification.getBody());
-        }
+//        RemoteMessage.Notification notification = remoteMessage.getNotification();
+//        String title = "";
+//        String body = "";
+//        if (notification != null) {
+//            title = notification.getTitle();
+//            body =  notification.getBody();
+//        }
+        //更改通知
         Message msg = new Message();
         //自定義消息代碼
         msg.what=1;
         //要傳送的物件
-        msg.obj=body;
+//        msg.obj=1;
+        //主執行緒才能控制元件
         MainActivity.handler.sendMessage(msg);
+
+    }
+
+    @Override
+    public void onNewToken(@NonNull String token) {
+        super.onNewToken(token);
+//        Log.d("顯示裝置Token",token);
 
     }
 }

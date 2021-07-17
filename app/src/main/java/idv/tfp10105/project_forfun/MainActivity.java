@@ -61,18 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean handleMessage(Message msg) {
                 if (msg.what == 1) {
-                    int notifyAdd = (int) msg.obj;
-                    if(notifyAdd>0) {
-                        notify += notifyAdd;
-                        if (notify > 0) {
-                            tvNotification.setVisibility(View.VISIBLE);
-                            tvNotification.setText(notify + "");
-                        }
-                    }
-                    else{
-                        handleNotificationCount();
-                    }
-
+                    handleNotificationCount();
                 }
                 return true;
             }
@@ -273,6 +262,10 @@ public class MainActivity extends AppCompatActivity {
             if (notify > 0) {
                 tvNotification.setVisibility(View.VISIBLE);
                 tvNotification.setText(notify + "");
+            }
+            else{
+                tvNotification.setVisibility(View.INVISIBLE);
+                tvNotification.setText(0+"");
             }
         }
 
