@@ -27,14 +27,15 @@ public class OcrAdapter extends FragmentStateAdapter {
                 return new Ocr_pay();
             case 4:
                 return new Ocr_complete();
-            default:
+            case 5:
                 return new Ocr_cancel();
-
+            default:
+                return new Ocr_paid();
         }
     }
 
     @Override
     public int getItemCount() {
-        return 6;
+        return 7;
     }
 }

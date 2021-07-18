@@ -28,13 +28,15 @@ public class OcrHOAdapter extends FragmentStateAdapter {
                 return new OcrHO_pay();
             case 4:
                 return new OcrHO_complete();
-            default:
+            case 5:
                 return new OcrHO_cancel();
+            default:
+                return new OcrHO_payarrive();
         }
     }
 
     @Override
     public int getItemCount() {
-        return 6;
+        return 7;
     }
 }

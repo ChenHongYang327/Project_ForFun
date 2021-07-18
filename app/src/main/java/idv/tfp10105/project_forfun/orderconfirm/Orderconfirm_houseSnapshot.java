@@ -139,10 +139,10 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 //                preloadInfo();
 //                ocrCancel6();
 //                break;
-//            case 7:
-//                preloadInfo();
-//                ocrPaid7();
-//                break;
+            case 7:
+                preloadInfo();
+                ocrPaid7();
+                break;
 //            case 11:
 //                preloadInfo();
 //                ocrHOReserve11();
@@ -167,10 +167,10 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 //                preloadInfo();
 //                ocrHOCancel16();
 //                break;
-//            case 17:
-//                preloadInfo();
-//                ocrHOPayarrive17();
-//                break;
+            case 17:
+                preloadInfo();
+                ocrHOPayarrive17();
+                break;
             default:
                 Toast.makeText(activity, "查無資料", Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(view).navigate(R.id.homeFragment);
@@ -295,12 +295,12 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 //
 //    }
 
-//    private void ocrPaid7() {
-//        tvCon1.setText("我的合約");
-//        tvCon2.setText("我要續租");
-//        tvCon3.setText("我要評分");
-//
-//    }
+    private void ocrPaid7() {
+        tvCon1.setText("我的合約");
+        tvCon2.setText("我要續租");
+        tvCon3.setText("我要評分");
+
+    }
 
 //    private void ocrHOReserve11() {
 //        btCon3.setVisibility(View.GONE);
@@ -419,13 +419,13 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 //
 //    }
 
-//    private void ocrHOPayarrive17() {
-//        tvConntText.setText("聯絡房客");
-//        tvCon1.setText("我的合約");
-//        tvCon2.setText("我要評分");
-//        tvCon3.setText("新增其他款項");
-//
-//    }
+    private void ocrHOPayarrive17() {
+        tvConntText.setText("聯絡房客");
+        tvCon1.setText("我的合約");
+        tvCon2.setText("我要評分");
+        tvCon3.setText("新增其他款項");
+
+    }
 
     //資料預抓
     private void preloadInfo() {

@@ -1,4 +1,4 @@
-package idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner;
+package idv.tfp10105.project_forfun.orderconfirm.ocf;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,9 +38,9 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Order;
 import idv.tfp10105.project_forfun.common.bean.Publish;
 
-public class OcrHO_payarrive extends Fragment {
-    private int TAPNUMBER = 17; //此頁面編號
-    private int OrderStatusNumber = 17; //訂單流程的狀態編號
+public class Ocr_pay_otherpay extends Fragment {
+    private int TAPNUMBER = 8; //此頁面編號
+    private int OrderStatusNumber = 8; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;
@@ -65,25 +65,22 @@ public class OcrHO_payarrive extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_ocr_h_o_payarrive, container, false);
+        return inflater.inflate(R.layout.fragment_ocr_pay_otherpay, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvHint = view.findViewById(R.id.tv_ocrHO_payarrive_HintText);
+        tvHint = view.findViewById(R.id.tv_ocr_pay_otherpay_HintText);
 
         signInId = sharedPreferences.getInt("memberId", -1);
 
-        recyclerView = view.findViewById(R.id.recycleview_ocrHO_payarrive);
+        recyclerView = view.findViewById(R.id.recycleview_ocr_pay_otherpay);
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
-        //顯示adapter
-        //showAlls();
-
         //更新的功能
-        swipeRefreshLayout = view.findViewById(R.id.swipe_ocrHO_payarrive);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_ocr_pay_otherpay);
         //下拉可更新，要配合ui元件
         swipeRefreshLayout.setOnRefreshListener(() -> {
             //動畫開始
@@ -127,7 +124,7 @@ public class OcrHO_payarrive extends Fragment {
             String url = Common.URL + "OrderConfirm";
             //後端先拿預載資料
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("RESULTCODE", 5);
+            jsonObject.addProperty("RESULTCODE", 1);
             jsonObject.addProperty("STATUS", status);
             jsonObject.addProperty("SIGNINID", memberId); //房客
             String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
@@ -205,7 +202,7 @@ public class OcrHO_payarrive extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyAdaptor.Holder holder, int position) {
+        public void onBindViewHolder(@NonNull  MyAdaptor.Holder holder, int position) {
 
             final Order order = orderList.get(position);
             int orderId = order.getOrderId();

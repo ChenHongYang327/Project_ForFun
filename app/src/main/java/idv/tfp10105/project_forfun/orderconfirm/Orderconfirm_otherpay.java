@@ -121,14 +121,16 @@ public class Orderconfirm_otherpay extends Fragment {
 
         tapNum = bundleIn.getInt("OCR");
 
-        if (tapNum == 15) {
-            handleViews(); //無限新增
-
-        } else {
-            Bundle bundleOut = new Bundle();
-            bundleOut.putInt("OCR", tapNum);
-            Toast.makeText(activity, "查無內容", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+        switch (tapNum) {
+            case 15:
+                handleViews();
+                break;
+            default:
+                Bundle bundleOut = new Bundle();
+                bundleOut.putInt("OCR", tapNum);
+                Toast.makeText(activity, "查無內容", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+                break;
         }
     }
 

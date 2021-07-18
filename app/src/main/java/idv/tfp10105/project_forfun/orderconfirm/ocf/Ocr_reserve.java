@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -42,7 +43,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class Ocr_reserve extends Fragment {
     private int TAPNUMBER = 1; //頁面編號
-    private int OrderStatusNumber = 1; //訂單流程編號
+    private int OrderStatusNumber = 1; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;
@@ -82,7 +83,7 @@ public class Ocr_reserve extends Fragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
             //顯示adapter
-            showAlls();
+            //showAlls();
 
             //更新的功能
             swipeRefreshLayout = view.findViewById(R.id.swipe_ocr_reserve);
@@ -122,6 +123,7 @@ public class Ocr_reserve extends Fragment {
         }
     }
 
+    //拿訂單物件陣列
     private List<Order> getOrderListInfo(int status, int memberId) {
         List<Order> orderlists = null;
         if (RemoteAccess.networkCheck(activity)) {
@@ -148,9 +150,6 @@ public class Ocr_reserve extends Fragment {
         }
     }
 
-
-
-
     private void setOrderList(List<Order> orderList) {
         MyAdaptor myAdaptor = (MyAdaptor) recyclerView.getAdapter();
         if (myAdaptor == null) {
@@ -163,7 +162,7 @@ public class Ocr_reserve extends Fragment {
 
 
     //recycleView
-    private class MyAdaptor extends RecyclerView.Adapter<MyAdaptor.Holder> {
+    private class MyAdaptor extends Adapter<MyAdaptor.Holder> {
         private List<Order> orderList;
         private Context context;
         private final int imageSize;
@@ -216,6 +215,9 @@ public class Ocr_reserve extends Fragment {
             int publishId = order.getPublishId();
             Publish publish = getPublish(publishId);
 
+            //拿預約單ID
+            int appointmentId = getAppointmentID(publish.getPublishId());
+
             //圖片
             String imgPath = publish.getTitleImg();
             if (imgPath != null) {
@@ -228,18 +230,39 @@ public class Ocr_reserve extends Fragment {
             holder.tvArea.setText(publish.getAddress());
 
             holder.tvControlText.setText("待確認"); //bt上顯示的字
+
+            //跳轉去預約單
             holder.btClick.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
-                bundle.putInt("OCR", TAPNUMBER);
-                bundle.putInt("PUBLISHID",publishId);
-                bundle.putInt("SIGNINID", signInId);
-                bundle.putInt("ORDREID",orderId);
-
-                Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);
+                bundle.putInt("ApmtID", appointmentId);
+                Navigation.findNavController(v).navigate(R.id.appointmentFragment, bundle);
             });
         }
     }
 
+    //拿預約單ＩＤ
+    private int getAppointmentID(int publishId) {
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "OrderConfirm";
+            //後端先拿預載資料
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("RESULTCODE", 3);
+            jsonObject.addProperty("PUBLISHID", publishId);
+            jsonObject.addProperty("SIGNINID", signInId);
+            String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
+
+            JsonObject tmp = gson.fromJson(jsonin, JsonObject.class);
+            int appointmentId = tmp.get("APPOINTMENTID").getAsInt();
+
+            return appointmentId;
+
+        } else {
+            Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+        }
+        return -1;
+    }
+
+    //拿publish物件
     private Publish getPublish(int publishId) {
         Publish publish = new Publish();
         if (RemoteAccess.networkCheck(activity)) {
