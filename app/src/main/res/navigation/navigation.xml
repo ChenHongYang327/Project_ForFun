@@ -206,6 +206,11 @@
         android:name="idv.tfp10105.project_forfun.signin.Customer_Service_Page.Customer_Service_Fragment"
         android:label="檢舉"
         tools:layout="@layout/fragment_customer_service" />
+    <fragment
+        android:id="@+id/ocr_pay_otherpay"
+        android:name="idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_pay_otherpay"
+        android:label="其他款項"
+        tools:layout="@layout/fragment_ocr_pay_otherpay" />
 </navigation>
 
 

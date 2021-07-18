@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,9 +38,9 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Order;
 import idv.tfp10105.project_forfun.common.bean.Publish;
 
-public class Ocr_order extends Fragment {
-    private int TAPNUMBER = 2; //此頁面編號
-    private int OrderStatusNumber = 2; //訂單流程的狀態編號
+public class Ocr_pay_otherpay extends Fragment {
+    private int TAPNUMBER = 8; //此頁面編號
+    private int OrderStatusNumber = 8; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;
@@ -64,22 +65,22 @@ public class Ocr_order extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_ocr_order, container, false);
+        return inflater.inflate(R.layout.fragment_ocr_pay_otherpay, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view,  Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvHint = view.findViewById(R.id.tv_ocr_order_HintText);
+        tvHint = view.findViewById(R.id.tv_ocr_pay_otherpay_HintText);
 
         signInId = sharedPreferences.getInt("memberId", -1);
 
-        recyclerView = view.findViewById(R.id.recycleview_ocr_order);
+        recyclerView = view.findViewById(R.id.recycleview_ocr_pay_otherpay);
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
         //更新的功能
-        swipeRefreshLayout = view.findViewById(R.id.swipe_ocr_order);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_ocr_pay_otherpay);
         //下拉可更新，要配合ui元件
         swipeRefreshLayout.setOnRefreshListener(() -> {
             //動畫開始
@@ -88,7 +89,6 @@ public class Ocr_order extends Fragment {
             //動畫結束
             swipeRefreshLayout.setRefreshing(false);
         });
-
     }
 
     @Override

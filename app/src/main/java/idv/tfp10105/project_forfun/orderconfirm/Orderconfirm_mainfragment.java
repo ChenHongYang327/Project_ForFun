@@ -63,7 +63,7 @@ public class Orderconfirm_mainfragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("待付款"));
         tabLayout.addTab(tabLayout.newTab().setText("已完成"));
         tabLayout.addTab(tabLayout.newTab().setText("已取消"));
-        //tabLayout.addTab(tabLayout.newTab().setText("已繳費"));
+        tabLayout.addTab(tabLayout.newTab().setText("已繳費"));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
