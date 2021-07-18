@@ -223,15 +223,11 @@ public class OcrHO_cancel extends Fragment {
             holder.tvTitle.setText(publish.getTitle());
             holder.tvArea.setText(publish.getAddress());
 
-            holder.tvControlText.setText("待確認"); //bt上顯示的字
+            holder.tvControlText.setText("查看物件資訊"); //bt上顯示的字
             holder.btClick.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
-                bundle.putInt("OCR", TAPNUMBER);
-                bundle.putInt("PUBLISHID",publishId);
-                bundle.putInt("SIGNINID", signInId);
-                bundle.putInt("ORDREID",orderId);
-
-                Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);
+                bundle.putInt("publishId",publishId);
+                Navigation.findNavController(v).navigate(R.id.publishDetailFragment,bundle);
             });
         }
     }

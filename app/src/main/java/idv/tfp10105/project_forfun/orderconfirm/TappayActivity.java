@@ -257,7 +257,7 @@ public class TappayActivity extends AppCompatActivity {
                             "ImgDownloadFail" + ": " + getImgPath :
                             task.getException().getMessage() + ": " + getImgPath;
                     Log.e("updateFragment", message);
-                    tvResult.setText(message);
+                    //tvResult.setText(message);
                 }
             });
         }else {
@@ -365,7 +365,7 @@ public class TappayActivity extends AppCompatActivity {
                             getString(R.string.TapPay_MerchantID));
                     Log.d(TAG, text);
                     //tvResult.setText(text);
-                    tvResult.setText("success");
+                    tvResult.setText("付款成功");
 
                     btConfirm.setVisibility(View.GONE);
                     tvConfirmText.setText("");

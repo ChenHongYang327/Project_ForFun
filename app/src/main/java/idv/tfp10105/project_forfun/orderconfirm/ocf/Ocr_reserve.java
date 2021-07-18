@@ -229,7 +229,7 @@ public class Ocr_reserve extends Fragment {
             holder.tvTitle.setText(publish.getTitle());
             holder.tvArea.setText(publish.getAddress());
 
-            holder.tvControlText.setText("待確認"); //bt上顯示的字
+            holder.tvControlText.setText("預約中"); //bt上顯示的字
 
             //跳轉去預約單
             holder.btClick.setOnClickListener(v -> {

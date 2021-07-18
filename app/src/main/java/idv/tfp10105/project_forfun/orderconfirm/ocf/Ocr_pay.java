@@ -226,7 +226,7 @@ public class Ocr_pay extends Fragment {
             holder.tvTitle.setText(publish.getTitle());
             holder.tvArea.setText(publish.getAddress());
 
-            holder.tvControlText.setText("待確認"); //bt上顯示的字
+            holder.tvControlText.setText("我要付款"); //bt上顯示的字
             holder.btClick.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putInt("OCR", TAPNUMBER);

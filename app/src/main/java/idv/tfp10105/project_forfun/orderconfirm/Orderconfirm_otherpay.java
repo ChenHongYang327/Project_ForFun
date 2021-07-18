@@ -145,8 +145,6 @@ public class Orderconfirm_otherpay extends Fragment {
 
             //檢查網路連線
             if (RemoteAccess.networkCheck(activity)) {
-
-
                 String url = Common.URL + "OtherPay";
 
                 // take value
