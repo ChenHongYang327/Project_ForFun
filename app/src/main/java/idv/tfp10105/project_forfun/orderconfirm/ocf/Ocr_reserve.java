@@ -43,7 +43,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class Ocr_reserve extends Fragment {
     private int TAPNUMBER = 1; //頁面編號
-    private int OrderStatusNumber = 1; //訂單流程的狀態編號
+    private int OrderStatusNumber = 11; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;

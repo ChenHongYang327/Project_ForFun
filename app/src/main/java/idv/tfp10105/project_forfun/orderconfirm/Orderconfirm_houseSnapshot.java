@@ -44,7 +44,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
     private Gson gson = new Gson();
     private int sidninId, orderId, publishId, orderStatus, ocr_agmt;
     private FirebaseStorage storage;
-    private Member member;
     // BottomSheet
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheetView;
@@ -181,12 +180,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                 break;
         }
 
-        //跳轉 聯絡人
-        btConn.setOnClickListener(v -> {
-            Bundle bundle2PerSnap = new Bundle();
-            bundle2PerSnap.putSerializable("SelectUser", member);
-            Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle2PerSnap);
-        });
     }
 
 //    private void ocrReserve1() {
@@ -515,7 +508,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
             JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
             String memberStr = object.get("MEMBER").getAsString();
-            member = gson.fromJson(memberStr, Member.class);
+            Member member = gson.fromJson(memberStr, Member.class);
             String publishStr = object.get("PUBLISH").getAsString();
             Publish publish = gson.fromJson(publishStr, Publish.class);
 
@@ -534,10 +527,11 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                 setImgFromFireStorage(imgPath_Head, imgHeadShot);
             }
 
+            String name = member.getNameL() + member.getNameF();
             tvTitle.setText(publish.getTitle());
             tvArea.setText(publish.getAddress());
             tvSquare.setText(String.valueOf(publish.getSquare()));
-            tvName.setText(member.getNameL() + member.getNameF());
+            tvName.setText(name);
 
             switch (publish.getType()) {
                 case 0:
@@ -550,6 +544,14 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                     tvType.setText("無提供資訊");
                     break;
             }
+
+            //跳轉 聯絡人
+            btConn.setOnClickListener(v -> {
+                Bundle bundle2PerSnap = new Bundle();
+                bundle2PerSnap.putSerializable("SelectUser", member);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle2PerSnap);
+            });
+
         } else {
             Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
         }

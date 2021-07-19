@@ -276,7 +276,7 @@ public class OcrHO_reserve extends Fragment {
 
             publish = gson.fromJson(punStr, Publish.class);
 
-            Log.d("PUB", publish.toString());
+           // Log.d("PUB", publish.toString());
 
             return publish;
 
