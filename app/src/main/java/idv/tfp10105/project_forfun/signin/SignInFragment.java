@@ -120,17 +120,19 @@ public class SignInFragment extends Fragment {
         if (user != null) {
             if (sharedPreferences.getInt("memberId", -1) > 0) {
                 if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
-                    Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
-                    auth.signOut();
                     JsonObject req = new JsonObject();
                     req.addProperty("action", "clearToken");
                     req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
-                    RemoteAccess.getJsonData(url, req.toString());//不接回覆
+                    if(RemoteAccess.getJsonData(url, req.toString()).equals("error")) {
+                        Toast.makeText(activity, "請檢查伺服器連線狀態", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
+                    auth.signOut();
                     sharedPreferences.edit().clear().apply();
                     sharedPreferences.edit()
                             .putBoolean("firstOpen", false)
                             .apply();
-
                 } else {
                     Navigation.findNavController(btSignIn)
                         .navigate(R.id.homeFragment);

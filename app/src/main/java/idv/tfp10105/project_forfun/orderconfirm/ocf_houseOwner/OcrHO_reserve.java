@@ -42,7 +42,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class OcrHO_reserve extends Fragment {
     private int TAPNUMBER = 11; //頁面編號
-    private int OrderStatusNumber = 11; //訂單流程的狀態編號
+    private int OrderStatusNumber = 1; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;
@@ -276,7 +276,7 @@ public class OcrHO_reserve extends Fragment {
 
             publish = gson.fromJson(punStr, Publish.class);
 
-            Log.d("PUB", publish.toString());
+           // Log.d("PUB", publish.toString());
 
             return publish;
 

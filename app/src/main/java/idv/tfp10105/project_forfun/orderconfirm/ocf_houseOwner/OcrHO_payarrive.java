@@ -36,18 +36,18 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Order;
+import idv.tfp10105.project_forfun.common.bean.OtherPay;
 import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class OcrHO_payarrive extends Fragment {
     private int TAPNUMBER = 17; //此頁面編號
-    private int OrderStatusNumber = 17; //訂單流程的狀態編號
+    private int OrderStatusNumber = 7; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;
     private SharedPreferences sharedPreferences;
-    private List<Order> orders;
+    private List<OtherPay> otherPays;
     private int signInId;
-    private Order order;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvHint;
@@ -59,7 +59,7 @@ public class OcrHO_payarrive extends Fragment {
         activity = getActivity();
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE); //共用的
         storage = FirebaseStorage.getInstance();
-        orders = new ArrayList<>();
+        otherPays = new ArrayList<>();
     }
 
     @Override
@@ -102,45 +102,45 @@ public class OcrHO_payarrive extends Fragment {
 
     //顯示全部
     private void showAlls() {
-        if (!orders.isEmpty()) {
-            orders.clear();
-            orders = getOrderListInfo(OrderStatusNumber, signInId);
-            if(orders.isEmpty()){
+        if (!otherPays.isEmpty()) {
+            otherPays.clear();
+            otherPays = getOtherpayListInfo(OrderStatusNumber, signInId);
+            if(otherPays.isEmpty()){
                 tvHint.setText("尚未有訂單！");
             }else{
-                setOrderList(orders);
+                setOrderList(otherPays);
             }
         } else {
-            orders = getOrderListInfo(OrderStatusNumber, signInId);
-            if(orders.isEmpty()){
+            otherPays = getOtherpayListInfo(OrderStatusNumber, signInId);
+            if(otherPays.isEmpty()){
                 tvHint.setText("尚未有訂單！");
             }else{
-                setOrderList(orders);
+                setOrderList(otherPays);
             }
         }
     }
 
-    //拿後端對應資料
-    private List<Order> getOrderListInfo(int status, int memberId) {
-        List<Order> orderlists = null;
+    //拿後Otherpay端對應資料
+    private List<OtherPay> getOtherpayListInfo(int status, int memberId) {
+        List<OtherPay> otherPays = null;
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "OrderConfirm";
             //後端先拿預載資料
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("RESULTCODE", 5);
+            jsonObject.addProperty("RESULTCODE", 8);
             jsonObject.addProperty("STATUS", status);
             jsonObject.addProperty("SIGNINID", memberId); //房客
             String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
 
             JsonObject tmp = gson.fromJson(jsonin, JsonObject.class);
-            Type listType = new TypeToken<List<Order>>() {
+            Type listType = new TypeToken<List<OtherPay>>() {
             }.getType();
 
-            orderlists = gson.fromJson(tmp.get("ORDERLIST").getAsString(), listType);
+            otherPays = gson.fromJson(tmp.get("OTHERPAYLIST").getAsString(), listType);
 
-            Log.d("ORDER", orderlists.toString());
+            Log.d("ORDER", otherPays.toString());
 
-            return orderlists;
+            return otherPays;
         } else {
             Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
             return null;
@@ -148,30 +148,31 @@ public class OcrHO_payarrive extends Fragment {
     }
 
     //set recycleView Adapter
-    private void setOrderList(List<Order> orderList) {
+    private void setOrderList(List<OtherPay> otherPayList) {
         MyAdaptor myAdaptor = (MyAdaptor) recyclerView.getAdapter();
         if (myAdaptor == null) {
-            myAdaptor = new MyAdaptor(activity, orderList);
+            myAdaptor = new MyAdaptor(activity, otherPayList);
             recyclerView.setAdapter(myAdaptor);
         }
-        myAdaptor.setOrderList(orderList);
+        myAdaptor.setOtherpayList(otherPayList);
         myAdaptor.notifyDataSetChanged();
     }
 
     //recycleView
     private class MyAdaptor extends RecyclerView.Adapter<MyAdaptor.Holder> {
-        private List<Order> orderList;
+        private List<OtherPay> otherPayList;
         private Context context;
         private final int imageSize;
 
-        public MyAdaptor(Context context, List<Order> orderList) {
+
+        public MyAdaptor(Context context, List<OtherPay> otherPayList) {
             this.context = context;
-            this.orderList = orderList;
+            this.otherPayList = otherPayList;
             imageSize = getResources().getDisplayMetrics().widthPixels / 4;
         }
 
-        void setOrderList(List<Order> orderList) {
-            this.orderList = orderList;
+        void setOtherpayList(List<OtherPay> otherPayList) {
+            this.otherPayList = otherPayList;
         }
 
 
@@ -194,7 +195,7 @@ public class OcrHO_payarrive extends Fragment {
 
         @Override
         public int getItemCount() {
-            return orderList == null ? 0 : orderList.size();
+            return otherPayList == null ? 0 : otherPayList.size();
         }
 
         @Override
@@ -205,15 +206,17 @@ public class OcrHO_payarrive extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyAdaptor.Holder holder, int position) {
+        public void onBindViewHolder(@NonNull  MyAdaptor.Holder holder, int position) {
 
-            final Order order = orderList.get(position);
+            final OtherPay otherPay = otherPayList.get(position);
+
+            Order order = getOrder(otherPay.getOtherpayId());
             int orderId = order.getOrderId();
             int publishId = order.getPublishId();
             Publish publish = getPublish(publishId);
 
             //圖片
-            String imgPath = publish.getTitleImg();
+            String imgPath = otherPay.getSuggestImg();
             if (imgPath != null) {
                 setImgFromFireStorage(imgPath, holder.imgPic);
             } else {
@@ -221,9 +224,9 @@ public class OcrHO_payarrive extends Fragment {
             }
 
             holder.tvTitle.setText(publish.getTitle());
-            holder.tvArea.setText(publish.getAddress());
+            //holder.tvArea.setText(publish.getAddress());
 
-            holder.tvControlText.setText("查看付款資訊"); //bt上顯示的字
+            holder.tvControlText.setText("確認資訊"); //bt上顯示的字
             holder.btClick.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putInt("OCR", TAPNUMBER);
@@ -255,6 +258,33 @@ public class OcrHO_payarrive extends Fragment {
             Log.d("PUB", publish.toString());
 
             return publish;
+
+        } else {
+            Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+        }
+        return null;
+    }
+
+    //拿order物件
+    @Nullable
+    private Order getOrder(int otherpayId) {
+        Order order = new Order();
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "OrderConfirm";
+            //後端先拿預載資料
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("RESULTCODE", 7);
+            jsonObject.addProperty("OTHERPAYID", otherpayId);
+            String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
+
+            JsonObject tmp = gson.fromJson(jsonin, JsonObject.class);
+            String punStr = tmp.get("ORDER").getAsString();
+
+            order = gson.fromJson(punStr, Order.class);
+
+            //Log.d("PUB", order.toString());
+
+            return order;
 
         } else {
             Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();

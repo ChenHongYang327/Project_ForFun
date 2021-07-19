@@ -63,7 +63,6 @@ public class discussionDetailFragment extends Fragment {
     private CircularImageView detailBtMemberHead;
     private RecyclerView rvDetail;
     private EditText detail_et_comment;
-    private String imagePath;
     private Bundle bundle;
     private FirebaseStorage storage;
     private byte[] image;
@@ -71,6 +70,7 @@ public class discussionDetailFragment extends Fragment {
     private List<Post> posts;
     private String url = Common.URL;
     private String name, headshot;
+    private String imagePath = "Project_ForFun/Discussion_insert/no_image.jpg";
 
 
 
@@ -84,7 +84,6 @@ public class discussionDetailFragment extends Fragment {
         post = (Post) (getArguments() != null ? getArguments().getSerializable("post") : null);
         name = getArguments() != null ? getArguments().getString("name") : null;
         headshot = getArguments() != null ? getArguments().getString("headshot") : null;
-
     }
 
     @Override
@@ -127,7 +126,6 @@ public class discussionDetailFragment extends Fragment {
 
     //顯示貼文內容
     private void showPost() {
-        downloadImage(detailBtMemberHead,headshot);
         if (imagePath != "") {
             showImage(post.getPostImg());
             Log.d("post","post: " + post.toString());
@@ -137,6 +135,7 @@ public class discussionDetailFragment extends Fragment {
         detailTitle.setText(post.getPostTitle());
         detailContext.setText(post.getPostContext());
         detailTime.setText(post.getCreateTime().toString());
+        downloadImage(detailBtMemberHead,headshot);
         detailMemberName.setText(name);
     }
 
@@ -193,9 +192,11 @@ public class discussionDetailFragment extends Fragment {
                 int itemId = item.getItemId();
                 //新增
                 if (itemId == R.id.update) {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("post", post);
-                    Navigation.findNavController(v).navigate(R.id.discussionUpdateFragment, bundle);
+                    Bundle bundle2 = new Bundle();
+                    bundle2.putString("name", name);
+                    bundle2.putString("headshot", headshot);
+                    bundle2.putSerializable("post", post);
+                    Navigation.findNavController(v).navigate(R.id.discussionUpdateFragment, bundle2);
                     //刪除
                 } else if (itemId == R.id.delete) {
                     //實例化AlertDialog.Builder物件

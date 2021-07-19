@@ -57,7 +57,6 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Post;
 
-
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.POWER_SERVICE;
 
@@ -80,6 +79,7 @@ public class discussionInsertFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private String name, headshot;
     private Bundle bundle;
+    private Integer memberId;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -99,6 +99,7 @@ public class discussionInsertFragment extends Fragment {
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         name = sharedPreferences.getString("name","");
         headshot = sharedPreferences.getString("headshot", "");
+        memberId = sharedPreferences.getInt("memberId",-1);
 
     }
 
@@ -246,7 +247,7 @@ public class discussionInsertFragment extends Fragment {
             if (RemoteAccess.networkCheck(activity)) {
                 //用json傳至後端
                 url += "DiscussionBoardController";
-                Post post = new Post(0, insert_spinner.getSelectedItem().toString(), 0, title, context, imagePath);
+                Post post = new Post(0, insert_spinner.getSelectedItem().toString(), memberId , title, context, imagePath);
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("action", "postInsert");
                 jsonObject.addProperty("post", new Gson().toJson(post));
@@ -382,4 +383,5 @@ public class discussionInsertFragment extends Fragment {
     }
 
 }
+
 

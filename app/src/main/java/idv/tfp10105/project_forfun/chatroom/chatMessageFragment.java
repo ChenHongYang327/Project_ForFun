@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -126,21 +127,6 @@ public class chatMessageFragment extends Fragment {
                 if (count == 0) {
                     Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                 } else {
-
-                    if (!chatRoomMessage.getMemberId().equals(chatRoom.getMemberId1())) {
-                        ChatRoomMessageAdapter.MyViewHolder.otherMessage.setVisibility(View.VISIBLE);
-                        ChatRoomMessageAdapter.MyViewHolder.selfMessage.setVisibility(View.GONE);
-                        ChatRoomMessageAdapter.MyViewHolder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
-                        ChatRoomMessageAdapter.MyViewHolder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
-                        ChatRoomMessageAdapter.MyViewHolder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-
-                    } else {
-                        ChatRoomMessageAdapter.MyViewHolder.selfMessage.setVisibility(View.VISIBLE);
-                        ChatRoomMessageAdapter.MyViewHolder.otherMessage.setVisibility(View.GONE);
-                        ChatRoomMessageAdapter.MyViewHolder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
-                        ChatRoomMessageAdapter.MyViewHolder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-                    }
-
                     Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
                     chatRoomFragment.ChatRoomAdapter chatRoomAdapter = (chatRoomFragment.ChatRoomAdapter) rvChatMessage.getAdapter();
@@ -172,9 +158,12 @@ public class chatMessageFragment extends Fragment {
 
 
 
-    public static class ChatRoomMessageAdapter extends RecyclerView.Adapter<ChatRoomMessageAdapter.MyViewHolder> {
+    public class ChatRoomMessageAdapter extends RecyclerView.Adapter {
         private final LayoutInflater layoutInflater;
         private List<ChatRoomMessage> chatRoomMessages;
+        private final int TYPE_MESSAGE_SENT = 0;
+        private final int TYPE_MESSAGE_RECEIVED = 1;
+
 
         public ChatRoomMessageAdapter(Context context ,List<ChatRoomMessage> chatRoomMessages) {
             layoutInflater = LayoutInflater.from(context);
@@ -185,25 +174,54 @@ public class chatMessageFragment extends Fragment {
             this.chatRoomMessages = chatRoomMessages;
         }
 
-        public static class MyViewHolder extends RecyclerView.ViewHolder {
-            public static CircularImageView chatRoomMemberImg;
-            public static TextView chatRoom_message_context, chatRoom_message_CreatTime, chatRoom_message_context_self, chatRoom_message_CreatTime_self, chatRoom_message_ReadStatus_self;
-            public static LinearLayout otherMessage;
-            public static LinearLayout selfMessage;
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            public TextView chatRoom_message_context_self, chatRoom_message_CreatTime_self, chatRoom_message_ReadStatus_self;
+            public LinearLayout selfMessage;
 
             public MyViewHolder(@NonNull View itemView) {
                 super(itemView);
-               chatRoomMemberImg = itemView.findViewById(R.id.chatRoomMemberImg);
-               chatRoom_message_context = itemView.findViewById(R.id.chatRoom_message_context);
-               chatRoom_message_CreatTime = itemView.findViewById(R.id.chatRoom_message_CreatTime);
                chatRoom_message_context_self = itemView.findViewById(R.id.chatRoom_message_context_self);
                chatRoom_message_CreatTime_self = itemView.findViewById(R.id.chatRoom_message_CreatTime_self);
                chatRoom_message_ReadStatus_self = itemView.findViewById(R.id.chatRoom_message_ReadStatus_self);
-               otherMessage = itemView.findViewById(R.id.other_message);
                selfMessage = itemView.findViewById(R.id.self_message);
 
             }
         }
+
+
+        public class ReceivedViewHolder extends RecyclerView.ViewHolder {
+            public CircularImageView chatRoomMemberImg;
+            public TextView chatRoom_message_context, chatRoom_message_CreatTime;
+            public LinearLayout otherMessage;
+
+
+            public ReceivedViewHolder(@NonNull View itemView) {
+                super(itemView);
+                chatRoomMemberImg = itemView.findViewById(R.id.chatRoomMemberImg);
+                chatRoom_message_context = itemView.findViewById(R.id.chatRoom_message_context);
+                chatRoom_message_CreatTime = itemView.findViewById(R.id.chatRoom_message_CreatTime);
+                otherMessage = itemView.findViewById(R.id.other_message);
+            }
+        }
+
+//        @Override
+//        public int getItemViewType(int position) {
+//            ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
+//            try {
+//                if(chatRoomMessage.getBoolean("isSent")){
+//                    if(chatRoomMessage.has("message")){
+//                        return TYPE_MESSAGE_SENT;
+//                    }
+//                }else{
+//                    if(chatRoomMessage.has("message")){
+//                        return TYPE_MESSAGE_RECEIVED;
+//                    }
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return -1;
+//        }
 
         @Override
         public int getItemCount() {
@@ -212,21 +230,35 @@ public class chatMessageFragment extends Fragment {
 
         @NonNull
         @Override
-        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View itemView = layoutInflater.inflate(R.layout.chat_member_itemview, parent, false);
-            return new MyViewHolder(itemView);
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView;
+                switch (viewType){
+                    case TYPE_MESSAGE_SENT:
+                        itemView = layoutInflater.inflate(R.layout.send_chat_message_itemview, parent, false);
+                        return new MyViewHolder(itemView);
+
+                    case TYPE_MESSAGE_RECEIVED:
+                        itemView = layoutInflater.inflate(R.layout.received_chat_message_itemview, parent, false);
+                        return new ReceivedViewHolder(itemView);
+
+                    default:
+                        return null;
+                }
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
-            holder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
-            holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
-            holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-            holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
-            holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-//            holder.chatRoom_message_ReadStatus_self.set(false);
-
+            if (chatRoomMessage.getMemberId() == chatRoom.getMemberId1()) {
+                ReceivedViewHolder receivedViewHolder = (ReceivedViewHolder) holder;
+                receivedViewHolder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
+                receivedViewHolder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
+                receivedViewHolder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
+            } else {
+                MyViewHolder myViewHolder = (MyViewHolder) holder;
+                myViewHolder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
+                myViewHolder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
+            }
 
         }
     }

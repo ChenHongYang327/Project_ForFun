@@ -40,7 +40,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class OcrHO_pay extends Fragment {
     private int TAPNUMBER = 14; //此頁面編號
-    private int OrderStatusNumber = 14; //訂單流程的狀態編號
+    private int OrderStatusNumber = 4; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;

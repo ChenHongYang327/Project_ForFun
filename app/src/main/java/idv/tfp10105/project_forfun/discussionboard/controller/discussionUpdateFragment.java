@@ -43,6 +43,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mikhaellopez.circularimageview.CircularImageView;
 import com.yalantis.ucrop.UCrop;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +65,8 @@ public class discussionUpdateFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
     private FragmentActivity activity;
     private EditText update_context_edtext, update_title_edtext;
-    private ImageButton update_bt_save, update_bt_memberhead;
+    private ImageButton update_bt_save;
+    private CircularImageView update_bt_memberhead;
     private TextView update_memberName_text, update_time_text;
     private String imagePath;
     private FirebaseStorage storage;
@@ -72,10 +74,10 @@ public class discussionUpdateFragment extends Fragment {
     private File file;
     private Uri contentUri;
     private ImageView update_bt_imageView;
-    private String url = Common.URL;
-    private Bundle bundle;
+    private String url = Common.URL + "DiscussionBoardController";
     private Post post;
-    private boolean pictureTaken;
+    private boolean pictureTaken = false ;
+    private String name, headshot;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -93,6 +95,9 @@ public class discussionUpdateFragment extends Fragment {
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
 
+        post = (Post) (getArguments() != null ? getArguments().getSerializable("post") : null);
+        name = getArguments() != null ? getArguments().getString("name") : null;
+        headshot = getArguments() != null ? getArguments().getString("headshot") : null;
 
     }
 
@@ -107,13 +112,14 @@ public class discussionUpdateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         final NavController navController = Navigation.findNavController(view);
-        bundle = getArguments();
-        if (bundle == null || bundle.getSerializable("post") == null) {
-            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
-            navController.popBackStack();
-            return;
-        }
-        post = (Post) bundle.getSerializable("post");
+//
+//        if (getArguments() == null || getArguments().getSerializable("post") == null) {
+//            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
+//            navController.popBackStack();
+//            return;
+//        }
+
+
         showPost();
 
         handleUpdate_bt_picture();
@@ -137,10 +143,12 @@ public class discussionUpdateFragment extends Fragment {
 
         if (imagePath != "") {
             downloadImage(post.getPostImg());
+           Log.d(TAG,"image:" + post.getPostImg());
         } else {
-
-            update_bt_imageView.setImageResource(R.drawable.no_image);
+            downloadImage(imagePath);
         }
+        showImage(update_bt_memberhead, headshot);
+        update_memberName_text.setText(name);
         update_title_edtext.setText(post.getPostTitle());
         update_context_edtext.setText(post.getPostContext());
 //        update_time_text.setText(post.getUpdateTime().toString());
@@ -209,11 +217,11 @@ public class discussionUpdateFragment extends Fragment {
                 return;
             }
             String title = update_title_edtext.getText().toString().trim();
-            if (context.length() <= 0) {
+            if (title.length() <= 0) {
                 Toast.makeText(activity, "請輸入標題", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(pictureTaken) {
+            if(pictureTaken == true) {
                 imagePath = getString(R.string.app_name) + "/Discussion_update/" + System.currentTimeMillis();
                 storage.getReference().child(imagePath).putFile(contentUri)
                         .addOnCompleteListener(task -> {
@@ -233,9 +241,8 @@ public class discussionUpdateFragment extends Fragment {
 
             if (RemoteAccess.networkCheck(activity)) {
                 //用json傳至後端
-                url += "DiscussionBoardController";
                 int id = post.getPostId();
-                post.setFiles(id, 0, title, context,imagePath );
+                post.setFiles(id, post.getPosterId(), title, context,imagePath );
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("action", "postUpdate");
                 jsonObject.addProperty("postId", id);
@@ -340,6 +347,26 @@ public class discussionUpdateFragment extends Fragment {
                         }
                     });
         }
+    }
+
+    // 下載Firebase storage的照片並顯示在ImageView上
+    private void showImage(final ImageView imageView, final String path) {
+        final int ONE_MEGABYTE = 1024 * 1024;
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                        imageView.setImageResource(R.drawable.no_image);
+                        Log.e(TAG, message);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

@@ -47,11 +47,12 @@ import java.util.Date;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.OtherPay;
 
 import static android.app.Activity.RESULT_OK;
 
 public class Orderconfirm_otherpay extends Fragment {
-    private TextView tvAccount, tvMsg, tvConfirmText, tvCancelText;
+    private TextView tvAccount, tvMsg, tvConfirmText, tvCancelText, tvTitle;
     private ImageView imgPic, btConfirm, btCancel;
     private SharedPreferences sharedPreferences;
     private Bundle bundleIn = getArguments();
@@ -111,6 +112,7 @@ public class Orderconfirm_otherpay extends Fragment {
         imgPic = view.findViewById(R.id.img_ocrOtherPay_pic);
         btCancel = view.findViewById(R.id.bt_ocrOtherPay_cansel);
         btConfirm = view.findViewById(R.id.bt_ocrOtherPay_confirm);
+        tvTitle = view.findViewById(R.id.tv_ocrOtherPay_Title);
 
         //bottomsheet
         btTakePic_sheet = bottomSheetView.findViewById(R.id.btTakepic);
@@ -125,6 +127,16 @@ public class Orderconfirm_otherpay extends Fragment {
             case 15:
                 handleViews();
                 break;
+            case 7: //房客預覽
+                handlePreViews();
+                break;
+            case 17: //房東預覽 同 房客預覽
+                handlePreViews();
+                break;
+            case 8: //下定前預覽 同 房客預覽
+                handlePreViews();
+                break;
+
             default:
                 Bundle bundleOut = new Bundle();
                 bundleOut.putInt("OCR", tapNum);
@@ -134,8 +146,30 @@ public class Orderconfirm_otherpay extends Fragment {
         }
     }
 
+    private void handlePreViews() {
+        int otherpayId = bundleIn.getInt("OTHERPAYID");
+
+        tvTitle.setText("付款明細");
+
+        btConfirm.setVisibility(View.GONE);
+        tvConfirmText.setText("");
+        //取消按鈕
+        btCancel.setOnClickListener(v -> {
+            Bundle bundleOut = new Bundle();
+            bundleOut.putInt("OCR", tapNum);
+            Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+        });
+
+        //抓值
+        OtherPay otherPay = getotherpay(otherpayId);
+        tvAccount.setText(otherPay.getOtherpayMoney());
+        tvMsg.setText(otherPay.getOtherpayNote());
+        String imgpath = otherPay.getSuggestImg();
+        setImgFromFireStorage(imgpath,imgPic);
+    }
 
     private void handleViews() {
+        tvTitle.setVisibility(View.GONE);
 
         imgPic.setOnClickListener(v -> {
             bottomSheetDialog.show();
@@ -296,6 +330,53 @@ public class Orderconfirm_otherpay extends Fragment {
                     }
                 });
         return imageRef.getPath();
+    }
+
+    //拿otherpay By otherpayId
+    private OtherPay getotherpay(int otherpayId){
+        OtherPay otherPay = new OtherPay();
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "OtherPay";
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("OTHERPAYID", otherpayId);
+            jsonObject.addProperty("RESULTCODE", 4);
+
+            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
+            JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
+
+            String tmp = object.get("OTHERPAY").getAsString();
+            otherPay = gson.fromJson(tmp,OtherPay.class);
+
+            int resoltcode = object.get("RESULT").getAsInt();
+            if (resoltcode == 200) {
+                return otherPay;
+            }else{
+                Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+        } else {
+            Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
+    //下載firebase 照片
+    private void setImgFromFireStorage(final String imgPath, final ImageView showImg) {
+        StorageReference imgRef = storage.getReference().child(imgPath);
+        final int ONE_MEGBYTE = 1024 * 1024;
+        imgRef.getBytes(ONE_MEGBYTE).addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                byte[] bytes = task.getResult();
+                Bitmap bitmapPc = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                showImg.setImageBitmap(bitmapPc);
+            } else {
+                String message = task.getException() == null ?
+                        "ImgDownloadFail" + ": " + imgPath :
+                        task.getException().getMessage() + ": " + imgPath;
+                //Log.e("updateFragment", message);
+            }
+        });
     }
 
 }
