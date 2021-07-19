@@ -64,12 +64,21 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         String headShot=customersHeadShot.get(position)==null?"/Project_ForFun/no image.jpg":customersHeadShot.get(position);
         //提醒者的頭像
         getImage(holder.ivNotification,headShot);
+        final String url= Common.URL+"NotificationController";
+        //取得Title
+        JsonObject jsonObject=new JsonObject();
         //設定提醒內容
         if(notification.getCommentId()!=0){
-            holder.tvNotificationTitle.setText("您的文章有一則新留言");
+            jsonObject.addProperty("action","getPostTitle");
+            jsonObject.addProperty("commentId",notification.getCommentId());
+            String postTitle=RemoteAccess.getJsonData(url,jsonObject.toString());
+            holder.tvNotificationTitle.setText("您的"+"「"+postTitle+"」"+"文章有新留言");
         }
         else if(notification.getAppointmentId()!=0){
-            holder.tvNotificationTitle.setText("您有一筆新的看房預約");
+            jsonObject.addProperty("action","getPublishTitle");
+            jsonObject.addProperty("appointmentId",notification.getAppointmentId());
+            String publishTitle=RemoteAccess.getJsonData(url,jsonObject.toString());
+            holder.tvNotificationTitle.setText("您的"+"「"+ publishTitle+"」"+"刊登單有新的看房預約");
         }
         else if(notification.getOrderId()!=0){
             holder.tvNotificationTitle.setText("您有一筆新的訂單");
@@ -90,7 +99,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             holder.cvNotification.setForeground(null);
         }
         holder.cvNotification.setOnClickListener(v->{
-          String url= Common.URL+"NotificationController";
             if(RemoteAccess.networkCheck(activity)) {
                 if (notification.getCommentId() != 0) {
                     JsonObject req=new JsonObject();

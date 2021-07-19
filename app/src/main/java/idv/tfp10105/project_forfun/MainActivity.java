@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
@@ -56,25 +57,24 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         handleView();
         sharedPreferences = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
-        handleNotificationCount();
-        handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                if (msg.what == 1) {
-                    handleNotificationCount();
-                }
-                return true;
+        // Android 11 /R 之后创建 Handler 构造函数 Handler(Handler.Callback callback) 变更为 new Handler(Looper.myLooper(), callback)
+        // Handler 允许我们发送延时消息，如果在延时消息未处理完，而此时 Handler 所在的 Activity 被关闭，但因为上述 Handler 用法则可能会导致内存泄漏。那么，在延时消息未处理完时，Handler 无法释放外部类 MainActivity 的对象，从而导致内存泄漏产生。
+        // https://shoewann0402.github.io/2020/03/09/android-R-about-handler-change/
+        handler = new Handler(Looper.myLooper(), msg -> {
+            if (msg.what == 1) {
+                handleNotificationCount();
             }
+            return true;
         });
         //開一個新執行緒控制小鈴鐺通知
 //        handleNotification();
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         handleAccess();
+        handleNotificationCount();
 
     }
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 //設定顯示返回鍵
                 if (navController.getCurrentDestination().getId() == R.id.notificationFragment) {
                     btBell.setVisibility(View.INVISIBLE);//隱藏通知按鈕
-                    tvNotification.setVisibility(View.INVISIBLE);
+                    tvNotification.setVisibility(View.INVISIBLE);//隱藏通知數量
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);//顯示返回鍵
 
                 } else if (navController.getCurrentDestination().getId() == R.id.meberCenterPersonalInformationFragment ||
@@ -260,8 +260,10 @@ public class MainActivity extends AppCompatActivity {
                 notify = Integer.parseInt(resq);
             }
             if (notify > 0) {
-                tvNotification.setVisibility(View.VISIBLE);
                 tvNotification.setText(notify + "");
+                if(navController.getCurrentDestination().getId() != R.id.notificationFragment) {
+                    tvNotification.setVisibility(View.VISIBLE);
+                }
             }
             else{
                 tvNotification.setVisibility(View.INVISIBLE);
