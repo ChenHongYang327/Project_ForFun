@@ -97,7 +97,7 @@ public class AppointmentFragment extends Fragment {
         btnAppointmentCancel = view.findViewById(R.id.btnAppointmentCancel);
         btnAppointmentConfirm = view.findViewById(R.id.btnAppointmentConfirm);
 
-        appointmentId = getArguments() != null ? getArguments().getInt("AmptId") : 0;
+        appointmentId = getArguments() != null ? getArguments().getInt("ApmtID") : 0;
 //        Log.d("appoint", appointmentId + "");
         if (appointmentId == 0) {
             // 無預約資料，新增模式
