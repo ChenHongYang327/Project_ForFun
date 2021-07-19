@@ -181,7 +181,7 @@ public class discussionBoard_KnowledgeFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
     }
 
@@ -191,7 +191,7 @@ public class discussionBoard_KnowledgeFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("boardId","需求單");
+            jsonObject.addProperty("boardId","知識問答");
             jsonObject.addProperty("action", "getAll");
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
             Type listMember = new TypeToken<List<Member>>() {}.getType();
@@ -205,6 +205,23 @@ public class discussionBoard_KnowledgeFragment extends Fragment {
         Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
 
         return members;
+    }
+
+    private Member getMemberByOwnerId (int ownerId) {
+        Member membershot = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/memberCenterPersonalInformation";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMember");
+            request.addProperty("member_id", ownerId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, new Gson().toJson(request));
+
+            membershot = new Gson().fromJson(jsonResule, Member.class);
+        }
+
+        return  membershot;
     }
 
     private void showPosts(List<Post> posts, List<Member> members) {
@@ -296,6 +313,14 @@ public class discussionBoard_KnowledgeFragment extends Fragment {
             holder.disPostContext.setText(post.getPostContext());
             holder.disPostTime.setText(post.getCreateTime().toString());
             showImage(holder.disPostMemberImg, member2.getHeadshot());
+
+            holder.disPostMemberImg.setOnClickListener(v -> {
+                Member memberPersonal = getMemberByOwnerId(post.getPosterId());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("SelectUser", memberPersonal);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment,bundle);
+
+            });
 
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();

@@ -165,7 +165,7 @@ public class discussionInsertFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
 
                 TextView errorText = (TextView) insert_spinner.getSelectedView();
-                errorText.setError("");
+                errorText.setError("請選擇板塊");
                 //just to highlight that this is an error
                 errorText.setTextColor(Color.RED);
                 //changes the selected item text to this

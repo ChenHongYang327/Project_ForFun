@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -50,6 +51,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Comment;
+import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 
 
@@ -71,6 +73,9 @@ public class discussionDetailFragment extends Fragment {
     private String url = Common.URL;
     private String name, headshot;
     private String imagePath = "Project_ForFun/Discussion_insert/no_image.jpg";
+    private List<Member> members;
+    private Integer memberId;
+    private SharedPreferences sharedPreferences;
 
 
 
@@ -84,6 +89,9 @@ public class discussionDetailFragment extends Fragment {
         post = (Post) (getArguments() != null ? getArguments().getSerializable("post") : null);
         name = getArguments() != null ? getArguments().getString("name") : null;
         headshot = getArguments() != null ? getArguments().getString("headshot") : null;
+
+        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        memberId = sharedPreferences.getInt("memberId",-1);
     }
 
     @Override
@@ -101,7 +109,7 @@ public class discussionDetailFragment extends Fragment {
         handleBtMore();
         handleRecyclerView();
         comments = getComments();
-        showComment(comments);
+        showComment(comments, members);
         handleBtSent();
     }
 
@@ -151,21 +159,42 @@ public class discussionDetailFragment extends Fragment {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("postId",post.getPostId());
             jsonObject.addProperty("action", "getAll");
-            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
-            Type listType = new TypeToken<List<Comment>>() {
-            }.getType();
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
+            Type listType = new TypeToken<List<Comment>>() {}.getType();
 
             //解析後端傳回資料
-            comments = new Gson().fromJson(jsonIn, listType);
+            comments = new Gson().fromJson(jsonIn.get("commentList").getAsString(), listType);
         } else {
             Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "comments : " + comments, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "comments : " + comments, Toast.LENGTH_SHORT).show();
         return comments;
     }
 
+    // 抓留言者資料
+    private List<Member> getMembers() {
 
-    private void showComment(List<Comment> comments) {
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "CommentController";
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("postId",post.getPostId());
+            jsonObject.addProperty("action", "getAll");
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
+            Type listMember = new TypeToken<List<Member>>() {}.getType();
+
+            //解析後端傳回資料
+            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(),listMember);
+
+        } else {
+            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+        }
+//        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
+
+        return members;
+    }
+
+
+    private void showComment(List<Comment> comments, List<Member> members) {
         if (comments == null || comments.isEmpty()) {
             Toast.makeText(activity, "尚未有留言", Toast.LENGTH_SHORT).show();
         }
@@ -173,10 +202,10 @@ public class discussionDetailFragment extends Fragment {
         CommentAdapter commentAdapter = (CommentAdapter) rvDetail.getAdapter();
         // 如果spotAdapter不存在就建立新的，否則續用舊有的
         if (commentAdapter == null) {
-            rvDetail.setAdapter(new CommentAdapter(activity,comments));
+            rvDetail.setAdapter(new CommentAdapter(activity,comments, getMembers()));
         } else {
             //更新Adapter資料,重刷
-            commentAdapter.setAdapter(comments);
+            commentAdapter.setAdapter(comments, members);
 
             //重新執行RecyclerView 三方法
             commentAdapter.notifyDataSetChanged();
@@ -263,14 +292,17 @@ public class discussionDetailFragment extends Fragment {
     public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder> {
         private final LayoutInflater layoutInflater;
         private List<Comment> comments;
+        private List<Member> members;
 
-        public CommentAdapter(Context context, List<Comment> comments) {
+        public CommentAdapter(Context context, List<Comment> comments, List<Member> members) {
             layoutInflater = LayoutInflater.from(context);
             this.comments = comments;
+            this.members = members;
         }
 
-        public void setAdapter(List<Comment> comments) {
+        public void setAdapter(List<Comment> comments, List<Member> members) {
             this.comments = comments;
+            this.members = members;
         }
 
 
@@ -305,10 +337,11 @@ public class discussionDetailFragment extends Fragment {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void onBindViewHolder(@NonNull @NotNull discussionDetailFragment.CommentAdapter.MyViewHolder holder, int position) {
-            Comment comment = comments.get(position);
+            final Comment comment = comments.get(position);
+            Member member2 = members.get(position);
             holder.comment_text.setText(comment.getCommentMsg());
-            holder.comment_memberName.setText(name);
-            downloadImage(holder.comment_bt_membetHead, headshot);
+            holder.comment_memberName.setText(member2.getNameL() + member2.getNameF());
+            downloadImage(holder.comment_bt_membetHead, member2.getHeadshot());
             holder.comment_bt_report.setOnClickListener(v -> {
                     Navigation.findNavController(v).navigate(R.id.reportFragment);
             });
@@ -390,7 +423,7 @@ public class discussionDetailFragment extends Fragment {
             }
             if (RemoteAccess.networkCheck(activity)) {
                 url = Common.URL + "CommentController";
-                Comment comment = new Comment(0,1,post.getPostId(),commentMgs);
+                Comment comment = new Comment(0, memberId, post.getPostId(), commentMgs);
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("action","commentInsert");
                 jsonObject.addProperty("comment", new Gson().toJson(comment));

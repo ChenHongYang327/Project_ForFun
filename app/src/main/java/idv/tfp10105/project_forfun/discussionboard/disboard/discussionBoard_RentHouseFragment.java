@@ -60,12 +60,12 @@ public class discussionBoard_RentHouseFragment extends Fragment {
     private List<Post> posts;
     private SearchView searchView;
     private FloatingActionButton bt_Add;
-    private String signin_name, signin_headshot;
-    private Post post;
     private SharedPreferences sharedPreferences;
     private String name, headshot;
-    private int memberId;
+    private String signin_name, signin_headshot;
+    private Post post;
     private List<Member> members;
+    private int memberId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,7 +99,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG,"onResume");
+//        Log.d(TAG,"onResume");
         posts = getPosts();
         showPosts(posts, members);
     }
@@ -168,7 +168,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
 
     //連線資料庫取資料
     private List<Post> getPosts() {
-        List<Post> posts = null;
+        List<Post> posts = new ArrayList<>();
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
@@ -176,7 +176,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             jsonObject.addProperty("action", "getAll");
 
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-            Type listPost = new TypeToken<List<Post>>() {}.getType();
+            Type listPost = new TypeToken<List<Post>>(){}.getType();
 
             //解析後端傳回資料
             posts = new Gson().fromJson(jsonIn.get("postList").getAsString(),listPost);
@@ -184,7 +184,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
     }
 
@@ -194,7 +194,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("boardId","需求單");
+            jsonObject.addProperty("boardId","租屋交流");
             jsonObject.addProperty("action", "getAll");
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
             Type listMember = new TypeToken<List<Member>>() {}.getType();
@@ -205,10 +205,28 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
 
         return members;
     }
+
+    private Member getMemberByOwnerId (int ownerId) {
+        Member membershot = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/memberCenterPersonalInformation";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMember");
+            request.addProperty("member_id", ownerId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, new Gson().toJson(request));
+
+            membershot = new Gson().fromJson(jsonResule, Member.class);
+        }
+
+        return  membershot;
+    }
+
 
     private void showPosts(List<Post> posts, List<Member> members) {
         if (posts == null || posts.isEmpty()) {
@@ -300,6 +318,14 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             holder.disPostTime.setText(post.getCreateTime().toString());
             showImage(holder.disPostMemberImg, member2.getHeadshot());
 
+            holder.disPostMemberImg.setOnClickListener(v -> {
+                Member memberPersonal = getMemberByOwnerId(post.getPosterId());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("SelectUser", memberPersonal);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment,bundle);
+
+            });
+
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();
             String imagePath = post.getPostImg();
@@ -381,7 +407,6 @@ public class discussionBoard_RentHouseFragment extends Fragment {
                     return true;
                 });
                 popupMenu.show();
-                return;
             });
         }
 

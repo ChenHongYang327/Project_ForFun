@@ -33,6 +33,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -101,7 +102,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG,"onResume");
+//        Log.d(TAG,"onResume");
         posts = getPosts();
         showPosts(posts, members);
 
@@ -188,8 +189,25 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
+    }
+
+    private Member getMemberByOwnerId (int ownerId) {
+        Member membershot = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/memberCenterPersonalInformation";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMember");
+            request.addProperty("member_id", ownerId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, new Gson().toJson(request));
+
+            membershot = new Gson().fromJson(jsonResule, Member.class);
+        }
+
+        return  membershot;
     }
 
     // 抓po文者資料
@@ -209,7 +227,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
 
         return members;
     }
@@ -303,6 +321,14 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             holder.disPostContext.setText(post.getPostContext());
             holder.disPostTime.setText(post.getCreateTime().toString());
             showImage(holder.disPostMemberImg, member2.getHeadshot());
+
+            holder.disPostMemberImg.setOnClickListener(v -> {
+                Member memberPersonal = getMemberByOwnerId(post.getPosterId());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("SelectUser", memberPersonal);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment,bundle);
+
+            });
 
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();
