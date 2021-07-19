@@ -40,7 +40,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class OcrHO_cancel extends Fragment {
     private int TAPNUMBER = 16; //此頁面編號
-    private int OrderStatusNumber = 16; //訂單流程的狀態編號
+    private int OrderStatusNumber = 6; //訂單流程的狀態編號
     private Activity activity;
     private RecyclerView recyclerView;
     private FirebaseStorage storage;

@@ -189,55 +189,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         });
     }
 
-    private void ocrpay_Otherpayd8() {
-        btCon3.setVisibility(View.GONE);
-        tvCon1.setText("我要付款");
-        tvCon2.setText("刪除此次交易");
-
-        btcon0.setOnClickListener(this::navgateToPublishDetail);
-        btCon1.setOnClickListener(v -> {
-           //跳去tappayActivity
-            //帶職＆刪除頁面
-            sharedPreferences.edit().putInt("ORDERID", orderId);
-            sharedPreferences.edit().putString("TAB", "otherpay");
-            Intent intent = new Intent(getActivity(), TappayActivity.class);
-            startActivity(intent);
-            Navigation.findNavController(v).popBackStack(R.id.orderconfirm_houseSnapshot, true);
-        });
-        btCon2.setOnClickListener(v -> {
-            //改變其他付款 狀態->2  跳完回首頁
-            tv_bottomsheet_Title.setText("是否刪除此訂單？");
-            bottomSheetDialog.show();
-
-            //確認取消要改otherpay狀態碼->2
-            bt_bottomsheet_Confirm.setOnClickListener(view -> {
-                if (RemoteAccess.networkCheck(activity)) {
-                    String url = Common.URL + "OtherPay";
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("OTHERPAYID", orderId);
-                    jsonObject.addProperty("RESULTCODE", 3);
-
-                    String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
-                    JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
-                    int result = object.get("RESULT").getAsInt();
-
-                    if (result == 200) {
-                        Toast.makeText(activity, "成功", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(v).navigate(R.id.homeFragment);
-                    } else {
-                        Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
-                }
-            });
-            bt_bottomsheet_Cancel.setOnClickListener(view -> {
-                bottomSheetDialog.dismiss();
-            });
-        });
-    }
-
 //    private void ocrReserve1() {
 //        btCon3.setVisibility(View.GONE);
 //        tvCon1.setText("修改預約");
@@ -349,10 +300,73 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 //    }
 
     private void ocrPaid7() {
-        tvCon1.setText("我的合約");
-        tvCon2.setText("我要續租");
-        tvCon3.setText("我要評分");
+        btCon3.setVisibility(View.GONE);
+        tvCon1.setText("付款單明細");
+        tvCon2.setText("回首頁");
 
+        btcon0.setOnClickListener(this::navgateToPublishDetail);
+        btCon1.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("OCR", 7);
+            Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
+        });
+        btCon2.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.homeFragment);
+        });
+
+    }
+
+    private void ocrpay_Otherpayd8() {
+        btCon3.setVisibility(View.GONE);
+        tvCon1.setText("我要付款");
+        tvCon2.setText("刪除此次交易");
+
+        btcon0.setOnClickListener(v->{
+            Bundle bundle = new Bundle();
+            bundle.putInt("OCR", 8);
+            Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
+        });
+        btCon1.setOnClickListener(v -> {
+            //跳去tappayActivity
+            //帶職＆刪除頁面
+            sharedPreferences.edit().putInt("ORDERID", orderId);
+            sharedPreferences.edit().putString("TAB", "otherpay");
+            Intent intent = new Intent(getActivity(), TappayActivity.class);
+            startActivity(intent);
+            Navigation.findNavController(v).popBackStack(R.id.orderconfirm_houseSnapshot, true);
+        });
+        btCon2.setOnClickListener(v -> {
+            //改變其他付款 狀態->2  跳完回首頁
+            tv_bottomsheet_Title.setText("是否刪除此訂單？");
+            bottomSheetDialog.show();
+
+            //確認取消要改otherpay狀態碼->2
+            bt_bottomsheet_Confirm.setOnClickListener(view -> {
+                if (RemoteAccess.networkCheck(activity)) {
+                    String url = Common.URL + "OtherPay";
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("OTHERPAYID", orderId);
+                    jsonObject.addProperty("RESULTCODE", 3);
+
+                    String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
+                    JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
+                    int result = object.get("RESULT").getAsInt();
+
+                    if (result == 200) {
+                        Toast.makeText(activity, "成功", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(v).navigate(R.id.homeFragment);
+                    } else {
+                        Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+                }
+            });
+            bt_bottomsheet_Cancel.setOnClickListener(view -> {
+                bottomSheetDialog.dismiss();
+            });
+        });
     }
 
 //    private void ocrHOReserve11() {
@@ -474,10 +488,19 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 
     private void ocrHOPayarrive17() {
         tvConntText.setText("聯絡房客");
-        tvCon1.setText("我的合約");
-        tvCon2.setText("我要評分");
-        tvCon3.setText("新增其他款項");
+        btCon3.setVisibility(View.GONE);
+        tvCon1.setText("付款單明細");
+        tvCon2.setText("回首頁");
 
+        btcon0.setOnClickListener(this::navgateToPublishDetail);
+        btCon1.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("OCR", 17);
+            Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
+        });
+        btCon2.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.homeFragment);
+        });
     }
 
     //資料預抓
