@@ -46,6 +46,7 @@ import java.util.List;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
@@ -59,9 +60,12 @@ public class discussionBoard_RentHouseFragment extends Fragment {
     private List<Post> posts;
     private SearchView searchView;
     private FloatingActionButton bt_Add;
+    private String signin_name, signin_headshot;
     private Post post;
     private SharedPreferences sharedPreferences;
     private String name, headshot;
+    private int memberId;
+    private List<Member> members;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,8 +73,9 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
         sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
-        name = sharedPreferences.getString("name","");
-        headshot = sharedPreferences.getString("headshot", "");
+        signin_name = sharedPreferences.getString("name","");
+        signin_headshot = sharedPreferences.getString("headshot", "");
+        memberId = sharedPreferences.getInt("memberId" , -1);
     }
 
     @Override
@@ -96,7 +101,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         super.onResume();
         Log.d(TAG,"onResume");
         posts = getPosts();
-        showPosts(posts);
+        showPosts(posts, members);
     }
 
     private void findViews(View view) {
@@ -111,7 +116,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             //開始動畫
             swipeRefreshLayout.setRefreshing(true);
             //重新載入recycleView
-            showPosts(posts);
+            showPosts(posts, members);
             //結束動畫
             swipeRefreshLayout.setRefreshing(false);
 
@@ -124,7 +129,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             public boolean onQueryTextChange(String newText) {
                 //如果輸入條件為空字串,就顯示原始資料,否則就顯示收尋後結果
                 if (newText.isEmpty()) {
-                    showPosts(posts);
+                    showPosts(posts, members);
                 } else {
                     List<Post> searchPosts = new ArrayList<>();
                     //搜尋原始資料內有無包含關鍵字（不區分大小寫）
@@ -133,7 +138,7 @@ public class discussionBoard_RentHouseFragment extends Fragment {
                             searchPosts.add(post);
                         }
                     }
-                    showPosts(searchPosts);
+                    showPosts(searchPosts, members);
                 }
                 return true;
             }
@@ -146,6 +151,9 @@ public class discussionBoard_RentHouseFragment extends Fragment {
 
 
     private void handleBtAdd() {
+//        Bundle bundle = new Bundle();
+//        bundle.putString("signin_name", signin_name);
+//        bundle.putString("signin_headshot", signin_headshot);
         //跳轉至新增頁面
         bt_Add.setOnClickListener(v -> Navigation.findNavController(v)
                 .navigate(R.id.action_discussionBoardFragment_to_discussionInsertFragment));
@@ -166,12 +174,13 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("boardId", "租屋交流");
             jsonObject.addProperty("action", "getAll");
-            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
-            Type listType = new TypeToken<List<Post>>() {
-            }.getType();
+
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
+            Type listPost = new TypeToken<List<Post>>() {}.getType();
 
             //解析後端傳回資料
-            posts = new Gson().fromJson(jsonIn, listType);
+            posts = new Gson().fromJson(jsonIn.get("postList").getAsString(),listPost);
+
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
@@ -179,8 +188,29 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         return posts;
     }
 
+    // 抓po文者資料
+    private List<Member> getMembers() {
 
-    private void showPosts(List<Post> posts) {
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "DiscussionBoardController";
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("boardId","需求單");
+            jsonObject.addProperty("action", "getAll");
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
+            Type listMember = new TypeToken<List<Member>>() {}.getType();
+
+            //解析後端傳回資料
+            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(),listMember);
+
+        } else {
+            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
+
+        return members;
+    }
+
+    private void showPosts(List<Post> posts, List<Member> members) {
         if (posts == null || posts.isEmpty()) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
@@ -188,10 +218,10 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         RentAdapter rentAdapter = (RentAdapter) rv_rent.getAdapter();
         // 如果spotAdapter不存在就建立新的，否則續用舊有的
         if (rentAdapter == null) {
-            rv_rent.setAdapter(new RentAdapter(activity, posts));
+            rv_rent.setAdapter(new RentAdapter(activity, posts, getMembers()));
         } else {
             //更新Adapter資料,重刷
-            rentAdapter.setAdapter(posts);
+            rentAdapter.setAdapter(posts, members);
 
             //重新執行RecyclerView 三方法
             rentAdapter.notifyDataSetChanged();
@@ -204,19 +234,22 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         private final int imageSize;
         //內部列表（搜尋後）
         private List<Post> posts;
+        private List<Member> members;
 
 
 
-        public RentAdapter(Context context, List<Post> posts) {
+        public RentAdapter(Context context, List<Post> posts, List<Member> members) {
             layoutInflater = LayoutInflater.from(context);
             this.posts = posts;
+            this.members = members;
             //螢幕寬度除以四當圖片尺寸
             imageSize = getResources().getDisplayMetrics().widthPixels / 4;
         }
 
         //        重刷RecyclerView畫面
-        public void setAdapter(List<Post> posts) {
+        public void setAdapter(List<Post> posts, List<Member> members) {
             this.posts = posts;
+            this.members = members;
         }
 
 
@@ -258,12 +291,14 @@ public class discussionBoard_RentHouseFragment extends Fragment {
         public void onBindViewHolder(@NonNull @NotNull RentAdapter.MyViewHolder holder, int position) {
 
             final Post post = posts.get(position);
+            Member member2 = members.get(position);
+
             holder.disPostTitle.setText(post.getPostTitle());
             //TODO
-            holder.disPostName.setText(name);
+            holder.disPostName.setText(member2.getNameL() + member2.getNameF());
             holder.disPostContext.setText(post.getPostContext());
             holder.disPostTime.setText(post.getCreateTime().toString());
-            showImage(holder.disPostMemberImg, headshot);
+            showImage(holder.disPostMemberImg, member2.getHeadshot());
 
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();
@@ -278,8 +313,8 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             //設定點擊事件
             holder.disPostImg.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
-                bundle.putString("name", name);
-                bundle.putString("headshot", headshot);
+                bundle.putString("name", member2.getNameL() + member2.getNameF());
+                bundle.putString("headshot", member2.getHeadshot());
                 bundle.putSerializable("post", post);
                 //轉至詳細頁面
                 Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
@@ -289,68 +324,67 @@ public class discussionBoard_RentHouseFragment extends Fragment {
             } else {
                 holder.disPostImg.setImageResource(R.drawable.no_image);
             }
+
             holder.disPostBtMore.setOnClickListener(v -> {
-                controller(v, post, url);
-            });
-        }
 
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        public void controller (View v, Post post, String url) {
-            //選單
-            PopupMenu popupMenu = new PopupMenu(activity,v, Gravity.END);
-            popupMenu.inflate(R.menu.popup_menu);
-            popupMenu.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                //新增
-                if (itemId == R.id.update){
-                    Bundle bundle = new Bundle();
-                    bundle.putString("name", name);
-                    bundle.putString("headshot", headshot);
-                    bundle.putSerializable("post",post);
-                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment,bundle);
-                    //刪除
-                } else if (itemId == R.id.delete) {
-                    if (RemoteAccess.networkCheck(activity)){
-                        JsonObject jsonDelete = new JsonObject();
-                        jsonDelete.addProperty("action","postDelete");
-                        jsonDelete.addProperty("postId",post.getPostId());
-                        int count;
-                        String result = RemoteAccess.getJsonData(url,jsonDelete.toString());
-                        count = Integer.parseInt(result);
-                        if (count == 0) {
-                            Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
-                        } else {
-                            posts.remove(post);
-                            RentAdapter.this.notifyDataSetChanged();
-                            // 外面spots也必須移除選取的spot
-                            discussionBoard_RentHouseFragment.this.posts.remove(post);
-                            storage.getReference().child(post.getPostImg()).delete()
-                                    .addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            Log.d(TAG, "照片已刪除");
-                                        } else {
-                                            String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
-                                                    task.getException().getMessage() + ": " + post.getPostImg();
-                                            Log.e(TAG, message);
-                                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                //選單
+                PopupMenu popupMenu = new PopupMenu(activity,v, Gravity.END);
+                popupMenu.inflate(R.menu.popup_menu);
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int itemId = item.getItemId();
+                    //新增
+                    if (itemId == R.id.update){
+                        Bundle bundle = new Bundle();
+                        bundle.putString("name", member2.getNameL() + member2.getNameF());
+                        bundle.putString("headshot", member2.getHeadshot());
+                        bundle.putSerializable("post",post);
+                        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment,bundle);
 
-                            Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                        //刪除
+                    } else if (itemId == R.id.delete) {
+                        if (RemoteAccess.networkCheck(activity)){
+                            JsonObject jsonDelete = new JsonObject();
+                            jsonDelete.addProperty("action","postDelete");
+                            jsonDelete.addProperty("postId",post.getPostId());
+                            int count;
+                            String result = RemoteAccess.getJsonData(url,jsonDelete.toString());
+                            count = Integer.parseInt(result);
+                            if (count == 0) {
+                                Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
+                            } else {
+                                posts.remove(post);
+                                RentAdapter.this.notifyDataSetChanged();
+                                // 外面spots也必須移除選取的spot
+                                discussionBoard_RentHouseFragment.this.posts.remove(post);
+                                storage.getReference().child(post.getPostImg()).delete()
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "照片已刪除");
+                                            } else {
+                                                String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
+                                                        task.getException().getMessage() + ": " + post.getPostImg();
+                                                Log.e(TAG, message);
+                                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                            }
+
                         }
-
+                        //檢舉
+                    }else if (itemId == R.id.report) {
+                        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
+                    } else {
+                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                     }
-                    //檢舉
-                }else if (itemId == R.id.report) {
-                            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
-                } else {
-                    Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
-                }
-                return true;
+                    return true;
+                });
+                popupMenu.show();
+                return;
             });
-            popupMenu.show();
-            return;
         }
+
 
 
         // 下載Firebase storage的照片並顯示在ImageView上
