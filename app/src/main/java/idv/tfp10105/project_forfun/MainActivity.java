@@ -30,6 +30,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.JsonObject;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private NavController navController;
     private Toolbar toolbar;
     private TextView tvNotification;
+    private CircularImageView ivCircle;
     private SharedPreferences sharedPreferences;
     private int notify = 0;
     private ImageButton btBell;//actionbar 中的ImageButton
@@ -86,9 +88,11 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             btBell = findViewById(R.id.btBell);              //取得元件
             tvNotification = findViewById(R.id.tvNotification);
+            ivCircle=findViewById(R.id.ivCircle);
             //點擊通知
             btBell.setOnClickListener(v -> {
                 tvNotification.setVisibility(View.GONE);
+                ivCircle.setVisibility(View.GONE);
                 notify = 0;
                 navController.navigate(R.id.notificationFragment);
 
@@ -124,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 if (navController.getCurrentDestination().getId() == R.id.notificationFragment) {
                     btBell.setVisibility(View.INVISIBLE);//隱藏通知按鈕
                     tvNotification.setVisibility(View.INVISIBLE);//隱藏通知數量
+                    ivCircle.setVisibility(View.INVISIBLE);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);//顯示返回鍵
 
                 } else if (navController.getCurrentDestination().getId() == R.id.meberCenterPersonalInformationFragment ||
@@ -140,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                     btBell.setVisibility(View.VISIBLE);
                     if (notify != 0) {
                         tvNotification.setVisibility(View.VISIBLE);
+                        ivCircle.setVisibility(View.VISIBLE);
                     }
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 }
@@ -224,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     tvNotification.setVisibility(View.VISIBLE);
+                                    ivCircle.setVisibility(View.VISIBLE);
                                     tvNotification.setText(notify + "");
 
                                 }
@@ -263,10 +270,12 @@ public class MainActivity extends AppCompatActivity {
                 tvNotification.setText(notify + "");
                 if(navController.getCurrentDestination().getId() != R.id.notificationFragment) {
                     tvNotification.setVisibility(View.VISIBLE);
+                    ivCircle.setVisibility(View.VISIBLE);
                 }
             }
             else{
                 tvNotification.setVisibility(View.INVISIBLE);
+                ivCircle.setVisibility(View.INVISIBLE);
                 tvNotification.setText(0+"");
             }
         }
