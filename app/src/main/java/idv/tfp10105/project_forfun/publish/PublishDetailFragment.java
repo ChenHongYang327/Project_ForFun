@@ -1,6 +1,7 @@
 package idv.tfp10105.project_forfun.publish;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -73,6 +75,7 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.Gender;
 import idv.tfp10105.project_forfun.common.HouseType;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.Appointment;
 import idv.tfp10105.project_forfun.common.bean.Area;
 import idv.tfp10105.project_forfun.common.bean.City;
 import idv.tfp10105.project_forfun.common.bean.Favorite;
@@ -115,6 +118,7 @@ public class PublishDetailFragment extends Fragment {
     private Member owner;
     private List<Order> orderList;
     private Favorite favorite;
+    private int appointmentId;
 
     // 地圖相關
     private GoogleMap googleMap;
@@ -167,9 +171,12 @@ public class PublishDetailFragment extends Fragment {
         owner = getMemberByOwnerId(publish.getOwnerId());
 //        Log.d("home", "owner = " + gson.toJson(owner));
         // 評價資料
-        orderList = getOrdersByPublishId(publishId);
+        orderList = getOrdersByPublishId(publish.getPublishId());
         // 收藏資料
         favorite = getMyFavoriteByPublishId(userId, publish.getPublishId());
+        // 預約資料
+        appointmentId = getMyAppointmentByPublishId(userId, publish.getPublishId());
+//        Log.d("publish", "appointmentId = " + appointmentId);
 
         // 刊登相關
         banner = view.findViewById(R.id.bannerPublishDetail);
@@ -316,7 +323,7 @@ public class PublishDetailFragment extends Fragment {
             request.addProperty("publishId", publishId);
 
             String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
-            Log.d("publish", jsonResule);
+//            Log.d("publish", jsonResule);
 
             JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
             String favoriteJson = response.get("favorite").getAsString();
@@ -338,7 +345,7 @@ public class PublishDetailFragment extends Fragment {
             request.addProperty("publishId", publishId);
 
             String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
-            Log.d("publish", jsonResule);
+//            Log.d("publish", jsonResule);
 
             JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
             String favoriteJson = response.get("favorite").getAsString();
@@ -359,13 +366,33 @@ public class PublishDetailFragment extends Fragment {
             request.addProperty("removeId", favoriteId);
 
             String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
-            Log.d("publish", jsonResule);
+//            Log.d("publish", jsonResule);
 
             JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
             result = response.get("pass").getAsBoolean();
         }
 
         return result;
+    }
+
+    private int getMyAppointmentByPublishId(int userId, int publishId) {
+        int appointmentId = 0;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/appointment";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMyAppointmentByPublishId");
+            request.addProperty("userId", userId);
+            request.addProperty("publishId", publishId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, gson.toJson(request));
+//            Log.d("publish", jsonResule);
+
+            JsonObject response = gson.fromJson(jsonResule, JsonObject.class);
+            appointmentId = Math.max(response.get("appointmentId").getAsInt(), 0);
+        }
+
+        return  appointmentId;
     }
 
     private void setPublishData(Publish publish) {
@@ -503,26 +530,39 @@ public class PublishDetailFragment extends Fragment {
     }
 
     private void handleButton() {
-        publishDetailBtnCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String phone = publishDetailBtnCall.getText().toString();
-                if (phone.isEmpty()) {
-                    Toast.makeText(activity, "無電話資訊", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        publishDetailBtnCall.setOnClickListener(v -> {
+            String phone = publishDetailBtnCall.getText().toString();
+            if (phone.isEmpty()) {
+                Toast.makeText(activity, "無電話資訊", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + phone));
-                if (isIntentAvailable(intent)) {
-                    startActivity(intent);
-                }
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + phone));
+            if (isIntentAvailable(intent)) {
+                startActivity(intent);
             }
         });
 
+        publishDetailBtnAppoint.setText(appointmentId == 0 ? "預約看房" : "修改預約");
         publishDetailBtnAppoint.setOnClickListener(v -> {
+            if (userId == publish.getOwnerId()) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                dialog.setTitle("無法預約");
+                dialog.setMessage("無法預約自己的房屋");
+                dialog.setPositiveButton("確定", null);
+
+                Window window = dialog.show().getWindow();
+                // 修改按鈕顏色
+                Button btnOK = window.findViewById(android.R.id.button1);
+                btnOK.setTextColor(getResources().getColor(R.color.black));
+
+                return;
+            }
+
             // 把ID帶到預約頁面
             Bundle bundle = new Bundle();
             bundle.putInt("publishId", publish.getPublishId());
+            bundle.putInt("ApmtID", appointmentId);
 
             Navigation.findNavController(v).navigate(R.id.action_publishDetailFragment_to_appointmentFragment, bundle);
         });
