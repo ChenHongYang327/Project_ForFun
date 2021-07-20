@@ -38,6 +38,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:background="@drawable/iv_circle"
+                android:visibility="gone"
                 app:civ_shadow="true"
                 app:civ_shadow_radius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -51,6 +52,7 @@
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="5" />
