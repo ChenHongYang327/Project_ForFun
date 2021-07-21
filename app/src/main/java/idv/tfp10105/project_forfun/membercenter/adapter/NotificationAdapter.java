@@ -23,8 +23,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -101,15 +103,22 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.cvNotification.setOnClickListener(v->{
             if(RemoteAccess.networkCheck(activity)) {
                 if (notification.getCommentId() != 0) {
+                    //跳轉留言
                     JsonObject req=new JsonObject();
                     req.addProperty("action","getPostId");
                     req.addProperty("commentId",notification.getCommentId());
-                    Post post=new Gson().fromJson(RemoteAccess.getJsonData(url,req.toString()),Post.class);
+                    JsonObject resp=new Gson().fromJson(RemoteAccess.getJsonData(url,req.toString()),JsonObject.class);
+                    Post post=new Gson().fromJson(resp.get("post").getAsString(),Post.class);
+                    String bName=resp.get("name").getAsString();
+                    String bHeadshot=resp.get("headshot").getAsString();
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("post",post);
+                    bundle.putString("name",bName);
+                    bundle.putString("headshot",bHeadshot);
                     Navigation.findNavController(v).navigate(R.id.discussionDetailFragment,bundle);
                 } else if (notification.getAppointmentId() != 0) {
                     //看房預約單
+                    Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment_ho);
                 } else if (notification.getOrderId() != 0) {
                     //新訂單
                 } else if (notification.getMessageId() != 0) {
