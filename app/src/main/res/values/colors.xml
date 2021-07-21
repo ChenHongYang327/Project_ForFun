@@ -13,4 +13,11 @@
     <color name="ratingStar">#FAFA23</color>
     <color name="gray">#bababa</color>
     <color name="red">#FF0404</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="pure_white">#ffffff</color>
+    <color name="pure_black">#000000</color>
+    <color name="edit_stroke">#eeeeee</color>
+    <color name="edit_bg">#eeeeee</color>
 </resources>

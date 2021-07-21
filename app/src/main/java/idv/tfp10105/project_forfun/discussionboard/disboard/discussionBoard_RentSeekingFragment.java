@@ -69,6 +69,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
     private List<Member> members;
     private Member member;
     private int memberId;
+    private ImageButton dis_bt_needHistory;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,8 +80,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         signin_name = sharedPreferences.getString("name","");
         signin_headshot = sharedPreferences.getString("headshot", "");
         memberId = sharedPreferences.getInt("memberId" , -1);
-
-
     }
 
     @Override
@@ -97,7 +96,10 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         handleBtAdd();
         handleSearchView();
         handleSwipeRefresh();
+
     }
+
+
 
     @Override
     public void onResume() {
@@ -105,7 +107,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
 //        Log.d(TAG,"onResume");
         posts = getPosts();
         showPosts(posts, members);
-
     }
 
 
@@ -114,6 +115,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout_seek);
         rv_seeking = view.findViewById(R.id.rv_seeking);
         bt_Add = view.findViewById(R.id.dis_bt_Add);
+        dis_bt_needHistory = view.findViewById(R.id.dis_bt_needHistory);
     }
 
     private void handleSwipeRefresh() {
@@ -191,6 +193,12 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         }
 //        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
+    }
+
+    private void handleDis_bt_needHistory(View v) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("post" , post);
+        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
     }
 
     private Member getMemberByOwnerId (int ownerId) {
