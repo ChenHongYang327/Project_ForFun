@@ -41,12 +41,12 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
-    private NavController navController;
+    private static NavController navController;
     private Toolbar toolbar;
-    private TextView tvNotification;
-    private CircularImageView ivCircle;
-    private SharedPreferences sharedPreferences;
-    private int notify = 0;
+    private static TextView tvNotification;
+    private static CircularImageView ivCircle;
+    private static SharedPreferences commonSharedPreferences;
+    private static int notify = 0;
     private ImageButton btBell;//actionbar 中的ImageButton
     public static Handler handler;
 
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         handleView();
-        sharedPreferences = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        commonSharedPreferences = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         // Android 11 /R 之后创建 Handler 构造函数 Handler(Handler.Callback callback) 变更为 new Handler(Looper.myLooper(), callback)
         // Handler 允许我们发送延时消息，如果在延时消息未处理完，而此时 Handler 所在的 Activity 被关闭，但因为上述 Handler 用法则可能会导致内存泄漏。那么，在延时消息未处理完时，Handler 无法释放外部类 MainActivity 的对象，从而导致内存泄漏产生。
         // https://shoewann0402.github.io/2020/03/09/android-R-about-handler-change/
@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                         navController.getCurrentDestination().getId() == R.id.publishDetailFragment ||
                         navController.getCurrentDestination().getId() == R.id.appointmentFragment ||
                         navController.getCurrentDestination().getId() == R.id.personalSnapshotFragment) {
+                    btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } else {
                     btBell.setVisibility(View.VISIBLE);
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                 final String url = Common.URL + "NotificationController";
                 JsonObject req = new JsonObject();
                 while (true) {
-                    memberId = sharedPreferences.getInt("memberId", -1);
+                    memberId = commonSharedPreferences.getInt("memberId", -1);
                     //如果不是遊客
                     if (memberId != -1) {
                         //對伺服器發請求
@@ -252,11 +253,11 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void handleNotificationCount() {
+    public static void handleNotificationCount() {
         int memberId;
         final String url = Common.URL + "NotificationController";
         JsonObject req = new JsonObject();
-        memberId = sharedPreferences.getInt("memberId", -1);
+        memberId = commonSharedPreferences.getInt("memberId", -1);
         //如果不是遊客
         if (memberId != -1) {
             //對伺服器發請求

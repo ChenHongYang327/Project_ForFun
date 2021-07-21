@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
@@ -372,6 +373,7 @@ public class SignInFragment extends Fragment {
                         .putString("citizen",citizen)
                         .putLong("lastlogin",new Date().getTime())//登入時間
                         .apply();
+                MainActivity.handleNotificationCount();
                 Navigation.findNavController(btSignIn)
                         .navigate(R.id.homeFragment);
             }
