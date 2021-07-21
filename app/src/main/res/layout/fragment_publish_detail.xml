@@ -310,6 +310,8 @@
                             android:layout_height="140dp"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="8dp"
+                            app:civ_shadow="true"
+                            app:civ_shadow_radius="10dp"
                             tools:src="@tools:sample/avatars" />
 
                         <TextView
@@ -333,6 +335,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/bt_14050blank"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:text="房東電話"
                             android:textColor="@color/black"
                             app:backgroundTint="?android:attr/panelBackground"
@@ -344,6 +347,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
                             android:background="@drawable/bt_14050blank"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:text="預約看房"
                             android:textColor="@color/black"
                             app:backgroundTint="?android:attr/panelBackground"
@@ -355,6 +359,12 @@
                     android:id="@+id/textView80"
                     android:layout_width="match_parent"
                     android:layout_height="32dp" />
+
+                <TextView
+                    android:id="@+id/textView40"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="點擊地圖開啟導航" />
 
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/publishDetailMap"
