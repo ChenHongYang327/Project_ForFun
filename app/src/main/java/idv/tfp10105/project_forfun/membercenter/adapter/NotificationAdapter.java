@@ -2,6 +2,7 @@ package idv.tfp10105.project_forfun.membercenter.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -41,11 +42,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
    private Activity activity;
    private List<Notification> notifications;
    private List<String> customersHeadShot;
+   private List<Integer> appointmentOwnerId;
+   private SharedPreferences sharedPreferences;
+   private int memberId;
 
-    public NotificationAdapter(Activity activity, List<Notification> notifications, List<String> customersHeadShot) {
+    public NotificationAdapter(Activity activity, List<Notification> notifications, List<String> customersHeadShot, List<Integer> appointmentOwnerId) {
         this.activity = activity;
         this.notifications = notifications;
         this.customersHeadShot = customersHeadShot;
+        this.appointmentOwnerId = appointmentOwnerId;
+        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        memberId = sharedPreferences.getInt("memberId", -1);
     }
 
     @NonNull
@@ -64,6 +71,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(@NonNull NotificationHodler holder, int position) {
         Notification notification=notifications.get(position);
         String headShot=customersHeadShot.get(position)==null?"/Project_ForFun/no image.jpg":customersHeadShot.get(position);
+        int ownerId=appointmentOwnerId.get(position);
         //提醒者的頭像
         getImage(holder.ivNotification,headShot);
         final String url= Common.URL+"NotificationController";
@@ -80,7 +88,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             jsonObject.addProperty("action","getPublishTitle");
             jsonObject.addProperty("appointmentId",notification.getAppointmentId());
             String publishTitle=RemoteAccess.getJsonData(url,jsonObject.toString());
-            holder.tvNotificationTitle.setText("您的"+"「"+ publishTitle+"」"+"刊登單有新的看房預約");
+            if(memberId==ownerId) {
+                holder.tvNotificationTitle.setText("您的" + "「" + publishTitle + "」" + "刊登單有新的看房預約");
+            }
+            else{
+                holder.tvNotificationTitle.setText("您的" + "「" + publishTitle + "」" + "的看房預約已通過");
+            }
         }
         else if(notification.getOrderId()!=0){
             holder.tvNotificationTitle.setText("您有一筆新的訂單");
@@ -118,7 +131,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     Navigation.findNavController(v).navigate(R.id.discussionDetailFragment,bundle);
                 } else if (notification.getAppointmentId() != 0) {
                     //看房預約單
-                    Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment_ho);
+                    if(memberId==ownerId) {
+                        Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment_ho);
+                    }
+                    else{
+                        Bundle bundle=new Bundle();
+                        bundle.putString("postion","待下訂");
+                        Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment,bundle);
+                    }
                 } else if (notification.getOrderId() != 0) {
                     //新訂單
                 } else if (notification.getMessageId() != 0) {

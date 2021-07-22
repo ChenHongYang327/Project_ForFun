@@ -159,6 +159,9 @@ public class discussionDetailFragment extends Fragment {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("postId",post.getPostId());
             jsonObject.addProperty("action", "getAll");
+            //通知功能用
+            jsonObject.addProperty("reqMemberId", memberId);
+            //------
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
             Type listType = new TypeToken<List<Comment>>() {}.getType();
 
@@ -179,6 +182,8 @@ public class discussionDetailFragment extends Fragment {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("postId",post.getPostId());
             jsonObject.addProperty("action", "getAll");
+            //通知功能用
+            jsonObject.addProperty("reqMemberId", memberId);
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
             Type listMember = new TypeToken<List<Member>>() {}.getType();
 
@@ -455,6 +460,8 @@ public class discussionDetailFragment extends Fragment {
             url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("action", "getAll");
+            //通知功能用
+            jsonObject.addProperty("reqMemberId", memberId);
             String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
             Type listType = new TypeToken<List<Post>>() {
             }.getType();
