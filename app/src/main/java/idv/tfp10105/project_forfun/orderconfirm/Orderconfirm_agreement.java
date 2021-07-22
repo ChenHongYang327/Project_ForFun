@@ -48,14 +48,11 @@ public class Orderconfirm_agreement extends Fragment {
 
     private TextView tvDateStart, tvDateEnd, tvRent, tvSignHO, tvSignCus, tvAddress, tvConfirmText, tvCancelText;
     private ImageView btConfirm, btCancel, imgSignHO, imgSignCus;
-    private Bitmap bitmapSignHO, bitmapSign;
-    private int orderId, resultcode, agreementId;
-    private String dateStart, dateEnd, result_Add, imgPath, address;
-    private Bundle bundleIn = getArguments();
+    private int orderId, resultcode, agreementId, tapNum;
+    private String result_Add, imgPath;
     private Gson gson = new Gson();
     private FirebaseStorage storage;
     private SharedPreferences sharedPreferences;
-    private String url = Common.URL + "Agreement";
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN);
     private DateFormat sdfSave = new SimpleDateFormat("yyyy - mm - dd hh:mm:ss");
     private Date dateS = new Date();
@@ -96,9 +93,10 @@ public class Orderconfirm_agreement extends Fragment {
         tvConfirmText = view.findViewById(R.id.tv_ocrAgreement_confirmText);
         tvCancelText = view.findViewById(R.id.tv_ocrAgreement_cancelText);
 
-        int tapNum = bundleIn.getInt("OCR");
-        orderId = bundleIn.getInt("ORDERID");
-        agreementId = bundleIn.getInt("AGREEMENTID");
+        Bundle bundleIn = getArguments();
+        tapNum = bundleIn.getInt("OCR",-1);
+        orderId = bundleIn.getInt("ORDERID",-1);
+
 
         switch (tapNum) {
             case 13:
@@ -114,52 +112,33 @@ public class Orderconfirm_agreement extends Fragment {
                 /**
                  * 訂單table “訂單狀態”要調整 -> 4 待付款
                  */
+                agreementId = bundleIn.getInt("AGREEMENTID",-1);
                 tenantEvent();
+                break;
+
+            case 4:
+                //瀏覽模式（房東房客都簽完名了）
+                agreementId = bundleIn.getInt("AGREEMENTID",-1);
+                preView();
                 break;
 
             case 5:
                 //瀏覽模式（房東房客都簽完名了）
-                btConfirm.setVisibility(View.GONE);
-                tvConfirmText.setText("");
-
-                Agreement agmt = getAgreementInfo(agreementId);
-                tvDateStart.setText(sdf.format(agmt.getStartDate()));
-                tvDateEnd.setText(sdf.format(agmt.getEndDate()));
-                tvRent.setText(String.valueOf(agmt.getAgreementMoney()));
-                String imgPathHO = agmt.getLandlordSign();
-                String imgPath = agmt.getTenantSign();
-
-                //set img
-                setImgFromFireStorage(imgPathHO, imgSignHO);
-                setImgFromFireStorage(imgPath, imgSignCus);
-                tvSignHO.setText("");
-                tvSignCus.setText("");
-
-                //set Address
-                tvAddress.setText(getAddress(orderId));
+                agreementId = bundleIn.getInt("AGREEMENTID",-1);
+                preView();
                 break;
 
-//            case 15:
-//                //房東 瀏覽模式
-//                btConfirm.setVisibility(View.GONE);
-//                tvConfirmText.setText("");
-//
-//                Agreement agmtH = getAgreementInfo(agreementId);
-//                tvDateStart.setText(sdf.format(agmtH.getStartDate()));
-//                tvDateEnd.setText(sdf.format(agmtH.getEndDate()));
-//                tvRent.setText(String.valueOf(agmtH.getAgreementMoney()));
-//                String igPathHO = agmtH.getLandlordSign();
-//                String igPath = agmtH.getTenantSign();
-//
-//                //set img
-//                setImgFromFireStorage(igPathHO, imgSignHO);
-//                setImgFromFireStorage(igPath, imgSignCus);
-//                tvSignHO.setText("");
-//                tvSignCus.setText("");
-//
-//                //set Address
-//                tvAddress.setText(getAddress(orderId));
-//                break;
+            case 14:
+                //瀏覽模式（房東房客都簽完名了）
+                agreementId = bundleIn.getInt("AGREEMENTID",-1);
+                preView();
+                break;
+
+            case 15:
+                //瀏覽模式（房東房客都簽完名了）
+                agreementId = bundleIn.getInt("AGREEMENTID",-1);
+                preView();
+                break;
 
             default:
                 Bundle bundleOut = new Bundle();
@@ -170,6 +149,8 @@ public class Orderconfirm_agreement extends Fragment {
         }
 
         //取消按鈕
+        tvCancelText.setText("");
+        btCancel.setVisibility(View.GONE);
         btCancel.setOnClickListener(v -> {
             Bundle bundleOut = new Bundle();
             bundleOut.putInt("OCR", tapNum);
@@ -183,6 +164,7 @@ public class Orderconfirm_agreement extends Fragment {
 
         //檢查網路連線
         if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "Agreement";
             //預載地址
             tvAddress.setText(getAddress(orderId));
 
@@ -275,8 +257,6 @@ public class Orderconfirm_agreement extends Fragment {
                 objectH.addProperty("AGREEMENT", agmtStr);
                 objectH.addProperty("RESULTCODE", 3);
 
-                Log.d("TEST_H",objectH.toString());
-
                 String jsonH = RemoteAccess.getJsonData(url, objectH.toString());
                 JsonObject jsonIn_H = gson.fromJson(jsonH, JsonObject.class);
                 resultcode = jsonIn_H.get("RESULT").getAsInt();
@@ -350,6 +330,7 @@ public class Orderconfirm_agreement extends Fragment {
         btConfirm.setOnClickListener(v -> {
             //檢查網路連線
             if (RemoteAccess.networkCheck(activity)) {
+                String url = Common.URL + "Agreement";
 
                 //上傳圖片到firebase
                 imgPath = getImgPath(bytes);
@@ -381,6 +362,7 @@ public class Orderconfirm_agreement extends Fragment {
     //resultcode 2
     private Agreement getAgreementInfo(int agreementId) {
         if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "Agreement";
             JsonObject object_All = new JsonObject();
             object_All.addProperty("RESULTCODE", 2);
             object_All.addProperty("AGREEMENTID", agreementId);
@@ -407,6 +389,7 @@ public class Orderconfirm_agreement extends Fragment {
     private String getAddress(int orderId) {
 
         if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "Agreement";
             //後端先拿預載資料
             JsonObject jsonObject1 = new JsonObject();
             jsonObject1.addProperty("RESULTCODE", 1);
@@ -467,6 +450,29 @@ public class Orderconfirm_agreement extends Fragment {
                 //Log.e("updateFragment", message);
             }
         });
+    }
+
+    //瀏覽模式（房東房客都簽完名了）
+    private void preView(){
+        btConfirm.setVisibility(View.GONE);
+        tvConfirmText.setText("");
+        tvRent.setEnabled(false);
+
+        Agreement agmt = getAgreementInfo(agreementId);
+        tvDateStart.setText(sdf.format(agmt.getStartDate()));
+        tvDateEnd.setText(sdf.format(agmt.getEndDate()));
+        tvRent.setText(String.valueOf(agmt.getAgreementMoney()));
+        String imgPathHO = agmt.getLandlordSign();
+        String imgPath = agmt.getTenantSign();
+
+        //set img
+        setImgFromFireStorage(imgPathHO, imgSignHO);
+        setImgFromFireStorage(imgPath, imgSignCus);
+        tvSignHO.setText("");
+        tvSignCus.setText("");
+
+        //set Address
+        tvAddress.setText(getAddress(orderId));
     }
 
 }

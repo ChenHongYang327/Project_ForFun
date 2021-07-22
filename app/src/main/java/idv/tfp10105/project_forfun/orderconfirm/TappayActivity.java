@@ -106,19 +106,25 @@ public class TappayActivity extends AppCompatActivity {
 
         //宣告 偏號設定檔位置
         sharedPreferences = getSharedPreferences("OrderSharedPre",Context.MODE_PRIVATE);
-        shardToMainActivity = getSharedPreferences( "SharedPreferences",Context.MODE_PRIVATE);
+       // shardToMainActivity = getSharedPreferences( "SharedPreferences",Context.MODE_PRIVATE);
         // 判斷誰登入 帶id
-        payObjID = sharedPreferences.getInt("ORDERID",-1); //該資訊id ,orderid OR otherpayId
-        String str = sharedPreferences.getString("TAB","-1");
+        //payObjID = sharedPreferences.getInt("ORDERID",-1); //該資訊id ,orderid OR otherpayId
+        //String str = sharedPreferences.getString("TAB","-1");
+       // int str = sharedPreferences.getInt("TAB",-1);
+
+        Intent intent = getIntent();
+
+        payObjID = intent.getIntExtra("ORDERID",-1);
+        int str = intent.getIntExtra("TAB",-1);
 
         switch (str){
-            case "order":
+            case 1: //order
                 prepareGooglePay();
                 //set order Info
                 orderEvent();
                 break;
 
-            case "otherpay":
+            case 2: //otherpay
                 prepareGooglePay();
                 //set otherpay Info
                 otherPayEvent();
@@ -167,6 +173,7 @@ public class TappayActivity extends AppCompatActivity {
         });
 
         //取消按鈕事件
+        btCancel.setVisibility(View.GONE);
         btCancel.setOnClickListener(v->{
             //delete sharedPreference value
             sharedPreferences.edit().remove("ORDERID").apply();
@@ -403,10 +410,11 @@ public class TappayActivity extends AppCompatActivity {
             int resoltcode = result.get("RESULT").getAsInt();
 
             if(resoltcode == 200){
-                sharedPreferences.edit().remove("ORDERID").apply();
-                sharedPreferences.edit().remove("TAB").apply();
+//                sharedPreferences.edit().remove("ORDERID").apply();
+//                sharedPreferences.edit().remove("TAB").apply();
                 shardToMainActivity.edit().putString("TappayActivity","ToHomeFragment");
             }else{ Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show(); }
+            return;
         }
         if(isorder = true){
             //order 改狀態->5
@@ -422,10 +430,11 @@ public class TappayActivity extends AppCompatActivity {
 
             if(resoltcode == 200){
                 //delete sharedPreference value
-                sharedPreferences.edit().remove("ORDERID").apply();
-                sharedPreferences.edit().remove("TAB").apply();
-                shardToMainActivity.edit().putString("TappayActivity","ToHomeFragment");
+//                sharedPreferences.edit().remove("ORDERID").apply();
+//                sharedPreferences.edit().remove("TAB").apply();
+              //  shardToMainActivity.edit().putString("TappayActivity","ToHomeFragment");
             }else{ Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show(); }
+            return;
 
         }
     }

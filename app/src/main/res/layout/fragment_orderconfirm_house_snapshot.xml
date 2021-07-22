@@ -212,7 +212,7 @@
                     android:id="@+id/tv_HSShot_con0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="瀏覽房屋資訊"
+                    android:text="瀏覽房屋資訊"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_con0"

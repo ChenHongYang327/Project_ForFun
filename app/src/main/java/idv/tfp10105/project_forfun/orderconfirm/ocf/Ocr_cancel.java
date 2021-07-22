@@ -47,7 +47,6 @@ public class Ocr_cancel extends Fragment {
     private SharedPreferences sharedPreferences;
     private List<Order> orders;
     private int signInId;
-    private Order order;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvHint;

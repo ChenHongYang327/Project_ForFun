@@ -182,22 +182,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 
     }
 
-//    private void ocrReserve1() {
-//        btCon3.setVisibility(View.GONE);
-//        tvCon1.setText("修改預約");
-//        tvCon2.setText("取消預約");
-//
-//        btcon0.setOnClickListener(v -> {
-//            // Navigation.findNavController(v).navigate(R.id.homeFragment);
-//        });
-//        btCon1.setOnClickListener(v -> {
-//            //  Navigation.findNavController(v).navigate();
-//        });
-//        btCon2.setOnClickListener(v -> {
-//            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-//        });
-//    }
-
     private void ocrOrder2() {
         btCon3.setVisibility(View.GONE);
         tvCon1.setText("確認下訂");
@@ -212,6 +196,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                 orderStatus = 12;
                 orderChangeStatus(orderStatus);
                 Navigation.findNavController(v).navigate(R.id.homeFragment);
+                bottomSheetDialog.dismiss();
             });
             bt_bottomsheet_Cancel.setOnClickListener(view -> {
                 bottomSheetDialog.dismiss();
@@ -248,14 +233,17 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
-            ocr_agmt = 5;
+            ocr_agmt = 4;
             navgateToAgreement(v, ocr_agmt);
         });
         btCon2.setOnClickListener(v -> {
             //帶職＆刪除頁面
-            sharedPreferences.edit().putInt("ORDERID", orderId);
-            sharedPreferences.edit().putString("TAB", "order");
+//            sharedPreferences.edit().putInt("ORDERID", orderId);
+//            sharedPreferences.edit().putInt("TAB", 1);
             Intent intent = new Intent(getActivity(), TappayActivity.class);
+            intent.putExtra("ORDERID",orderId);
+            intent.putExtra("TAB",1);
+
             startActivity(intent);
             Navigation.findNavController(v).popBackStack(R.id.orderconfirm_houseSnapshot, true);
         });
@@ -284,13 +272,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             Navigation.findNavController(v).navigate(R.id.orderconfirm_score, bundle);
         });
     }
-
-//    private void ocrCancel6() {
-//        tvCon1.setText("我的合約");
-//        tvCon2.setText("我要續租");
-//        tvCon3.setText("我要評分");
-//
-//    }
 
     private void ocrPaid7() {
         btCon3.setVisibility(View.GONE);
@@ -348,6 +329,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                     if (result == 200) {
                         Toast.makeText(activity, "成功", Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(v).navigate(R.id.homeFragment);
+                        bottomSheetDialog.dismiss();
                     } else {
                         Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
                     }
@@ -361,24 +343,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             });
         });
     }
-
-//    private void ocrHOReserve11() {
-//        btCon3.setVisibility(View.GONE);
-//        tvConntText.setText("聯絡房客");
-//        tvCon1.setText("確認預約");
-//        tvCon2.setText("取消預約");
-//
-//        btcon0.setOnClickListener(v -> {
-//
-//        });
-//        btCon1.setOnClickListener(v -> {
-//
-//        });
-//        btCon2.setOnClickListener(v -> {
-//
-//        });
-//
-//    }
 
     private void ocrHOOrder12() {
         btCon3.setVisibility(View.GONE);
@@ -396,6 +360,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                 orderStatus = 13;
                 orderChangeStatus(orderStatus);
                 Navigation.findNavController(v).navigate(R.id.homeFragment);
+                bottomSheetDialog.dismiss();
             });
             bt_bottomsheet_Cancel.setOnClickListener(view -> {
                 bottomSheetDialog.dismiss();
@@ -412,12 +377,16 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon3.setVisibility(View.GONE);
         tvConntText.setText("聯絡房客");
         tvCon1.setText("建立合約");
-        tvCon2.setText("取消此次交易");
+        //tvCon2.setText("取消此次交易");
+        tvCon2.setText("交易易易易");
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
-            ocr_agmt = 13;
-            navgateToAgreement(v, ocr_agmt);
+            int ocr = 13;
+            Bundle bundle = new Bundle();
+            bundle.putInt("OCR", ocr);
+            bundle.putInt("ORDERID", orderId);
+            Navigation.findNavController(v).navigate(R.id.orderconfirm_agreement, bundle);
         });
         btCon2.setOnClickListener(v -> {
             //改變訂單狀態->6  跳完回首頁
@@ -434,7 +403,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
-            ocr_agmt = 5;
+            ocr_agmt = 14;
             navgateToAgreement(v, ocr_agmt);
         });
         btCon2.setOnClickListener(v -> {
@@ -455,7 +424,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
-            ocr_agmt = 5;
+            ocr_agmt = 15;
             navgateToAgreement(v, ocr_agmt);
         });
         btCon2.setOnClickListener(v -> {
@@ -470,14 +439,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
         });
     }
-
-//    private void ocrHOCancel16() {
-//        tvConntText.setText("聯絡房客");
-//        tvCon1.setText("我的合約");
-//        tvCon2.setText("我要評分");
-//        tvCon3.setText("新增其他款項");
-//
-//    }
 
     private void ocrHOPayarrive17() {
         tvConntText.setText("聯絡房客");
@@ -583,6 +544,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             Toast.makeText(activity, "OK", Toast.LENGTH_SHORT).show();
             orderChangeStatus(orderStatus);
             Navigation.findNavController(v).navigate(R.id.homeFragment);
+            bottomSheetDialog.dismiss();
         });
         bt_bottomsheet_Cancel.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();

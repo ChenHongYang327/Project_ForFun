@@ -28,8 +28,8 @@ public class Orderconfirm_score extends Fragment {
     private Activity activity;
     private RatingBar ratingBarP, ratingBarH;
     private ImageView btConfirm, btCancel; //button
-    private TextView tvHOmsg, tvmsg, tvbtConfirmText, tvHouseMsgText, tvHouseTitle, tvTitle;
-    private Bundle bundleIn = getArguments(), bundleOut = new Bundle();
+    private TextView tvHOmsg, tvmsg, tvbtConfirmText, tvHouseMsgText, tvHouseTitle, tvTitle, tvCancelText;
+    private Bundle bundleOut = new Bundle();
     private int tapNum = -1, orderId = -1, signInId = -1;
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences, mainsharedPreferences;
@@ -65,29 +65,32 @@ public class Orderconfirm_score extends Fragment {
         tvHouseMsgText = view.findViewById(R.id.tv_ocrScore_house_Visibility);
         tvHOmsg = view.findViewById(R.id.tv_ocrScore_HouseMsg);
         tvmsg = view.findViewById(R.id.tv_ocrScore_peopleMsg);
+        tvCancelText = view.findViewById(R.id.tv_ocrScore_cancelText);
 
 
 //        orderId = sharedPreferences.getInt("ORDERID",-1);
 //        tapNum = sharedPreferences.getInt("SCORETAB",-1);
         signInId = mainsharedPreferences.getInt("memberId", -1);
 
+        Bundle bundleIn = getArguments();
         tapNum = bundleIn.getInt("SCORE", -1);
         orderId = bundleIn.getInt("ORDERID", -1);
 
         bundleOut.putInt("OCR", tapNum);
+
+        tvCancelText.setText("");
+        btCancel.setVisibility(View.GONE);
         //取消按鈕回上頁
         btCancel.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
         });
 
         // 判斷是否已評價過
-
-
         switch (tapNum) {
             case 5:
                 // 房客
-                if (isEvaluationExist(signInId)) {
-                    Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+                if (isEvaluationExist(signInId,orderId)) {
+                    Navigation.findNavController(view).navigate(R.id.homeFragment);
                     Toast.makeText(activity, "已完成評價", Toast.LENGTH_SHORT).show();
                     break;
                 } else {
@@ -97,8 +100,8 @@ public class Orderconfirm_score extends Fragment {
 
             case 15:
                 // 房東
-                if (isEvaluationExist(signInId)) {
-                    Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+                if (isEvaluationExist(signInId,orderId)) {
+                    Navigation.findNavController(view).navigate(R.id.homeFragment);
                     Toast.makeText(activity, "已完成評價", Toast.LENGTH_SHORT).show();
                     break;
                 } else {
@@ -191,12 +194,14 @@ public class Orderconfirm_score extends Fragment {
     }
 
 
-    private boolean isEvaluationExist(int signinId) {
+    private boolean isEvaluationExist(int signinId, int orderId) {
         if (RemoteAccess.networkCheck(activity)) {
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("TYPECODE", 2);
-            jsonObject.addProperty("ORDERID", signinId);
+            jsonObject.addProperty("SIGNINID", signinId);
+            jsonObject.addProperty("ORDERID", orderId);
+
             String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
 
             JsonObject result = gson.fromJson(jsonIn, JsonObject.class);

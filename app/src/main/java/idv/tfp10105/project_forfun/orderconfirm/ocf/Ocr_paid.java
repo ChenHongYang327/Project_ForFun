@@ -48,7 +48,6 @@ public class Ocr_paid extends Fragment {
     private SharedPreferences sharedPreferences;
     private List<OtherPay> otherPays;
     private int signInId;
-    private Order order;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvHint;
@@ -231,9 +230,9 @@ public class Ocr_paid extends Fragment {
                 bundle.putInt("OCR", TAPNUMBER);
                 bundle.putInt("PUBLISHID",publishId);
                 bundle.putInt("SIGNINID", signInId);
-                bundle.putInt("ORDREID",orderId);
+                bundle.putInt("ORDERID",orderId);
 
-                Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);
+                Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundle);
             });
         }
     }

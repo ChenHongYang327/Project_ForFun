@@ -46,7 +46,6 @@ public class Ocr_order extends Fragment {
     private SharedPreferences sharedPreferences;
     private List<Order> orders;
     private int signInId;
-    private Order order;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvHint;
@@ -135,7 +134,7 @@ public class Ocr_order extends Fragment {
 
             orderlists = gson.fromJson(tmp.get("ORDERLIST").getAsString(), listType);
 
-            Log.d("ORDER", orderlists.toString());
+            Log.d("ORDER", tmp.get("ORDERLIST").getAsString());
 
             return orderlists;
         } else {
@@ -205,7 +204,11 @@ public class Ocr_order extends Fragment {
         public void onBindViewHolder(@NonNull  MyAdaptor.Holder holder, int position) {
 
             final Order order = orderList.get(position);
+
             int orderId = order.getOrderId();
+
+            Log.d("ORD",String.valueOf(orderId));
+
             int publishId = order.getPublishId();
             Publish publish = getPublish(publishId);
 
@@ -226,7 +229,9 @@ public class Ocr_order extends Fragment {
                 bundle.putInt("OCR", TAPNUMBER);
                 bundle.putInt("PUBLISHID",publishId);
                 bundle.putInt("SIGNINID", signInId);
-                bundle.putInt("ORDREID",orderId);
+                bundle.putInt("ORDERID",orderId);
+
+                Log.d("ORDE",String.valueOf(orderId));
 
                 Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);
             });

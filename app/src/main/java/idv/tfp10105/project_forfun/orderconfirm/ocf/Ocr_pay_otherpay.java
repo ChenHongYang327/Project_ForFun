@@ -229,7 +229,7 @@ public class Ocr_pay_otherpay extends Fragment {
                 bundle.putInt("OCR", TAPNUMBER);
                 bundle.putInt("PUBLISHID",publishId);
                 bundle.putInt("SIGNINID", signInId);
-                bundle.putInt("ORDREID",orderId);
+                bundle.putInt("ORDERID",orderId);
 
                 Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundle);
             });

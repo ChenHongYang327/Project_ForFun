@@ -234,7 +234,7 @@ public class OcrHO_payarrive extends Fragment {
                 bundle.putInt("SIGNINID", signInId);
                 bundle.putInt("ORDREID",orderId);
 
-                Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_houseSnapshot, bundle);
+                Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundle);
             });
         }
     }
