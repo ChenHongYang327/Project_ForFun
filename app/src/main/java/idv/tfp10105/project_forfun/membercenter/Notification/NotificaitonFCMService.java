@@ -14,6 +14,8 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 import idv.tfp10105.project_forfun.MainActivity;
 
 public class NotificaitonFCMService extends FirebaseMessagingService{
@@ -21,21 +23,25 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-//        RemoteMessage.Notification notification = remoteMessage.getNotification();
-//        String title = "";
+        RemoteMessage.Notification notification = remoteMessage.getNotification();
+        String title = "";
 //        String body = "";
-//        if (notification != null) {
-//            title = notification.getTitle();
-//            body =  notification.getBody();
-//        }
-        //更改通知圖案
-        Message msg = new Message();
-        //自定義消息代碼
-        msg.what=1;
-        //要傳送的物件
+        if (notification != null) {
+            title = notification.getTitle();
+//           body =  notification.getBody();
+//           Log.d("顯示FirebaseService data",remoteMessage.getData().toString());
+        }
+       if(notification==null||title.equals("新通知")) {
+//           Log.d("FirebaseService","觸發更新通知");
+           //更改通知圖案
+           Message msg = new Message();
+           //自定義消息代碼
+           msg.what = 1;
+           //要傳送的物件
 //        msg.obj=1;
-        //主執行緒才能控制元件
-        MainActivity.handler.sendMessage(msg);
+           //主執行緒才能控制元件
+           MainActivity.handler.sendMessage(msg);
+       }
 
     }
 

@@ -25,12 +25,15 @@ public class Orderconfirm_mainfragment extends Fragment {
     private AppCompatActivity activity;
     private View view;
     private SwitchCompat switchCompat;
+    private String bundle;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (AppCompatActivity) getActivity();
+        bundle=getArguments()==null?"":getArguments().getString("postion");
+
     }
 
     @Override
@@ -86,6 +89,10 @@ public class Orderconfirm_mainfragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 tabLayout.selectTab(tabLayout.getTabAt(position));
+                if(bundle.equals("待下訂")){
+                    viewPager2.setCurrentItem(1,true);
+                    bundle="";
+                }
             }
         });
 
