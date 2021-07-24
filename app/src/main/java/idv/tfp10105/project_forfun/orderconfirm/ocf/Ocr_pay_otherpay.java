@@ -101,14 +101,14 @@ public class Ocr_pay_otherpay extends Fragment {
     private void showAlls() {
         if (!otherPays.isEmpty()) {
             otherPays.clear();
-            otherPays = getOtherpayListInfo(OrderStatusNumber, signInId);
+            otherPays = getOtherpayListInfo(signInId);
             if(otherPays.isEmpty()){
                 tvHint.setText("尚未有訂單！");
             }else{
                 setOrderList(otherPays);
             }
         } else {
-            otherPays = getOtherpayListInfo(OrderStatusNumber, signInId);
+            otherPays = getOtherpayListInfo(signInId);
             if(otherPays.isEmpty()){
                 tvHint.setText("尚未有訂單！");
             }else{
@@ -118,14 +118,14 @@ public class Ocr_pay_otherpay extends Fragment {
     }
 
     //拿後Otherpay端對應資料
-    private List<OtherPay> getOtherpayListInfo(int status, int memberId) {
+    private List<OtherPay> getOtherpayListInfo(int memberId) {
         List<OtherPay> otherPays = null;
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "OrderConfirm";
             //後端先拿預載資料
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("RESULTCODE", 6);
-            jsonObject.addProperty("STATUS", status);
+            jsonObject.addProperty("STATUS", 5);
             jsonObject.addProperty("SIGNINID", memberId); //房客
             String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
 
@@ -230,6 +230,7 @@ public class Ocr_pay_otherpay extends Fragment {
                 bundle.putInt("PUBLISHID",publishId);
                 bundle.putInt("SIGNINID", signInId);
                 bundle.putInt("ORDERID",orderId);
+                bundle.putInt("OTHERPAYID",otherPay.getOtherpayId());
 
                 Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundle);
             });

@@ -128,7 +128,7 @@ public class OcrHO_payarrive extends Fragment {
             //後端先拿預載資料
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("RESULTCODE", 8);
-            jsonObject.addProperty("STATUS", status);
+            jsonObject.addProperty("STATUS", 5);
             jsonObject.addProperty("SIGNINID", memberId); //房客
             String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
 
@@ -232,7 +232,8 @@ public class OcrHO_payarrive extends Fragment {
                 bundle.putInt("OCR", TAPNUMBER);
                 bundle.putInt("PUBLISHID",publishId);
                 bundle.putInt("SIGNINID", signInId);
-                bundle.putInt("ORDREID",orderId);
+                bundle.putInt("ORDERID",orderId);
+                bundle.putInt("OTHERPAYID",otherPay.getOtherpayId());
 
                 Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundle);
             });

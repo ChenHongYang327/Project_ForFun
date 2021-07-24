@@ -90,7 +90,7 @@ public class Orderconfirm_score extends Fragment {
             case 5:
                 // 房客
                 if (isEvaluationExist(signInId,orderId)) {
-                    Navigation.findNavController(view).navigate(R.id.homeFragment);
+                    Navigation.findNavController(view).popBackStack();
                     Toast.makeText(activity, "已完成評價", Toast.LENGTH_SHORT).show();
                     break;
                 } else {
@@ -109,7 +109,7 @@ public class Orderconfirm_score extends Fragment {
                     break;
                 }
             default:
-                Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+                Navigation.findNavController(view).popBackStack();
                 Toast.makeText(activity, "已完成評價", Toast.LENGTH_SHORT).show();
                 break;
         }

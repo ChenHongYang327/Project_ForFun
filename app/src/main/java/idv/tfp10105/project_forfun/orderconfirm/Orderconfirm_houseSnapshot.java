@@ -107,10 +107,6 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         orderId = bundle.getInt("ORDERID", -1);
         int ocrId = bundle.getInt("OCR", -1);
 
-//        sidninId = 3;
-//        publishId = 9;
-//        orderId = 2;
-//        int ocrId = 2;
 
         //判斷跳轉頁面來源
         switch (ocrId) {
@@ -241,8 +237,8 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 //            sharedPreferences.edit().putInt("ORDERID", orderId);
 //            sharedPreferences.edit().putInt("TAB", 1);
             Intent intent = new Intent(getActivity(), TappayActivity.class);
-            intent.putExtra("ORDERID",orderId);
-            intent.putExtra("TAB",1);
+            intent.putExtra("ORDERID", orderId);
+            intent.putExtra("TAB", 1);
 
             startActivity(intent);
             Navigation.findNavController(v).popBackStack(R.id.orderconfirm_houseSnapshot, true);
@@ -277,11 +273,14 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon3.setVisibility(View.GONE);
         tvCon1.setText("付款單明細");
         tvCon2.setText("回首頁");
+        Bundle bdget = getArguments();
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
+
             Bundle bundle = new Bundle();
             bundle.putInt("OCR", 7);
+            bundle.putInt("OTHERPAYID", bdget.getInt("OTHERPAYID"));
             Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
         });
         btCon2.setOnClickListener(v -> {
@@ -295,19 +294,22 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         tvCon1.setText("我要付款");
         tvCon2.setText("刪除此次交易");
 
-        btcon0.setOnClickListener(v->{
+        Bundle bdget = getArguments();
+        btcon0.setOnClickListener(this::navgateToPublishDetail);
+        btCon1.setOnClickListener(v -> {
+
             Bundle bundle = new Bundle();
             bundle.putInt("OCR", 8);
+            bundle.putInt("OTHERPAYID", bdget.getInt("OTHERPAYID"));
             Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
-        });
-        btCon1.setOnClickListener(v -> {
-            //跳去tappayActivity
-            //帶職＆刪除頁面
-            sharedPreferences.edit().putInt("ORDERID", orderId);
-            sharedPreferences.edit().putString("TAB", "otherpay");
-            Intent intent = new Intent(getActivity(), TappayActivity.class);
-            startActivity(intent);
-            Navigation.findNavController(v).popBackStack(R.id.orderconfirm_houseSnapshot, true);
+
+//            //跳去tappayActivity
+//            //帶職＆刪除頁面
+//            sharedPreferences.edit().putInt("ORDERID", orderId);
+//            sharedPreferences.edit().putString("TAB", "otherpay");
+//            Intent intent = new Intent(getActivity(), TappayActivity.class);
+//            startActivity(intent);
+//            Navigation.findNavController(v).popBackStack(R.id.orderconfirm_houseSnapshot, true);
         });
         btCon2.setOnClickListener(v -> {
             //改變其他付款 狀態->2  跳完回首頁
@@ -319,7 +321,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                 if (RemoteAccess.networkCheck(activity)) {
                     String url = Common.URL + "OtherPay";
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("OTHERPAYID", orderId);
+                    jsonObject.addProperty("OTHERPAYID", bdget.getInt("OTHERPAYID"));
                     jsonObject.addProperty("RESULTCODE", 3);
 
                     String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
@@ -327,15 +329,17 @@ public class Orderconfirm_houseSnapshot extends Fragment {
                     int result = object.get("RESULT").getAsInt();
 
                     if (result == 200) {
-                        Toast.makeText(activity, "成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "已刪除", Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(v).navigate(R.id.homeFragment);
                         bottomSheetDialog.dismiss();
                     } else {
                         Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
+                        bottomSheetDialog.dismiss();
                     }
 
                 } else {
                     Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+                    bottomSheetDialog.dismiss();
                 }
             });
             bt_bottomsheet_Cancel.setOnClickListener(view -> {
@@ -436,6 +440,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon3.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putInt("OCR", 15);
+            bundle.putInt("AGREEMENTID", getAgreementId());
             Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
         });
     }
@@ -446,10 +451,12 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         tvCon1.setText("付款單明細");
         tvCon2.setText("回首頁");
 
+        Bundle bdget = getArguments();
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putInt("OCR", 17);
+            bundle.putInt("OTHERPAYID", bdget.getInt("OTHERPAYID"));
             Navigation.findNavController(v).navigate(R.id.orderconfirm_otherpay, bundle);
         });
         btCon2.setOnClickListener(v -> {
@@ -508,6 +515,16 @@ public class Orderconfirm_houseSnapshot extends Fragment {
 
             //跳轉 聯絡人
             btConn.setOnClickListener(v -> {
+                Bundle bundle2PerSnap = new Bundle();
+                bundle2PerSnap.putSerializable("SelectUser", member);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle2PerSnap);
+            });
+            imgHeadShot.setOnClickListener(v->{
+                Bundle bundle2PerSnap = new Bundle();
+                bundle2PerSnap.putSerializable("SelectUser", member);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle2PerSnap);
+            });
+            tvName.setOnClickListener(v->{
                 Bundle bundle2PerSnap = new Bundle();
                 bundle2PerSnap.putSerializable("SelectUser", member);
                 Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle2PerSnap);
@@ -606,6 +623,31 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             }
         } else {
             Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int getAgreementId() {
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "HouseSnapsShot";
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("ORDERID", orderId);
+            jsonObject.addProperty("RESULTCODE", 3);
+
+            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
+            JsonObject object = gson.fromJson(jsonIn, JsonObject.class);
+            int agreementId = object.get("AGREEMENTID").getAsInt();
+            int result = object.get("RESULT").getAsInt();
+
+            if (result == 200) {
+                return agreementId;
+            } else {
+                Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
+                return -1;
+            }
+
+        } else {
+            Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+            return -1;
         }
     }
 

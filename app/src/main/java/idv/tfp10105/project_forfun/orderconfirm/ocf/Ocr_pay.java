@@ -36,6 +36,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Order;
+import idv.tfp10105.project_forfun.common.bean.OtherPay;
 import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class Ocr_pay extends Fragment {
@@ -49,8 +50,8 @@ public class Ocr_pay extends Fragment {
     private int signInId;
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView tvHint;
-    private ImageView btOtherPay;
+    private TextView tvHint, tvRedCircle;
+    private ImageView btOtherPay, imgRedCircle;
 
 
     @Override
@@ -73,6 +74,8 @@ public class Ocr_pay extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         tvHint = view.findViewById(R.id.tv_ocr_pay_HintText);
         btOtherPay = view.findViewById(R.id.bt_ocr_pay_ToOtherpay);
+        tvRedCircle = view.findViewById(R.id.tv_ocr_pay_redcircleText);
+        imgRedCircle = view.findViewById(R.id.img_ocr_pay_redcircle);
 
         signInId = sharedPreferences.getInt("memberId", -1);
 
@@ -94,6 +97,15 @@ public class Ocr_pay extends Fragment {
         btOtherPay.setOnClickListener(v->{
             Navigation.findNavController(v).navigate(R.id.ocr_pay_otherpay);
         });
+
+        //判斷是否有otherpay 付款資訊
+        List<OtherPay> otherPays = getOtherpayListInfo(signInId);
+        if(otherPays.isEmpty()){
+            imgRedCircle.setVisibility(View.GONE);
+            tvRedCircle.setText("");
+        }else{
+            tvRedCircle.setText(String.valueOf(otherPays.size()));
+        }
     }
 
     @Override
@@ -148,6 +160,34 @@ public class Ocr_pay extends Fragment {
             return null;
         }
     }
+
+    //拿後Otherpay端對應資料
+    private List<OtherPay> getOtherpayListInfo(int memberId) {
+        List<OtherPay> otherPays = null;
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "OrderConfirm";
+            //後端先拿預載資料
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("RESULTCODE", 6);
+            jsonObject.addProperty("STATUS", 5);
+            jsonObject.addProperty("SIGNINID", memberId); //房客
+            String jsonin = RemoteAccess.getJsonData(url, jsonObject.toString());
+
+            JsonObject tmp = gson.fromJson(jsonin, JsonObject.class);
+            Type listType = new TypeToken<List<OtherPay>>() {
+            }.getType();
+
+            otherPays = gson.fromJson(tmp.get("OTHERPAYLIST").getAsString(), listType);
+
+            Log.d("ORDER", otherPays.toString());
+
+            return otherPays;
+        } else {
+            Toast.makeText(activity, "網路連線失敗", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
 
     //set recycleView Adapter
     private void setOrderList(List<Order> orderList) {

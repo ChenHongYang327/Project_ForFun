@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:background="#FFEB3B"
-                    android:text="未付款"
+                    android:text="未付款，請選擇付款方式"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -113,10 +113,11 @@
                     android:id="@+id/bt_ocrTapPay_return"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
                     android:src="@drawable/bt_9044blank"
-                    app:layout_constraintBottom_toBottomOf="@+id/bt_ocrTapPay_cancel"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_ocrTapPay_result" />
 
                 <ImageView
                     android:id="@+id/bt_ocrTapPay_cancel"
@@ -135,11 +136,14 @@
                     android:id="@+id/bt_ocrTapPay_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginBottom="32dp"
                     android:src="@drawable/bt_9044blank"
-                    app:layout_constraintBottom_toBottomOf="@+id/bt_ocrTapPay_return"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_ocrTapPay_result" />
 
                 <TextView
                     android:id="@+id/tv_ocrTapPay_cancelText"

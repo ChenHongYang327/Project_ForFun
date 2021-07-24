@@ -55,7 +55,6 @@ public class Orderconfirm_otherpay extends Fragment {
     private TextView tvAccount, tvMsg, tvConfirmText, tvCancelText, tvTitle;
     private ImageView imgPic, btConfirm, btCancel;
     private SharedPreferences sharedPreferences;
-    private Bundle bundleIn = getArguments();
     private Gson gson = new Gson();
     private Activity activity;
     private int signInId, tapNum;
@@ -121,7 +120,8 @@ public class Orderconfirm_otherpay extends Fragment {
 
         signInId = sharedPreferences.getInt("memberId", -1);
 
-        tapNum = bundleIn.getInt("OCR");
+        Bundle bundle = getArguments();
+        tapNum = bundle.getInt("OCR",-1);
 
         switch (tapNum) {
             case 15:
@@ -133,36 +133,68 @@ public class Orderconfirm_otherpay extends Fragment {
             case 17: //房東預覽 同 房客預覽
                 handlePreViews();
                 break;
-            case 8: //下定前預覽 同 房客預覽
-                handlePreViews();
+            case 8: //下定前預覽 跳轉tappay
+                handleTopayPreViews();
                 break;
 
             default:
-                Bundle bundleOut = new Bundle();
-                bundleOut.putInt("OCR", tapNum);
                 Toast.makeText(activity, "查無內容", Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(view).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+                Navigation.findNavController(view).popBackStack();
                 break;
         }
     }
 
     private void handlePreViews() {
-        int otherpayId = bundleIn.getInt("OTHERPAYID");
+        Bundle bundle = getArguments();
+        int otherpayId = bundle.getInt("OTHERPAYID");
 
         tvTitle.setText("付款明細");
+        tvAccount.setEnabled(false);
+        tvMsg.setEnabled(false);
 
         btConfirm.setVisibility(View.GONE);
         tvConfirmText.setText("");
         //取消按鈕
-        btCancel.setOnClickListener(v -> {
-            Bundle bundleOut = new Bundle();
-            bundleOut.putInt("OCR", tapNum);
-            Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
-        });
+        btCancel.setVisibility(View.GONE);
+        tvCancelText.setText("");
+//        btCancel.setOnClickListener(v -> {
+//            Bundle bundleOut = new Bundle();
+//            bundleOut.putInt("OCR", tapNum);
+//            Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+//        });
 
         //抓值
         OtherPay otherPay = getotherpay(otherpayId);
-        tvAccount.setText(otherPay.getOtherpayMoney());
+        tvAccount.setText(String.valueOf(otherPay.getOtherpayMoney()));
+        tvMsg.setText(otherPay.getOtherpayNote());
+        String imgpath = otherPay.getSuggestImg();
+        setImgFromFireStorage(imgpath,imgPic);
+    }
+
+    private void handleTopayPreViews() {
+        Bundle bundle = getArguments();
+        int otherpayId = bundle.getInt("OTHERPAYID");
+
+        tvTitle.setText("付款明細");
+        tvAccount.setEnabled(false);
+        tvMsg.setEnabled(false);
+
+        //去Tappay 付款
+        btConfirm.setOnClickListener(v->{
+            Intent intent = new Intent(getActivity(), TappayActivity.class);
+            intent.putExtra("ORDERID", otherpayId);
+            intent.putExtra("TAB", 2);
+            startActivity(intent);
+            Navigation.findNavController(v).popBackStack(R.id.orderconfirm_otherpay,true);
+        });
+
+        //取消按鈕
+        btCancel.setVisibility(View.GONE);
+        tvCancelText.setText("");
+
+        //抓值
+        OtherPay otherPay = getotherpay(otherpayId);
+        tvAccount.setText(String.valueOf(otherPay.getOtherpayMoney()));
         tvMsg.setText(otherPay.getOtherpayNote());
         String imgpath = otherPay.getSuggestImg();
         setImgFromFireStorage(imgpath,imgPic);
@@ -186,7 +218,8 @@ public class Orderconfirm_otherpay extends Fragment {
                 String acc = tvAccount.getText().toString().trim();
                 //轉型態int
                 int account = Integer.parseInt(acc);
-                int agreementID = bundleIn.getInt("AGREEMENTID");
+                Bundle bundle = getArguments();
+                int agreementID = bundle.getInt("AGREEMENTID");
 
                 // 上傳圖片給firebase，路徑存回db
 
@@ -252,9 +285,7 @@ public class Orderconfirm_otherpay extends Fragment {
 
         //取消按鈕
         btCancel.setOnClickListener(v -> {
-            Bundle bundleOut = new Bundle();
-            bundleOut.putInt("OCR", tapNum);
-            Navigation.findNavController(v).navigate(R.id.orderconfirm_houseSnapshot, bundleOut);
+            Navigation.findNavController(v).popBackStack();
         });
 
     }
@@ -312,8 +343,8 @@ public class Orderconfirm_otherpay extends Fragment {
 
         // 取得storage根目錄位置
         StorageReference rootRef = storage.getReference();
-
-        String agreement_Id = bundleIn.get("AGREEMENTID").toString();
+        Bundle bundle = getArguments();
+        String agreement_Id = bundle.get("AGREEMENTID").toString();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //  回傳資料庫的路徑
         final String imagePath = getString(R.string.app_name) + "/OtherPay/" + agreement_Id + "/" + timeStamp;
