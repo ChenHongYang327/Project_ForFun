@@ -110,16 +110,19 @@ public class SignInFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        // 檢查電話號碼是否驗證成功過
+        FirebaseUser user = auth.getCurrentUser();
+        //判斷是否第一次開啟
         if (sharedPreferences.getBoolean("firstOpen", true)) {
             Navigation.findNavController(btSignIn)
                     .navigate(R.id.signin_Guided_Tour_Fragment);
             sharedPreferences.edit().putBoolean("firstOpen", false).apply();
-            return;
         }
-        // 檢查電話號碼是否驗證成功過
-        FirebaseUser user = auth.getCurrentUser();
-        if (user != null) {
+        //登入狀態
+        else if (user != null) {
+            //檢查帳號
             if (sharedPreferences.getInt("memberId", -1) > 0) {
+                //先判斷是否超過一小時
                 if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
                     JsonObject req = new JsonObject();
                     req.addProperty("action", "clearToken");
@@ -134,8 +137,9 @@ public class SignInFragment extends Fragment {
                     sharedPreferences.edit()
                             .putBoolean("firstOpen", false)
                             .apply();
+                    return;
                 }
-                else if(sharedPreferences.getInt("memberId", -1)!=-1){
+                //判斷帳號權限
                     JsonObject req = new JsonObject();
                     req.addProperty("action", "checkType");
                     req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
@@ -143,6 +147,7 @@ public class SignInFragment extends Fragment {
                         Toast.makeText(activity, "請檢查伺服器連線狀態", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    //停權狀態
                     else if(Integer.parseInt(RemoteAccess.getJsonData(url,req.toString()))==0){
                         sharedPreferences.edit().clear().apply();
                         sharedPreferences.edit()
@@ -150,26 +155,14 @@ public class SignInFragment extends Fragment {
                                 .apply();
                         auth.signOut();
                         Toast.makeText(activity, "帳號已被停權,請聯絡客服", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    else{
-                        Navigation.findNavController(btSignIn)
+                    //帳號正常
+                    Navigation.findNavController(btSignIn)
                                 .navigate(R.id.homeFragment);
-                    }
-                }
 
-                else {
-                    Navigation.findNavController(btSignIn)
-                        .navigate(R.id.homeFragment);
-
-                }
-            } else {
-                if (sharedPreferences.getBoolean("firstOpen", true)) {
-                    sharedPreferences.edit().putBoolean("firstOpen", false).apply();
-                    Navigation.findNavController(btSignIn)
-                            .navigate(R.id.signin_Guided_Tour_Fragment);
                 }
             }
-        }
 
     }
 
