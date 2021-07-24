@@ -52,7 +52,7 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
            //要傳送的物件
 //        msg.obj=1;
            //主執行緒才能控制元件
-           MainActivity.handler.sendMessage(msg);
+           ChatMessageFragment.handler.sendMessage(msg);
 //           Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
        }
 

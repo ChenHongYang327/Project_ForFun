@@ -66,7 +66,8 @@ public class ChatMessageFragment extends Fragment {
     private List<Member> members;
     private FirebaseStorage storage;
     private ChatRoomMessageAdapter chatRoomMessageAdapter;
-//    public static Handler handler;
+    public static Handler handler;
+    private String url = Common.URL + "MessageController";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,13 +75,11 @@ public class ChatMessageFragment extends Fragment {
         activity = getActivity();
         //取bundle資料
         chatRoom = (ChatRoom) (getArguments() != null ? getArguments().getSerializable("chatRooms") : null);
-        Log.d(TAG,"chatRoom2: " + chatRoom.getMemberId2());
-        Log.d(TAG,"chatRoom1: " + chatRoom.getMemberId1());
+
         //取偏好設定檔
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId", -1);
-
-        MainActivity.handler = new Handler(Looper.myLooper(), msg -> {
+        ChatMessageFragment.handler = new Handler(Looper.myLooper(), msg -> {
             Log.d(TAG,"handler");
             if (msg.what == 2) {
                 if (chatRoomMessageAdapter == null) {
@@ -133,39 +132,19 @@ public class ChatMessageFragment extends Fragment {
     private  List<ChatRoomMessage> getChatRoomMessage() {
         List<ChatRoomMessage> chatRoomMessages = new ArrayList<>();
         if (RemoteAccess.networkCheck(activity)) {
-
-            if(memberId.equals(chatRoom.getMemberId2())) {
-                String url = Common.URL + "MessageController";
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("action", "getAll");
-                jsonObject.addProperty("MEMBER_ID", memberId);
-                jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("action", "getAll");
+//            jsonObject.addProperty("MEMBER_ID", memberId);
+            jsonObject.addProperty("chatRoomId", chatRoom.getChatroomId());
 //            jsonObject.addProperty("MEMBER_ID", memberId);
 
-                JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
-                Type listType = new TypeToken<List<ChatRoomMessage>>() {
-                }.getType();
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+            Type listType = new TypeToken<List<ChatRoomMessage>>() {}.getType();
 
-                //解析後端傳回資料
-                chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
+            //解析後端傳回資料
+            chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
 
-            } else if (memberId.equals(chatRoom.getMemberId1())){
-                String url = Common.URL + "MessageController";
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("action", "getAll");
-                jsonObject.addProperty("MEMBER_ID", memberId);
-                jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId2());
-//            jsonObject.addProperty("MEMBER_ID", memberId);
-
-                JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
-                Type listType = new TypeToken<List<ChatRoomMessage>>() {
-                }.getType();
-
-                //解析後端傳回資料
-                chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
-            }
-
-        } else {
+        }else {
             Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
         }
         Toast.makeText(activity, "chatRoomMessages : " + chatRoomMessages, Toast.LENGTH_SHORT).show();
@@ -173,29 +152,6 @@ public class ChatMessageFragment extends Fragment {
 
     }
 
-//    // 抓Token
-//    private List<Member> getMembersToken() {
-//
-//        if (RemoteAccess.networkCheck(activity)) {
-//            String url = Common.URL + "MessageController";
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("action", "getAll");
-//            //通知功能用
-//            jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
-//
-////            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-////            Type listType = new TypeToken<List<Member>>() {}.getType();
-//
-//            //解析後端傳回資料
-////            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(),listType);
-//
-//        } else {
-//            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
-//        }
-////        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
-//
-//        return members;
-//    }
 
 
     private void handlebtSend() {
@@ -206,27 +162,57 @@ public class ChatMessageFragment extends Fragment {
                 return;
             }
             if (RemoteAccess.networkCheck(activity)) {
-                String url = Common.URL + "MessageController";
-                ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoom.getChatroomId(), memberId, chatMSG);
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("action", "messageInsert");
-                jsonObject.addProperty("chatMessage", chatMSG);
-                jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
-                int count;
-                //執行緒池物件
-                String result = RemoteAccess.getJsonData(url, jsonObject.toString());
-                //新增筆數
-                count = Integer.parseInt(result);
-                //筆數為0
-                if (count == 0) {
-                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+                if (memberId.equals(chatRoom.getMemberId1())) {
+                    ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoom.getChatroomId(), memberId, chatMSG);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("action", "messageInsert");
+                    jsonObject.addProperty("chatMessage", chatMSG);
+                    jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId2());
+                    jsonObject.addProperty("MemberId", memberId);
+                    jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
 
-                    ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
+                    int count;
+                    //執行緒池物件
+                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
+                    //新增筆數
+                    count = Integer.parseInt(result);
+                    //筆數為0
+                    if (count == 0) {
+                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
-                    chatRoomMessageAdapter.notifyDataSetChanged();
+                        ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
+
+                        chatRoomMessageAdapter.notifyDataSetChanged();
+                    }
+
+                    } else if (memberId.equals(chatRoom.getMemberId2())) {
+                    ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoom.getChatroomId(), memberId, chatMSG);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("action", "messageInsert");
+                    jsonObject.addProperty("chatMessage", chatMSG);
+                    jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
+                    jsonObject.addProperty("MemberId", memberId);
+                    jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
+
+                    int count;
+                    //執行緒池物件
+                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
+                    //新增筆數
+                    count = Integer.parseInt(result);
+                    //筆數為0
+                    if (count == 0) {
+                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+
+                        ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
+
+                        chatRoomMessageAdapter.notifyDataSetChanged();
+                    }
                 }
+
             }
 
         });
@@ -321,13 +307,13 @@ public class ChatMessageFragment extends Fragment {
                 holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
 //            holder.chatRoom_message_ReadStatus_self.setText(chatRoomMessage.getRead().toString());
                 holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-                holder.otherMessage.setVisibility(View.GONE);
+//                holder.otherMessage.setVisibility(View.GONE);
 
             } else {
 //                downloadImage(holder.chatRoomMemberImg, member2.getHeadshot());
                 holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
                 holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-                holder.selfMessage.setVisibility(View.GONE);
+//                holder.selfMessage.setVisibility(View.GONE);
 
             }
 
