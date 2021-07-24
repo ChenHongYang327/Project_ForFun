@@ -150,7 +150,11 @@ public class SignInFragment extends Fragment {
                                 .apply();
                         auth.signOut();
                         Toast.makeText(activity, "帳號已被停權,請聯絡客服", Toast.LENGTH_SHORT).show();
-                    };
+                    }
+                    else{
+                        Navigation.findNavController(btSignIn)
+                                .navigate(R.id.homeFragment);
+                    }
                 }
 
                 else {
