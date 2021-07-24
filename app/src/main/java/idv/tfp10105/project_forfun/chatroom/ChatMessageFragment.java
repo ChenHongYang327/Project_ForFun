@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,21 +50,23 @@ import idv.tfp10105.project_forfun.common.bean.ChatRoom;
 import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
 import idv.tfp10105.project_forfun.common.bean.Member;
 
-public class chatMessageFragment extends Fragment {
+public class ChatMessageFragment extends Fragment {
     private static final String TAG = "chatMessageFragment";
+    private  Activity activity;
     private CircularImageView memberImg;
     private TextView memberName;
     private EditText edMessage;
     private ImageButton btSend;
-    private Activity activity;
-    private RecyclerView rvChatMessage;
+    private  RecyclerView rvChatMessage;
     private List<ChatRoomMessage> chatRoomMessages;
-    private ChatRoom chatRoom;
+    private  ChatRoom chatRoom;
     private SharedPreferences sharedPreferences;
-    private Integer memberId;
+    private  Integer memberId;
     private String memberToken;
     private List<Member> members;
     private FirebaseStorage storage;
+    private ChatRoomMessageAdapter chatRoomMessageAdapter;
+//    public static Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,14 +74,31 @@ public class chatMessageFragment extends Fragment {
         activity = getActivity();
         //取bundle資料
         chatRoom = (ChatRoom) (getArguments() != null ? getArguments().getSerializable("chatRooms") : null);
-        Log.d(TAG,"chatRoom: " + chatRoom.getMemberId1());
+        Log.d(TAG,"chatRoom2: " + chatRoom.getMemberId2());
+        Log.d(TAG,"chatRoom1: " + chatRoom.getMemberId1());
         //取偏好設定檔
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId", -1);
 
+        MainActivity.handler = new Handler(Looper.myLooper(), msg -> {
+            Log.d(TAG,"handler");
+            if (msg.what == 2) {
+                if (chatRoomMessageAdapter == null) {
+                    chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, getChatRoomMessage());
+                    return true;
+                }
+                getChatRoomMessage();
+                chatRoomMessageAdapter.notifyDataSetChanged();
+                return true;
+            }
+            return true;
+        });
+
+
+
         // 每次取得registration token就傳送至server儲存，
         // 因為當MyFCMService.onNewToken()傳送token至server時可能失敗，而導致server沒有token
-        getTokenSendServer();
+//        getTokenSendServer();
     }
 
     @Override
@@ -109,21 +130,41 @@ public class chatMessageFragment extends Fragment {
         rvChatMessage.setLayoutManager(new LinearLayoutManager(activity));
     }
 
-    private List<ChatRoomMessage> getChatRoomMessage() {
+    private  List<ChatRoomMessage> getChatRoomMessage() {
         List<ChatRoomMessage> chatRoomMessages = new ArrayList<>();
         if (RemoteAccess.networkCheck(activity)) {
-            String url = Common.URL + "MessageController";
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("action", "getAll");
-            jsonObject.addProperty("MEMBER_ID", memberId);
-            jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
+
+            if(memberId.equals(chatRoom.getMemberId2())) {
+                String url = Common.URL + "MessageController";
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("action", "getAll");
+                jsonObject.addProperty("MEMBER_ID", memberId);
+                jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
 //            jsonObject.addProperty("MEMBER_ID", memberId);
 
-            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-            Type listType = new TypeToken<List<ChatRoomMessage>>() {}.getType();
+                JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+                Type listType = new TypeToken<List<ChatRoomMessage>>() {
+                }.getType();
 
-            //解析後端傳回資料
-            chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
+                //解析後端傳回資料
+                chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
+
+            } else if (memberId.equals(chatRoom.getMemberId1())){
+                String url = Common.URL + "MessageController";
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("action", "getAll");
+                jsonObject.addProperty("MEMBER_ID", memberId);
+                jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId2());
+//            jsonObject.addProperty("MEMBER_ID", memberId);
+
+                JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+                Type listType = new TypeToken<List<ChatRoomMessage>>() {
+                }.getType();
+
+                //解析後端傳回資料
+                chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
+            }
+
         } else {
             Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
         }
@@ -214,20 +255,20 @@ public class chatMessageFragment extends Fragment {
 
 
 
-    // 取得registration token後傳送至server
-    private void getTokenSendServer() {
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                if (task.getResult() != null) {
-                    String token = task.getResult();
-                    RemoteAccess.sendTokenToServer(token, activity);
-                }
-            }
-        });
-    }
+//    // 取得registration token後傳送至server
+//    private void getTokenSendServer() {
+//        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                if (task.getResult() != null) {
+//                    String token = task.getResult();
+//                    RemoteAccess.sendTokenToServer(token, activity);
+//                }
+//            }
+//        });
+//    }
 
 
-    private void showChatRoomMessage(List<ChatRoomMessage> chatRoomMessages) {
+    private  void showChatRoomMessage(List<ChatRoomMessage> chatRoomMessages) {
         if (chatRoomMessages == null || chatRoomMessages.isEmpty()) {
             Toast.makeText(activity, "沒有訊息", Toast.LENGTH_SHORT).show();
         }
@@ -235,7 +276,8 @@ public class chatMessageFragment extends Fragment {
         ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
         // 如果spotAdapter不存在就建立新的，否則續用舊有的
         if (chatRoomMessageAdapter == null) {
-            rvChatMessage.setAdapter(new ChatRoomMessageAdapter(activity, chatRoomMessages));
+            chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, chatRoomMessages);
+            rvChatMessage.setAdapter(chatRoomMessageAdapter);
         } else {
             //更新Adapter資料,重刷
             chatRoomMessageAdapter.setAdapter(chatRoomMessages);
@@ -312,35 +354,35 @@ public class chatMessageFragment extends Fragment {
         }
     }
 
-    public class FCMService extends FirebaseMessagingService {
-        private static final String TAG = "TAG_FCMService";
-
-        @Override
-        // 當Android裝置在前景收到FCM時呼叫
-        public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-            // 取得notification資料，主要為title與body這2個保留字
-            RemoteMessage.Notification notification = remoteMessage.getNotification();
-            String title = "";
-            String body = "";
-            if (notification != null) {
-                title = notification.getTitle();
-                body = notification.getBody();
-                Message message = new Message();
-                // 取得自訂資料
-//            Map<String, String> map = remoteMessage.getData();
-//            String data = map.get("data");
-//            Log.d(TAG, "onMessageReceived():\ntitle: " + title + ", body: " + body + ", data: " + data);
-
-                //主執行緒才能控制元件
-                MainActivity.handler.sendMessage(message);
-//                onNewToken(memberToken);
-            }
-        }
-
-        @Override
-        // 當registration token更新時呼叫，應該將新的token傳送至server
-        public void onNewToken(@NonNull String token) {
-            RemoteAccess.sendTokenToServer(token, activity);
-        }
-    }
+//    public class FCMService extends FirebaseMessagingService {
+//        private static final String TAG = "TAG_FCMService";
+//
+//        @Override
+//        // 當Android裝置在前景收到FCM時呼叫
+//        public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+//            // 取得notification資料，主要為title與body這2個保留字
+//            RemoteMessage.Notification notification = remoteMessage.getNotification();
+//            String title = "";
+//            String body = "";
+//            if (notification != null) {
+//                title = notification.getTitle();
+//                body = notification.getBody();
+//                Message message = new Message();
+//                // 取得自訂資料
+////            Map<String, String> map = remoteMessage.getData();
+////            String data = map.get("data");
+////            Log.d(TAG, "onMessageReceived():\ntitle: " + title + ", body: " + body + ", data: " + data);
+//
+//                //主執行緒才能控制元件
+//                MainActivity.handler.sendMessage(message);
+////                onNewToken(memberToken);
+//            }
+//        }
+//
+//        @Override
+//        // 當registration token更新時呼叫，應該將新的token傳送至server
+//        public void onNewToken(@NonNull String token) {
+//            RemoteAccess.sendTokenToServer(token, activity);
+//        }
+//    }
 }

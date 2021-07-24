@@ -199,7 +199,7 @@
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/chatMessageFragment"
-        android:name="idv.tfp10105.project_forfun.chatroom.chatMessageFragment"
+        android:name="idv.tfp10105.project_forfun.chatroom.ChatMessageFragment"
         android:label="chatMessageFragment" />
     <fragment
         android:id="@+id/customerServiceFragment"
