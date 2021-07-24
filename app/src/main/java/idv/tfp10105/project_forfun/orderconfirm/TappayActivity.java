@@ -172,9 +172,9 @@ public class TappayActivity extends AppCompatActivity {
 
         //取消按鈕事件
         btCancel.setVisibility(View.GONE);
-        btCancel.setOnClickListener(v -> {
-
-        });
+//        btCancel.setOnClickListener(v -> {
+//
+//        });
     }
 
     //set order Info
@@ -371,11 +371,11 @@ public class TappayActivity extends AppCompatActivity {
                     //tvResult.setText(text);
                     tvResult.setText("付款成功");
 
-                    btConfirm.setVisibility(View.GONE);
-                    tvConfirmText.setText("");
-                    btReturn.setVisibility(View.GONE);
-                    tvReturnText.setText("");
-                    tvCncelText.setText("回首頁");
+                    //btConfirm.setVisibility(View.GONE);
+                    tvConfirmText.setText("回首頁");
+                    //btReturn.setVisibility(View.GONE);
+                    //tvReturnText.setText("");
+                    //tvCncelText.setText("回首頁");
 
                     //成功後修改狀態碼
                     handleStatus();
@@ -430,6 +430,7 @@ public class TappayActivity extends AppCompatActivity {
             int resoltcode = result.get("RESULT").getAsInt();
 
             if (resoltcode == 200) {
+
                 btConfirm.setOnClickListener(v -> {
                     Intent intent = new Intent(TappayActivity.this, MainActivity.class);
                     intent.putExtra("tmptmp", 1);
