@@ -3,6 +3,8 @@ package idv.tfp10105.project_forfun.chatroom;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +25,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -29,14 +38,18 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.ChatRoom;
 import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
+import idv.tfp10105.project_forfun.common.bean.Member;
 
 public class chatMessageFragment extends Fragment {
+    private static final String TAG = "chatMessageFragment";
     private CircularImageView memberImg;
     private TextView memberName;
     private EditText edMessage;
@@ -47,6 +60,9 @@ public class chatMessageFragment extends Fragment {
     private ChatRoom chatRoom;
     private SharedPreferences sharedPreferences;
     private Integer memberId;
+    private String memberToken;
+    private List<Member> members;
+    private FirebaseStorage storage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,9 +70,14 @@ public class chatMessageFragment extends Fragment {
         activity = getActivity();
         //取bundle資料
         chatRoom = (ChatRoom) (getArguments() != null ? getArguments().getSerializable("chatRooms") : null);
+        Log.d(TAG,"chatRoom: " + chatRoom.getMemberId1());
         //取偏好設定檔
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId", -1);
+
+        // 每次取得registration token就傳送至server儲存，
+        // 因為當MyFCMService.onNewToken()傳送token至server時可能失敗，而導致server沒有token
+        getTokenSendServer();
     }
 
     @Override
@@ -71,6 +92,7 @@ public class chatMessageFragment extends Fragment {
         findViews(view);
         handleRecycleView();
         chatRoomMessages = getChatRoomMessage();
+//        getMembersToken();
         showChatRoomMessage(chatRoomMessages);
         handlebtSend();
     }
@@ -94,12 +116,14 @@ public class chatMessageFragment extends Fragment {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("action", "getAll");
             jsonObject.addProperty("MEMBER_ID", memberId);
-            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
-            Type listType = new TypeToken<List<ChatRoomMessage>>() {
-            }.getType();
+            jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
+//            jsonObject.addProperty("MEMBER_ID", memberId);
+
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
+            Type listType = new TypeToken<List<ChatRoomMessage>>() {}.getType();
 
             //解析後端傳回資料
-            chatRoomMessages = new Gson().fromJson(jsonIn, listType);
+            chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
         } else {
             Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
         }
@@ -107,6 +131,31 @@ public class chatMessageFragment extends Fragment {
         return chatRoomMessages;
 
     }
+
+//    // 抓Token
+//    private List<Member> getMembersToken() {
+//
+//        if (RemoteAccess.networkCheck(activity)) {
+//            String url = Common.URL + "MessageController";
+//            JsonObject jsonObject = new JsonObject();
+//            jsonObject.addProperty("action", "getAll");
+//            //通知功能用
+//            jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
+//
+////            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
+////            Type listType = new TypeToken<List<Member>>() {}.getType();
+//
+//            //解析後端傳回資料
+////            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(),listType);
+//
+//        } else {
+//            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+//        }
+////        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
+//
+//        return members;
+//    }
+
 
     private void handlebtSend() {
         btSend.setOnClickListener(v -> {
@@ -120,6 +169,7 @@ public class chatMessageFragment extends Fragment {
                 ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoom.getChatroomId(), memberId, chatMSG);
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("action", "messageInsert");
+                jsonObject.addProperty("chatMessage", chatMSG);
                 jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
                 int count;
                 //執行緒池物件
@@ -138,6 +188,41 @@ public class chatMessageFragment extends Fragment {
                 }
             }
 
+        });
+    }
+
+
+    // 下載Firebase storage的照片並顯示在ImageView上
+    private void downloadImage(final ImageView imageView, final String path) {
+        final int ONE_MEGABYTE = 1024 * 1024;
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                        imageView.setImageResource(R.drawable.no_image);
+                        Log.e(TAG, message);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
+
+    // 取得registration token後傳送至server
+    private void getTokenSendServer() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (task.getResult() != null) {
+                    String token = task.getResult();
+                    RemoteAccess.sendTokenToServer(token, activity);
+                }
+            }
         });
     }
 
@@ -162,8 +247,7 @@ public class chatMessageFragment extends Fragment {
     public class ChatRoomMessageAdapter extends RecyclerView.Adapter<ChatRoomMessageAdapter.MyViewHolder> {
         private final LayoutInflater layoutInflater;
         private List<ChatRoomMessage> chatRoomMessages;
-        private final int MESSAGE_IN_VIEW_TYPE = 1;
-        private final int MESSAGE_OUT_VIEW_TYPE = 2;
+
 
         public ChatRoomMessageAdapter(Context context, List<ChatRoomMessage> chatRoomMessages) {
             layoutInflater = LayoutInflater.from(context);
@@ -189,24 +273,26 @@ public class chatMessageFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ChatRoomMessageAdapter.MyViewHolder holder, int position) {
             ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
-            if (memberId.equals(chatRoom.getMemberId1())) {
+//            Member member2 = members.get(position);
+//            memberToken = member.getToken();
+            if (!memberId.equals(chatRoom.getMemberId1())) {
                 holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
 //            holder.chatRoom_message_ReadStatus_self.setText(chatRoomMessage.getRead().toString());
                 holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.otherMessage.setVisibility(View.GONE);
+                holder.otherMessage.setVisibility(View.GONE);
 
             } else {
-                holder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
+//                downloadImage(holder.chatRoomMemberImg, member2.getHeadshot());
                 holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
                 holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.selfMessage.setVisibility(View.GONE);
+                holder.selfMessage.setVisibility(View.GONE);
 
             }
 
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-//            public CircularImageView chatRoomMemberImg;
+            //            public CircularImageView chatRoomMemberImg;
             public ImageView chatRoomMemberImg;
             public TextView chatRoom_message_context, chatRoom_message_CreatTime, chatRoom_message_context_self, chatRoom_message_CreatTime_self, chatRoom_message_ReadStatus_self;
             public LinearLayout otherMessage;
@@ -226,114 +312,35 @@ public class chatMessageFragment extends Fragment {
         }
     }
 
-//    public class ChatRoomMessageAdapter extends RecyclerView.Adapter<ChatRoomMessageAdapter.MyViewHolder> {
-//        private final LayoutInflater layoutInflater;
-//        private List<ChatRoomMessage> chatRoomMessages;
-//        private final int MESSAGE_IN_VIEW_TYPE = 1;
-//        private final int MESSAGE_OUT_VIEW_TYPE = 2;
-//
-//
-//        public ChatRoomMessageAdapter(Context context, List<ChatRoomMessage> chatRoomMessages) {
-//            layoutInflater = LayoutInflater.from(context);
-//            this.chatRoomMessages = chatRoomMessages;
-//        }
-//
-//        public void setAdapter(List<ChatRoomMessage> chatRoomMessages) {
-//            this.chatRoomMessages = chatRoomMessages;
-//        }
-//
-//        public class MyViewHolder extends RecyclerView.ViewHolder {
-//            public CircularImageView chatRoomMemberImg;
-//            public TextView chatRoom_message_context, chatRoom_message_CreatTime, chatRoom_message_context_self, chatRoom_message_CreatTime_self, chatRoom_message_ReadStatus_self;
-//            public LinearLayout otherMessage;
-//            public LinearLayout selfMessage;
-//
-//            public MyViewHolder(@NonNull View itemView) {
-//                super(itemView);
-//                chatRoom_message_context_self = itemView.findViewById(R.id.chatRoom_message_context_self);
-//                chatRoom_message_CreatTime_self = itemView.findViewById(R.id.chatRoom_message_CreatTime_self);
-//                chatRoom_message_ReadStatus_self = itemView.findViewById(R.id.chatRoom_message_ReadStatus_self);
-//                chatRoomMemberImg = itemView.findViewById(R.id.chatRoomMemberImg);
-//                chatRoom_message_context = itemView.findViewById(R.id.chatRoom_message_context);
-//                chatRoom_message_CreatTime = itemView.findViewById(R.id.chatRoom_message_CreatTime);
-//                selfMessage = itemView.findViewById(R.id.self_message);
-//                otherMessage = itemView.findViewById(R.id.other_message);
-//
-//            }
-//        }
-//
-////        @Override
-////        public int getItemViewType(int position) {
-////            ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
-////            try {
-////                if(chatRoomMessage.getBoolean("isSent")){
-////                    if(chatRoomMessage.has("message")){
-////                        return TYPE_MESSAGE_SENT;
-////                    }
-////                }else{
-////                    if(chatRoomMessage.has("message")){
-////                        return TYPE_MESSAGE_RECEIVED;
-////                    }
-////                }
-////            } catch (Exception e) {
-////                e.printStackTrace();
-////            }
-////            return -1;
-////        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return chatRoomMessages == null ? 0 : chatRoomMessages.size();
-//        }
-//
-//        @NonNull
-//        @Override
-//        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//            View itemView = layoutInflater.inflate(R.layout.chat_msg_content, parent, false);
-//            return new MyViewHolder(itemView);
-//        }
-////            View view = null;
-////            if(viewType == MESSAGE_IN_VIEW_TYPE){
-////                view = LayoutInflater.from(parent.getContext())
-////                        .inflate(R.layout.received_chat_message_itemview, parent, false);
-////            }
-////            else{
-////                view = LayoutInflater.from(parent.getContext())
-////                        .inflate(R.layout.send_chat_message_itemview, parent, false);
-////            }
-//////            return new MessageHolder(view);
-////            return null;
-////        }
-//
-//        @Override
-//        public void onBindViewHolder(@NonNull chatMessageFragment.ChatRoomMessageAdapter.MyViewHolder holder, int position) {
-//            ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
-//            if (memberId.equals(chatRoomMessage.getMemberId())) {
-//                holder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
-//                holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
-//                holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-////                holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
-////                holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.chatRoomMemberImg.setVisibility(View.VISIBLE);
-//                holder.chatRoom_message_context.setVisibility(View.VISIBLE);
-//                holder.chatRoom_message_CreatTime.setVisibility(View.VISIBLE);
-//                holder.chatRoom_message_context_self.setVisibility(View.GONE);
-//                holder.chatRoom_message_ReadStatus_self.setVisibility(View.GONE);
-//            } else if (memberId.equals(chatRoom.getMemberId2())) {
-////                holder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
-////                holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
-////                holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
-//                holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.chatRoomMemberImg.setVisibility(View.GONE);
-//                holder.chatRoom_message_context.setVisibility(View.GONE);
-//                holder.chatRoom_message_CreatTime.setVisibility(View.GONE);
-//                holder.chatRoom_message_context_self.setVisibility(View.VISIBLE);
-//                holder.chatRoom_message_ReadStatus_self.setVisibility(View.VISIBLE);
-//            }
-//
-//
-//        }
-//
-//    }
+    public class FCMService extends FirebaseMessagingService {
+        private static final String TAG = "TAG_FCMService";
+
+        @Override
+        // 當Android裝置在前景收到FCM時呼叫
+        public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+            // 取得notification資料，主要為title與body這2個保留字
+            RemoteMessage.Notification notification = remoteMessage.getNotification();
+            String title = "";
+            String body = "";
+            if (notification != null) {
+                title = notification.getTitle();
+                body = notification.getBody();
+                Message message = new Message();
+                // 取得自訂資料
+//            Map<String, String> map = remoteMessage.getData();
+//            String data = map.get("data");
+//            Log.d(TAG, "onMessageReceived():\ntitle: " + title + ", body: " + body + ", data: " + data);
+
+                //主執行緒才能控制元件
+                MainActivity.handler.sendMessage(message);
+//                onNewToken(memberToken);
+            }
+        }
+
+        @Override
+        // 當registration token更新時呼叫，應該將新的token傳送至server
+        public void onNewToken(@NonNull String token) {
+            RemoteAccess.sendTokenToServer(token, activity);
+        }
+    }
 }
