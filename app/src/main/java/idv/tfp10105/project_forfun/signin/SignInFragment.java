@@ -134,7 +134,26 @@ public class SignInFragment extends Fragment {
                     sharedPreferences.edit()
                             .putBoolean("firstOpen", false)
                             .apply();
-                } else {
+                }
+                else if(sharedPreferences.getInt("memberId", -1)!=-1){
+                    JsonObject req = new JsonObject();
+                    req.addProperty("action", "checkType");
+                    req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
+                    if(RemoteAccess.getJsonData(url, req.toString()).equals("error")) {
+                        Toast.makeText(activity, "請檢查伺服器連線狀態", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    else if(Integer.parseInt(RemoteAccess.getJsonData(url,req.toString()))==0){
+                        sharedPreferences.edit().clear().apply();
+                        sharedPreferences.edit()
+                                .putBoolean("firstOpen",false)
+                                .apply();
+                        auth.signOut();
+                        Toast.makeText(activity, "帳號已被停權,請聯絡客服", Toast.LENGTH_SHORT).show();
+                    };
+                }
+
+                else {
                     Navigation.findNavController(btSignIn)
                         .navigate(R.id.homeFragment);
 
@@ -335,8 +354,8 @@ public class SignInFragment extends Fragment {
              return;
             }
             JsonObject respJson=new Gson().fromJson(resp,JsonObject.class);
-            boolean pass=respJson.get("pass").getAsBoolean();
-            if(pass) {
+            int pass=respJson.get("pass").getAsInt();
+            if(pass==0) {
                 Member member=new Gson().fromJson(respJson.get("imformation").getAsString(),Member.class);
                 FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -346,7 +365,7 @@ public class SignInFragment extends Fragment {
                             sharedPreferences.edit()
                                     .putString("token",token)
                                     .apply();
-                            Log.d("顯示裝置的token", token);
+//                            Log.d("顯示裝置的token", token);
                             req.addProperty("action","updateToken");
                             req.addProperty("member",new Gson().toJson(member));
                             RemoteAccess.getJsonData(url,req.toString());//不接回覆
@@ -377,7 +396,10 @@ public class SignInFragment extends Fragment {
                 Navigation.findNavController(btSignIn)
                         .navigate(R.id.homeFragment);
             }
-            else{
+            else if(pass==1) {
+                Toast.makeText(activity, "帳號已被停權,請聯絡客服", Toast.LENGTH_SHORT).show();
+            }
+            else if(pass==2){
                 Toast.makeText(activity, "手機號碼錯誤", Toast.LENGTH_SHORT).show();
             }
         }

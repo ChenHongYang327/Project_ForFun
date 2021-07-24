@@ -133,6 +133,7 @@ public class OcrHO_Publishing extends Fragment {
         public void onBindViewHolder(@NonNull PublishlistHolder holder, int position) {
             Publish publish = publishes.get(position);
             String city = cityNames.get(position);
+            holder.ivPublishList.setImageDrawable(getResources().getDrawable(R.drawable.no_image));
             getImage(holder.ivPublishList, publish.getTitleImg() == null ? "/" : publish.getTitleImg());
             holder.tvPLName.setText(publish.getTitle());
             holder.tvPLArea.setText("地區:" + city);

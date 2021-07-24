@@ -68,6 +68,7 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
 
         if(RemoteAccess.networkCheck(activity)){
             holder.ivFFavorite.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_favorite));
+            holder.ivFPublish.setImageDrawable(context.getResources().getDrawable(R.drawable.no_image));
             getImage(holder.ivFPublish,publish.getPublishImg1()==null?"//":publish.getTitleImg());
             holder.tvFPulishName.setText(publish.getTitle());
             holder.tvFPulishArea.setText("地區:"+city);
