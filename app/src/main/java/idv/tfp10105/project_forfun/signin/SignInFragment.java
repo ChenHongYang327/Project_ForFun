@@ -220,11 +220,45 @@ public class SignInFragment extends Fragment {
 
         //快速登入
         imageView.setOnLongClickListener(v -> {
-            Toast.makeText(activity, "略過電話驗證", Toast.LENGTH_SHORT).show();
-            etPhone.setText("0921371162");;
-            phone=etPhone.getText().toString().trim();
-            etVerificationCode.setText("123456");
-            phoneSure();
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("略過電話驗證");
+            String[] phones = {"0922877662","0921371162", "0924545884", "0952894963", "0960917393", "0929458421","0921526256","0930362802","0930553563","0916366024"};
+            builder.setSingleChoiceItems(phones,-1,new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            etPhone.setText(phones[which]);
+                            phone = etPhone.getText().toString().trim();
+                            etVerificationCode.setText("123456");
+                            JsonObject req = new JsonObject();
+                            req.addProperty("action", "checkRole");
+                            req.addProperty("phone", phones[which]);
+                            String resp = RemoteAccess.getJsonData(url, req.toString());
+                            if (resp.equals("error")) {
+                                Toast.makeText(activity, "與伺服器連線錯誤", Toast.LENGTH_SHORT).show();
+                            } else if (Integer.parseInt(resp) == 1) {
+                                Toast.makeText(activity, "房客", Toast.LENGTH_SHORT).show();
+
+                            } else if (Integer.parseInt(resp) == 2) {
+                                Toast.makeText(activity, "房東", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(activity, "資料庫中沒有此手機號碼或是權限不符合", Toast.LENGTH_SHORT).show();
+                            }
+//                            dialog.dismiss();
+                        }
+                    });
+            builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    phoneSure();
+                }
+            });
+            builder.setNegativeButton("取消", null);
+            Window window = builder.show().getWindow();
+            Button btSure = window.findViewById(android.R.id.button1);
+            Button btCancel = window.findViewById(android.R.id.button2);
+            btSure.setTextColor(getResources().getColor(R.color.black));
+            btCancel.setTextColor(getResources().getColor(R.color.black));
             return true;
         });
 
