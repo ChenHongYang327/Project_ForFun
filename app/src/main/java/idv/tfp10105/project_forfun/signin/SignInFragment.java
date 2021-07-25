@@ -119,7 +119,7 @@ public class SignInFragment extends Fragment {
             sharedPreferences.edit().putBoolean("firstOpen", false).apply();
         }
         //登入狀態
-        else if (user != null) {
+        else if (user != null||sharedPreferences.getInt("memberId", -1)!=-1) {
             //檢查帳號
             if (sharedPreferences.getInt("memberId", -1) > 0) {
                 //先判斷是否超過一小時
