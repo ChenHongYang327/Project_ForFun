@@ -199,9 +199,9 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             });
         });
         btCon2.setOnClickListener(v -> {
-            //改變訂單狀態->6  跳完回首頁
-            orderStatus = 6;
-            orderChangeStatus(orderStatus);
+                //改變訂單狀態->6  跳完回首頁
+                orderStatus = 6;
+                bottomsheetCancelEvent(orderStatus);
         });
     }
 
@@ -218,7 +218,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon2.setOnClickListener(v -> {
             //改變訂單狀態->6  跳完回首頁
             orderStatus = 6;
-            orderChangeStatus(orderStatus);
+            bottomsheetCancelEvent(orderStatus);
         });
     }
 
@@ -246,7 +246,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon3.setOnClickListener(v -> {
             //改變訂單狀態->6  跳完回首頁
             orderStatus = 6;
-            orderChangeStatus(orderStatus);
+            bottomsheetCancelEvent(orderStatus);
         });
     }
 
@@ -373,7 +373,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon2.setOnClickListener(v -> {
             //改變訂單狀態->6  跳完回首頁
             orderStatus = 6;
-            orderChangeStatus(orderStatus);
+            bottomsheetCancelEvent(orderStatus);
         });
     }
 
@@ -381,8 +381,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon3.setVisibility(View.GONE);
         tvConntText.setText("聯絡房客");
         tvCon1.setText("建立合約");
-        //tvCon2.setText("取消此次交易");
-        tvCon2.setText("交易易易易");
+        tvCon2.setText("取消此次交易");
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
@@ -395,7 +394,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon2.setOnClickListener(v -> {
             //改變訂單狀態->6  跳完回首頁
             orderStatus = 6;
-            orderChangeStatus(orderStatus);
+            bottomsheetCancelEvent(orderStatus);
         });
     }
 
@@ -403,7 +402,8 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         tvConntText.setText("聯絡房客");
         tvCon1.setText("我的合約");
         tvCon2.setText("產生付款連結");
-        tvCon3.setText("取消此次交易");
+        //tvCon3.setText("取消此次交易");
+        btCon3.setVisibility(View.GONE);
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
         btCon1.setOnClickListener(v -> {
@@ -413,11 +413,11 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         btCon2.setOnClickListener(v -> {
             Toast.makeText(activity, "已產生連結，待房客付款", Toast.LENGTH_SHORT).show();
         });
-        btCon3.setOnClickListener(v -> {
-            //改變訂單狀態->6  跳完回首頁
-            orderStatus = 6;
-            orderChangeStatus(orderStatus);
-        });
+//        btCon3.setOnClickListener(v -> {
+//            //改變訂單狀態->6  跳完回首頁
+//            orderStatus = 6;
+//            orderChangeStatus(orderStatus);
+//        });
     }
 
     private void ocrHOCompelete15() {
@@ -558,7 +558,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         tv_bottomsheet_Title.setText("是否取消此訂單？");
         bottomSheetDialog.show();
         bt_bottomsheet_Confirm.setOnClickListener(v -> {
-            Toast.makeText(activity, "OK", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "取消成功", Toast.LENGTH_SHORT).show();
             orderChangeStatus(orderStatus);
             Navigation.findNavController(v).navigate(R.id.homeFragment);
             bottomSheetDialog.dismiss();

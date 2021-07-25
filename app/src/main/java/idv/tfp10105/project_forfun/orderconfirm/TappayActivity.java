@@ -371,14 +371,16 @@ public class TappayActivity extends AppCompatActivity {
                     //tvResult.setText(text);
                     tvResult.setText("付款成功");
 
-                    //btConfirm.setVisibility(View.GONE);
                     tvConfirmText.setText("回首頁");
-                    //btReturn.setVisibility(View.GONE);
-                    //tvReturnText.setText("");
-                    //tvCncelText.setText("回首頁");
 
                     //成功後修改狀態碼
                     handleStatus();
+
+                    btConfirm.setOnClickListener(v -> {
+                        Intent intent = new Intent(TappayActivity.this, MainActivity.class);
+                        intent.putExtra("tmptmp", 1);
+                        startActivity(intent);
+                    });
                 },
                 //called back 失敗
                 (status, reportMsg) -> {
@@ -394,54 +396,45 @@ public class TappayActivity extends AppCompatActivity {
     //成功後修改狀態碼
     private void handleStatus() {
 
-        if (isotherPay = true) {
-            //otherpay 狀態改1，已付款
-            String url = Common.URL + "OtherPay";
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("OTHERPAYID", payObjID);
-            jsonObject.addProperty("RESULTCODE", 2);
-            //用其他執行序，傳資料拿資料！！！
-            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
 
-            JsonObject result = gson.fromJson(jsonIn, JsonObject.class);
-            int resoltcode = result.get("RESULT").getAsInt();
+            if (isorder == true) {
+                //order 改狀態->5
+                String url = Common.URL + "Order";
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("ORDER", payObjID);
+                jsonObject.addProperty("RESULTCODE", 1);
+                //用其他執行序，傳資料拿資料！！！
+                String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
 
-            if (resoltcode == 200) {
-                btConfirm.setOnClickListener(v -> {
-                    Intent intent = new Intent(TappayActivity.this, MainActivity.class);
-                    intent.putExtra("tmptmp", 1);
-                    startActivity(intent);
-                });
-            } else {
-                Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show();
+                JsonObject result = gson.fromJson(jsonIn, JsonObject.class);
+                int resoltcode = result.get("RESULT").getAsInt();
+
+                if (resoltcode == 200) {
+
+                } else {
+                    Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show();
+                }
+                return;
             }
-            return;
-        }
-        if (isorder = true) {
-            //order 改狀態->5
-            String url = Common.URL + "Order";
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("ORDER", payObjID);
-            jsonObject.addProperty("RESULTCODE", 1);
-            //用其他執行序，傳資料拿資料！！！
-            String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
+            if(isotherPay == true){
+                //otherpay 狀態改1，已付款
+                String url = Common.URL + "OtherPay";
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("OTHERPAYID", payObjID);
+                jsonObject.addProperty("RESULTCODE", 2);
+                //用其他執行序，傳資料拿資料！！！
+                String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
 
-            JsonObject result = gson.fromJson(jsonIn, JsonObject.class);
-            int resoltcode = result.get("RESULT").getAsInt();
+                JsonObject result = gson.fromJson(jsonIn, JsonObject.class);
+                int resoltcode = result.get("RESULT").getAsInt();
 
-            if (resoltcode == 200) {
+                if (resoltcode == 200) {
 
-                btConfirm.setOnClickListener(v -> {
-                    Intent intent = new Intent(TappayActivity.this, MainActivity.class);
-                    intent.putExtra("tmptmp", 1);
-                    startActivity(intent);
-                });
-            } else {
-                Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "網路連線失敗", Toast.LENGTH_SHORT).show();
+                }
+                return;
             }
-            return;
-
-        }
     }
 
     // 將交易資訊送至TapPay測試區
