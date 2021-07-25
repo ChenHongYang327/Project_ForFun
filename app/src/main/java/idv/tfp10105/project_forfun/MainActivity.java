@@ -41,12 +41,12 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
-    private static NavController navController;
+    private NavController navController;
     private Toolbar toolbar;
-    private static TextView tvNotification;
-    private static CircularImageView ivCircle;
-    private static SharedPreferences commonSharedPreferences;
-    private static int notify = 0;
+    private TextView tvNotification;
+    private CircularImageView ivCircle;
+    private SharedPreferences sharedPreferences;
+    public static int notify = 0;
     private ImageButton btBell;//actionbar 中的ImageButton
     public static Handler handler;
 
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         handleView();
-        commonSharedPreferences = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         // Android 11 /R 之后创建 Handler 构造函数 Handler(Handler.Callback callback) 变更为 new Handler(Looper.myLooper(), callback)
         // Handler 允许我们发送延时消息，如果在延时消息未处理完，而此时 Handler 所在的 Activity 被关闭，但因为上述 Handler 用法则可能会导致内存泄漏。那么，在延时消息未处理完时，Handler 无法释放外部类 MainActivity 的对象，从而导致内存泄漏产生。
         // https://shoewann0402.github.io/2020/03/09/android-R-about-handler-change/
@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
             if (msg.what == 1) {
                 handleNotificationCount();
             }
+//            else if (msg.what == 2) {
+//                //更新用戶資料
+//            }
             return true;
         });
         //開一個新執行緒控制小鈴鐺通知
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             btBell = findViewById(R.id.btBell);              //取得元件
             tvNotification = findViewById(R.id.tvNotification);
-            ivCircle=findViewById(R.id.ivCircle);
+            ivCircle = findViewById(R.id.ivCircle);
             //點擊通知
             btBell.setOnClickListener(v -> {
                 tvNotification.setVisibility(View.GONE);
@@ -215,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 final String url = Common.URL + "NotificationController";
                 JsonObject req = new JsonObject();
                 while (true) {
-                    memberId = commonSharedPreferences.getInt("memberId", -1);
+                    memberId = sharedPreferences.getInt("memberId", -1);
                     //如果不是遊客
                     if (memberId != -1) {
                         //對伺服器發請求
@@ -253,11 +256,11 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    public static void handleNotificationCount() {
+    public void handleNotificationCount() {
         int memberId;
         final String url = Common.URL + "NotificationController";
         JsonObject req = new JsonObject();
-        memberId = commonSharedPreferences.getInt("memberId", -1);
+        memberId = sharedPreferences.getInt("memberId", -1);
         //如果不是遊客
         if (memberId != -1) {
             //對伺服器發請求
@@ -269,16 +272,33 @@ public class MainActivity extends AppCompatActivity {
             }
             if (notify > 0) {
                 tvNotification.setText(notify + "");
-                if(navController.getCurrentDestination().getId() != R.id.notificationFragment) {
+                if (navController.getCurrentDestination().getId() != R.id.notificationFragment) {
                     tvNotification.setVisibility(View.VISIBLE);
                     ivCircle.setVisibility(View.VISIBLE);
                 }
-            }
-            else{
+            } else {
                 tvNotification.setVisibility(View.INVISIBLE);
                 ivCircle.setVisibility(View.INVISIBLE);
-                tvNotification.setText(0+"");
+                tvNotification.setText(0 + "");
             }
+        }
+
+    }
+
+    public void upadateMemberData() {
+        int memberId;
+//        final String url = Common.URL + "NotificationController";
+        JsonObject req = new JsonObject();
+        memberId = sharedPreferences.getInt("memberId", -1);
+        //如果不是遊客
+        if (memberId != -1) {
+            //對伺服器發請求
+//            req.addProperty("action", "getNotificationCouunt");
+            req.addProperty("memberId", memberId);
+//            String resq = RemoteAccess.getJsonData(url, req.toString());
+//            if (!resq.equals("error")) {
+//                notify = Integer.parseInt(resq);
+//            }
         }
 
     }

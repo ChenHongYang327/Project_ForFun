@@ -27,17 +27,15 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
         super.onMessageReceived(remoteMessage);
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         String title = "";
-//        String body = "";
+        String body = "";
         if (notification != null) {
             title = notification.getTitle();
 //           body =  notification.getBody();
 //           Log.d("顯示FirebaseService data",remoteMessage.getData().toString());
-
         }
-       if(notification==null||title.equals("新通知")) {
+        Message msg = new Message();
+       if(notification==null|| title.equals("新通知")) {
 //           Log.d("FirebaseService","觸發更新通知");
-           //更改通知圖案
-           Message msg = new Message();
            //自定義消息代碼
            msg.what = 1;
            //要傳送的物件
@@ -45,8 +43,6 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
            //主執行緒才能控制元件
            MainActivity.handler.sendMessage(msg);
        } else {
-           //更改通知圖案
-           Message msg = new Message();
            //自定義消息代碼
            msg.what = 2;
            //要傳送的物件

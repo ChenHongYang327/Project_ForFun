@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -33,6 +34,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -423,7 +425,7 @@ public class SignInFragment extends Fragment {
                         .putString("citizen",citizen)
                         .putLong("lastlogin",new Date().getTime())//登入時間
                         .apply();
-                MainActivity.handleNotificationCount();
+                handleNotificationCount(member.getMemberId());
                 Navigation.findNavController(btSignIn)
                         .navigate(R.id.homeFragment);
             }
@@ -437,6 +439,34 @@ public class SignInFragment extends Fragment {
         else {
             Toast.makeText(activity, "網路不可用", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void handleNotificationCount(int memberId) {
+        TextView tvNotification;
+        CircularImageView ivCircle;
+        tvNotification = activity.findViewById(R.id.tvNotification);
+        ivCircle = activity.findViewById(R.id.ivCircle);
+        final String url = Common.URL + "NotificationController";
+        JsonObject req = new JsonObject();
+        //如果不是遊客
+        if (memberId != -1) {
+            //對伺服器發請求
+            req.addProperty("action", "getNotificationCouunt");
+            req.addProperty("memberId", memberId);
+            String resq = RemoteAccess.getJsonData(url, req.toString());
+            if (!resq.equals("error")) {
+                MainActivity.notify = Integer.parseInt(resq);
+            }
+            if (MainActivity.notify > 0) {
+                tvNotification.setText(MainActivity.notify + "");
+            }
+            else{
+                tvNotification.setVisibility(View.INVISIBLE);
+                ivCircle.setVisibility(View.INVISIBLE);
+                tvNotification.setText(0+"");
+            }
+        }
+
     }
 
     private final PhoneAuthProvider.OnVerificationStateChangedCallbacks verifyCallbacks
@@ -474,6 +504,7 @@ public class SignInFragment extends Fragment {
             verificationId = id;
             resendToken = token;
         }
+
     };
 
 }
