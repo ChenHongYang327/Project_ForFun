@@ -58,6 +58,9 @@
         <action
             android:id="@+id/action_discussionBoardFragment_to_reportFragment"
             app:destination="@id/reportFragment" />
+        <action
+            android:id="@+id/action_discussionBoardFragment_to_discussionBoard_RentSeeking_ListFragment"
+            app:destination="@id/discussionBoard_RentSeeking_ListFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderconfirm_houseSnapshot"
@@ -211,6 +214,11 @@
         android:name="idv.tfp10105.project_forfun.orderconfirm.ocf.Ocr_pay_otherpay"
         android:label="其他款項"
         tools:layout="@layout/fragment_ocr_pay_otherpay" />
+    <fragment
+        android:id="@+id/discussionBoard_RentSeeking_ListFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeeking_ListFragment"
+        android:label="fragment_discussion_board__rent_seeking__list"
+        tools:layout="@layout/fragment_discussion_board__rent_seeking__list" />
 </navigation>
 
 

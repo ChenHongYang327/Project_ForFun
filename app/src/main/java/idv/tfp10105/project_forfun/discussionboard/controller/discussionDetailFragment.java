@@ -26,6 +26,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,7 +50,9 @@ import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
 import idv.tfp10105.project_forfun.common.bean.Comment;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
@@ -76,6 +79,7 @@ public class discussionDetailFragment extends Fragment {
     private List<Member> members;
     private Integer memberId;
     private SharedPreferences sharedPreferences;
+    private CommentAdapter commentAdapter;
 
 
 
@@ -204,17 +208,19 @@ public class discussionDetailFragment extends Fragment {
             Toast.makeText(activity, "尚未有留言", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
-        CommentAdapter commentAdapter = (CommentAdapter) rvDetail.getAdapter();
-        // 如果spotAdapter不存在就建立新的，否則續用舊有的
-        if (commentAdapter == null) {
-            rvDetail.setAdapter(new CommentAdapter(activity,comments, getMembers()));
-        } else {
-            //更新Adapter資料,重刷
-            commentAdapter.setAdapter(comments, members);
+        commentAdapter = new CommentAdapter(activity, comments ,members);
+        rvDetail.setAdapter(commentAdapter);
+//         commentAdapter = (CommentAdapter) rvDetail.getAdapter();
+//        // 如果spotAdapter不存在就建立新的，否則續用舊有的
+//        if (commentAdapter == null) {
+//            rvDetail.setAdapter(new CommentAdapter(activity,comments, getMembers()));
+//        } else {
+//            //更新Adapter資料,重刷
+//            commentAdapter.setAdapter(comments, members);
+//
+//            //重新執行RecyclerView 三方法
+//            commentAdapter.notifyDataSetChanged();
 
-            //重新執行RecyclerView 三方法
-            commentAdapter.notifyDataSetChanged();
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -238,6 +244,7 @@ public class discussionDetailFragment extends Fragment {
                             .setTitle("是否刪除貼文")
                             // 設定確定按鈕-顯示文字及點擊監聽器
                             .setPositiveButton("確定", (dialog, which) -> {
+
                                 if (RemoteAccess.networkCheck(activity)){
                                     JsonObject jsonDelete = new JsonObject();
                                     jsonDelete.addProperty("action","postDelete");
@@ -283,6 +290,8 @@ public class discussionDetailFragment extends Fragment {
                             .setCancelable(false)
                             // 顯示對話框
                             .show();
+
+
                 } else if (itemId == R.id.report) {
                             Navigation.findNavController(v).navigate(R.id.reportFragment);
                 } else {
@@ -326,6 +335,13 @@ public class discussionDetailFragment extends Fragment {
             }
         }
 
+        public void updateData(List<Comment> comments, List<Member> members) {
+            this.comments = comments;
+            this.members = members;
+            commentAdapter.notifyDataSetChanged();
+        }
+
+
         @Override
         public int getItemCount() {
             return comments == null ? 0 : comments.size();
@@ -343,10 +359,10 @@ public class discussionDetailFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull @NotNull discussionDetailFragment.CommentAdapter.MyViewHolder holder, int position) {
             final Comment comment = comments.get(position);
-            Member member2 = members.get(position);
+            Member member = members.get(position);
             holder.comment_text.setText(comment.getCommentMsg());
-            holder.comment_memberName.setText(member2.getNameL() + member2.getNameF());
-            downloadImage(holder.comment_bt_membetHead, member2.getHeadshot());
+            holder.comment_memberName.setText(member.getNameL() + member.getNameF());
+            downloadImage(holder.comment_bt_membetHead, member.getHeadshot());
             holder.comment_bt_report.setOnClickListener(v -> {
                     Navigation.findNavController(v).navigate(R.id.reportFragment);
             });
@@ -422,6 +438,7 @@ public class discussionDetailFragment extends Fragment {
     private void handleBtSent() {
         detailBtSent.setOnClickListener(v -> {
             String commentMgs = detail_et_comment.getText().toString().trim();
+            KeyboardUtils.hideKeyboard(activity);
             if (commentMgs.length() <= 0) {
                 Toast.makeText(activity, "Comment is invalid", Toast.LENGTH_SHORT).show();
                 return;
@@ -443,9 +460,13 @@ public class discussionDetailFragment extends Fragment {
                 } else {
                     Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
-                    CommentAdapter commentAdapter = (CommentAdapter) rvDetail.getAdapter();
+//                    CommentAdapter commentAdapter = (CommentAdapter) rvDetail.getAdapter();
+//
+//                    commentAdapter.notifyDataSetChanged();
 
-                    commentAdapter.notifyDataSetChanged();
+                    comments = getComments();
+                    commentAdapter.updateData(comments , members);
+
 
 
                 }
