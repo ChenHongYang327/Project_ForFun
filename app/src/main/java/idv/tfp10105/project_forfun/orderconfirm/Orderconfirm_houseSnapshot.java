@@ -560,7 +560,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
         bt_bottomsheet_Confirm.setOnClickListener(v -> {
             Toast.makeText(activity, "取消成功", Toast.LENGTH_SHORT).show();
             orderChangeStatus(orderStatus);
-            Navigation.findNavController(v).navigate(R.id.homeFragment);
+            Navigation.findNavController(imgHeadShot).navigate(R.id.homeFragment);
             bottomSheetDialog.dismiss();
         });
         bt_bottomsheet_Cancel.setOnClickListener(v -> {

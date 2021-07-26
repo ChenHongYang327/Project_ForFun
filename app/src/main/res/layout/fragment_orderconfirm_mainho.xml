@@ -35,14 +35,12 @@
                 android:id="@+id/bt_orderconfirm_mainHO_Publishing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginRight="24dp"
                 android:layout_weight="1"
                 android:src="@drawable/bt_9044blank"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/bt_orderconfirm_mainHO_customer"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/simpleSwitch_hosewOwner"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -57,32 +55,21 @@
                 app:layout_constraintStart_toStartOf="@+id/bt_orderconfirm_mainHO_Publishing"
                 app:layout_constraintTop_toTopOf="@+id/bt_orderconfirm_mainHO_Publishing" />
 
-            <ImageView
-                android:id="@+id/bt_orderconfirm_mainHO_customer"
+            <Switch
+                android:id="@+id/simpleSwitch_hosewOwner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_weight="1"
-                android:src="@drawable/bt_9044blank"
+                android:checked="true"
+                android:text="房東"
+                android:textOff="No"
+                android:textOn="Yes"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+            <!-- text to be displayed whenever current state is checked-->
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="我是房客"
-                android:textColor="#000000"
-                app:layout_constraintBottom_toBottomOf="@+id/bt_orderconfirm_mainHO_customer"
-                app:layout_constraintEnd_toEndOf="@+id/bt_orderconfirm_mainHO_customer"
-                app:layout_constraintStart_toStartOf="@+id/bt_orderconfirm_mainHO_customer"
-                app:layout_constraintTop_toTopOf="@+id/bt_orderconfirm_mainHO_customer" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>

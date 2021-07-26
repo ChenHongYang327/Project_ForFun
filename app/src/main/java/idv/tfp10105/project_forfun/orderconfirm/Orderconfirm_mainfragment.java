@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,9 +48,17 @@ public class Orderconfirm_mainfragment extends Fragment {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.bt_orderconfirm_mainfragment_HouseOwner).setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho);
+//        view.findViewById(R.id.bt_orderconfirm_mainfragment_HouseOwner).setOnClickListener(v -> {
+//            Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho);
+//            Navigation.findNavController(view).popBackStack(R.id.orderconfirm_mainfragment,true);
+//        });
 
+        Switch switch1 = view.findViewById(R.id.simpleSwitch_tenant);
+        switch1.toggle();
+        switch1.setOnClickListener(v->{
+            Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho);
+            Navigation.findNavController(view).popBackStack(R.id.orderconfirm_mainfragment,true);
+            switch1.toggle();
         });
 
 

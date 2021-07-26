@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,9 +49,14 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
         view.findViewById(R.id.bt_orderconfirm_mainHO_Publishing).setOnClickListener(v->{
             Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_ho_to_ocrHO_Publishing);
         });
-        view.findViewById(R.id.bt_orderconfirm_mainHO_customer).setOnClickListener(v->{
+
+        //switch
+        Switch switch2 = view.findViewById(R.id.simpleSwitch_hosewOwner);
+        switch2.setOnClickListener(v->{
             Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_ho_to_orderconfirm_mainfragment);
+            switch2.toggle();
         });
+
 
 
         TabLayout tabLayout = view.findViewById(R.id.orderconfirm_main_HO_tabs);
