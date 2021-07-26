@@ -389,7 +389,8 @@ public class AppointmentFragment extends Fragment {
                     dialogOK.setMessage("預約確認成功");
                     dialogOK.setCancelable(false);
                     dialogOK.setPositiveButton("確定", (dialog2, which2) -> {
-                        Navigation.findNavController(v).popBackStack();
+                        // 跳回首頁
+                        Navigation.findNavController(v).navigate(R.id.homeFragment);
                     });
                     Window window = dialogOK.show().getWindow();
                     // 修改按鈕顏色

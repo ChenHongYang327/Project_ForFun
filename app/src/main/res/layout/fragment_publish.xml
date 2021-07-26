@@ -479,6 +479,11 @@
                 app:backgroundTint="?android:attr/panelBackground"
                 app:backgroundTintMode="add" />
 
+            <TextView
+                android:id="@+id/textView32"
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
+
         </LinearLayout>
     </ScrollView>
 

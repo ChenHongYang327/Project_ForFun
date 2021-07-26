@@ -545,6 +545,22 @@ public class PublishDetailFragment extends Fragment {
 
         publishDetailBtnAppoint.setText(appointmentId == 0 ? "預約看房" : "修改預約");
         publishDetailBtnAppoint.setOnClickListener(v -> {
+            // 遊客不可預約
+            int role = sharedPreferences.getInt("role", -1);
+            if (role == 3) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                dialog.setTitle("無法預約");
+                dialog.setMessage("請先註冊為房客");
+                dialog.setPositiveButton("確定", null);
+
+                Window window = dialog.show().getWindow();
+                // 修改按鈕顏色
+                Button btnOK = window.findViewById(android.R.id.button1);
+                btnOK.setTextColor(getResources().getColor(R.color.black));
+
+                return;
+            }
+
             if (userId == publish.getOwnerId()) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
                 dialog.setTitle("無法預約");

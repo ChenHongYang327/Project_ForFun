@@ -736,6 +736,9 @@ public class PublishFragment extends Fragment {
                     dialog.setPositiveButton("確定", (dialog1, which) -> {
                         if (isEditMode) {
                             Navigation.findNavController(v).popBackStack();
+                        } else {
+                            // 跳回首頁
+                            Navigation.findNavController(v).navigate(R.id.homeFragment);
                         }
                     });
                     Window window = dialog.show().getWindow();
