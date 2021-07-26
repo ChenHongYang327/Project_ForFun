@@ -32,10 +32,11 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.ChatRoom;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
-public class chatRoomFragment extends Fragment {
-    private Activity activity;
-    private RecyclerView rv_chat;
-    private List<ChatRoom> chatRooms;
+public class ChatRoomFragment extends Fragment {
+    private static Activity activity;
+    public static RecyclerView rv_chat;
+    public static List<ChatRoom> chatRooms;
+    public static ChatRoom chatRoom;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class chatRoomFragment extends Fragment {
 
 
 
-    private List<ChatRoom> getChatRooms() {
+    public static List<ChatRoom> getChatRooms() {
         List<ChatRoom> chatRooms = new ArrayList<>();
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "ChatRoomController";
@@ -143,7 +144,7 @@ public class chatRoomFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            final ChatRoom chatRoom = chatRooms.get(position);
+            chatRoom = chatRooms.get(position);
             holder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
             holder.chatRoomCreatTime.setText(chatRoom.getCreateTime().toString());
             holder.chatRoom_memberName.setId(chatRoom.getMemberId1());

@@ -24,6 +24,12 @@ public class ChatRoom implements Serializable {
         this.deleteTime = deleteTime;
     }
 
+    public ChatRoom(Integer chatroomId, Integer memberId1, Integer memberId2) {
+        this.chatroomId = chatroomId;
+        this.memberId1 = memberId1;
+        this.memberId2 = memberId2;
+    }
+
     public Integer getChatroomId() {
         return chatroomId;
     }

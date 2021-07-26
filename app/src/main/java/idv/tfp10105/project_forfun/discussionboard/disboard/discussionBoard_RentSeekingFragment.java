@@ -40,6 +40,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +77,10 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
-        sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
-        signin_name = sharedPreferences.getString("name","");
+        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        signin_name = sharedPreferences.getString("name", "");
         signin_headshot = sharedPreferences.getString("headshot", "");
-        memberId = sharedPreferences.getInt("memberId" , -1);
+        memberId = sharedPreferences.getInt("memberId", -1);
     }
 
     @Override
@@ -96,9 +97,8 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         handleBtAdd();
         handleSearchView();
         handleSwipeRefresh();
-
+        handleDis_bt_needHistory();
     }
-
 
 
     @Override
@@ -149,6 +149,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
                 }
                 return true;
             }
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -178,15 +179,16 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("boardId","需求單");
+            jsonObject.addProperty("boardId", "需求單");
             jsonObject.addProperty("action", "getAll");
 
-            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-            Type listPost = new TypeToken<List<Post>>() {}.getType();
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+            Type listPost = new TypeToken<List<Post>>() {
+            }.getType();
 
 
             //解析後端傳回資料
-            posts = new Gson().fromJson(jsonIn.get("postList").getAsString(),listPost);
+            posts = new Gson().fromJson(jsonIn.get("postList").getAsString(), listPost);
 
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
@@ -195,13 +197,15 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         return posts;
     }
 
-    private void handleDis_bt_needHistory(View v) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("post" , post);
-        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
+    private void handleDis_bt_needHistory() {
+        dis_bt_needHistory.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("post", post);
+            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionBoard_RentSeeking_ListFragment, bundle);
+        });
     }
 
-    private Member getMemberByOwnerId (int ownerId) {
+    private Member getMemberByOwnerId(int ownerId) {
         Member membershot = null;
 
         if (RemoteAccess.networkCheck(activity)) {
@@ -215,7 +219,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             membershot = new Gson().fromJson(jsonResule, Member.class);
         }
 
-        return  membershot;
+        return membershot;
     }
 
     // 抓po文者資料
@@ -224,13 +228,14 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "DiscussionBoardController";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("boardId","需求單");
+            jsonObject.addProperty("boardId", "需求單");
             jsonObject.addProperty("action", "getAll");
-            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-            Type listMember = new TypeToken<List<Member>>() {}.getType();
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+            Type listMember = new TypeToken<List<Member>>() {
+            }.getType();
 
             //解析後端傳回資料
-            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(),listMember);
+            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(), listMember);
 
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
@@ -240,8 +245,8 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         return members;
     }
 
-    private void showPosts(List<Post> posts , List<Member> members) {
-        if (posts == null || posts.isEmpty())  {
+    private void showPosts(List<Post> posts, List<Member> members) {
+        if (posts == null || posts.isEmpty()) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
@@ -267,7 +272,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
         private List<Member> members;
 
 
-
         public SeekAdapter(Context context, List<Post> posts, List<Member> members) {
             layoutInflater = LayoutInflater.from(context);
             this.posts = posts;
@@ -281,7 +285,6 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
             this.posts = posts;
             this.members = members;
         }
-
 
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -334,28 +337,44 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
                 Member memberPersonal = getMemberByOwnerId(post.getPosterId());
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("SelectUser", memberPersonal);
-                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment,bundle);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle);
 
             });
 
             String url = Common.URL + "DiscussionBoardController";
             int postId = post.getPostId();
             String imagePath = post.getPostImg();
-            JsonObject jsonObject =  new JsonObject();
-            jsonObject.addProperty("action","getImage");
-            jsonObject.addProperty("imagePath",imagePath);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("action", "getImage");
+            jsonObject.addProperty("imagePath", imagePath);
             jsonObject.addProperty("postId", postId);
             jsonObject.addProperty("imageSize", imageSize);
             String jsonImg = RemoteAccess.getJsonData(url, jsonObject.toString());
 
             //設定點擊事件
             holder.disPostImg.setOnClickListener(v -> {
-                Bundle bundle = new Bundle();
-                bundle.putString("name", member2.getNameL() + member2.getNameF());
-                bundle.putString("headshot", member2.getHeadshot());
-                bundle.putSerializable("post", post);
-                //轉至詳細頁面
-                Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
+                if (RemoteAccess.networkCheck(activity)) {
+                    String url2 = Common.URL+"NotificationController";
+                    int memberId = sharedPreferences.getInt("memberId", -1);
+                        JsonObject req = new JsonObject();
+                        req.addProperty("action", "getNotification");
+                        req.addProperty("memberId", memberId);
+
+                        //將通知狀態改成已讀
+                        req.addProperty("action", "updateReaded");
+                        req.addProperty("postId", post.getPostId());
+                        JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()),JsonObject.class);
+                        resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()), JsonObject.class);
+
+
+
+                }
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", member2.getNameL() + member2.getNameF());
+                    bundle.putString("headshot", member2.getHeadshot());
+                    bundle.putSerializable("post", post);
+                    //轉至詳細頁面
+                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
             });
 
             if (jsonImg != null) {
@@ -366,7 +385,7 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
 
             holder.disPostBtMore.setOnClickListener(v -> {
                 //選單
-                PopupMenu popupMenu = new PopupMenu(activity,v, Gravity.END);
+                PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
                 popupMenu.inflate(R.menu.popup_menu);
 
 //                if (memberId == post.getPosterId()) {
@@ -384,81 +403,81 @@ public class discussionBoard_RentSeekingFragment extends Fragment {
                 popupMenu.setOnMenuItemClickListener(item -> {
 
                     int itemId = item.getItemId();
-                            //新增
-                        if ( itemId == R.id.update) {
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("post", post);
-                            bundle.putString("name", member2.getNameL() + member2.getNameF());
-                            bundle.putString("headshot", member2.getHeadshot());
-                            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment, bundle);
+                    //新增
+                    if (itemId == R.id.update) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("post", post);
+                        bundle.putString("name", member2.getNameL() + member2.getNameF());
+                        bundle.putString("headshot", member2.getHeadshot());
+                        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment, bundle);
 
-                            //刪除
-                    }else if (itemId == R.id.delete) {
-                            if (RemoteAccess.networkCheck(activity)) {
-                                JsonObject jsonDelete = new JsonObject();
-                                jsonDelete.addProperty("action", "postDelete");
-                                jsonDelete.addProperty("postId", post.getPostId());
-                                int count;
-                                String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
-                                count = Integer.parseInt(result);
-                                if (count == 0) {
-                                    Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    posts.remove(post);
-                                    SeekAdapter.this.notifyDataSetChanged();
-                                    // 外面spots也必須移除選取的spot
-                                    discussionBoard_RentSeekingFragment.this.posts.remove(post);
-                                    storage.getReference().child(post.getPostImg()).delete()
-                                            .addOnCompleteListener(task -> {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "照片已刪除");
-                                                } else {
-                                                    String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
-                                                            task.getException().getMessage() + ": " + post.getPostImg();
-                                                    Log.e(TAG, message);
-                                                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                        //刪除
+                    } else if (itemId == R.id.delete) {
+                        if (RemoteAccess.networkCheck(activity)) {
+                            JsonObject jsonDelete = new JsonObject();
+                            jsonDelete.addProperty("action", "postDelete");
+                            jsonDelete.addProperty("postId", post.getPostId());
+                            int count;
+                            String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
+                            count = Integer.parseInt(result);
+                            if (count == 0) {
+                                Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
+                            } else {
+                                posts.remove(post);
+                                SeekAdapter.this.notifyDataSetChanged();
+                                // 外面spots也必須移除選取的spot
+                                discussionBoard_RentSeekingFragment.this.posts.remove(post);
+                                storage.getReference().child(post.getPostImg()).delete()
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "照片已刪除");
+                                            } else {
+                                                String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
+                                                        task.getException().getMessage() + ": " + post.getPostImg();
+                                                Log.e(TAG, message);
+                                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
 
-                                    Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
-                                }
-                                //檢舉
+                                Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                            }
+                            //檢舉
                         }
-                    }else if (itemId == R.id.report) {
+                    } else if (itemId == R.id.report) {
+
                         Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
 
                     } else {
 
-                            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                     }
                     return true;
                 });
-                    popupMenu.show();
+                popupMenu.show();
             });
 
         }
-
 
 
         // 下載Firebase storage的照片並顯示在ImageView上
         private void showImage(final ImageView imageView, final String path) {
             final int ONE_MEGABYTE = 1024 * 1024;
             StorageReference imageRef = storage.getReference().child(path);
-                imageRef.getBytes(ONE_MEGABYTE)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                byte[] bytes = task.getResult();
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                imageView.setImageBitmap(bitmap);
-                            } else {
-                                String message = task.getException() == null ?
-                                        "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
-                                imageView.setImageResource(R.drawable.no_image);
-                                Log.e(TAG, message);
-                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
+            imageRef.getBytes(ONE_MEGABYTE)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            byte[] bytes = task.getResult();
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            imageView.setImageBitmap(bitmap);
+                        } else {
+                            String message = task.getException() == null ?
+                                    "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                            imageView.setImageResource(R.drawable.no_image);
+                            Log.e(TAG, message);
+                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
-
     }
+
+}

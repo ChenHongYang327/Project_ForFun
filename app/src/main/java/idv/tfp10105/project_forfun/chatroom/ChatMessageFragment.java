@@ -45,6 +45,7 @@ import java.util.Map;
 import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.ChatRoom;
 import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
@@ -52,6 +53,7 @@ import idv.tfp10105.project_forfun.common.bean.Member;
 
 public class ChatMessageFragment extends Fragment {
     private static final String TAG = "chatMessageFragment";
+    private static final String TAG2 = "chatMessageFragment2";
     private  Activity activity;
     private CircularImageView memberImg;
     private TextView memberName;
@@ -86,8 +88,11 @@ public class ChatMessageFragment extends Fragment {
                     chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, getChatRoomMessage());
                     return true;
                 }
-                getChatRoomMessage();
-                chatRoomMessageAdapter.notifyDataSetChanged();
+               chatRoomMessages = getChatRoomMessage();
+               chatRoomMessageAdapter.updateData(chatRoomMessages);
+                //更新數據和定位到最底部
+               rvChatMessage.scrollToPosition(chatRoomMessageAdapter.getItemCount()-1);
+
                 return true;
             }
             return true;
@@ -112,7 +117,6 @@ public class ChatMessageFragment extends Fragment {
         findViews(view);
         handleRecycleView();
         chatRoomMessages = getChatRoomMessage();
-//        getMembersToken();
         showChatRoomMessage(chatRoomMessages);
         handlebtSend();
     }
@@ -147,7 +151,7 @@ public class ChatMessageFragment extends Fragment {
         }else {
             Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "chatRoomMessages : " + chatRoomMessages, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "chatRoomMessages : " + chatRoomMessages, Toast.LENGTH_SHORT).show();
         return chatRoomMessages;
 
     }
@@ -157,6 +161,8 @@ public class ChatMessageFragment extends Fragment {
     private void handlebtSend() {
         btSend.setOnClickListener(v -> {
             String chatMSG = edMessage.getText().toString().trim();
+            //收起鍵盤
+            KeyboardUtils.hideKeyboard(activity);
             if (chatMSG.length() <= 0) {
                 Toast.makeText(activity, "Message is invalid", Toast.LENGTH_SHORT).show();
                 return;
@@ -182,9 +188,11 @@ public class ChatMessageFragment extends Fragment {
                     } else {
                         Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
-                        ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
+                        chatRoomMessages = getChatRoomMessage();
+                        chatRoomMessageAdapter.updateData(chatRoomMessages);
+                        //更新數據和定位到最底部
+                        rvChatMessage.scrollToPosition(chatRoomMessageAdapter.getItemCount()-1);
 
-                        chatRoomMessageAdapter.notifyDataSetChanged();
                     }
 
                     } else if (memberId.equals(chatRoom.getMemberId2())) {
@@ -207,9 +215,11 @@ public class ChatMessageFragment extends Fragment {
                     } else {
                         Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
-                        ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
+                        chatRoomMessages = getChatRoomMessage();
+                        chatRoomMessageAdapter.updateData(chatRoomMessages);
+                        //更新數據和定位到最底部
+                        rvChatMessage.scrollToPosition(chatRoomMessageAdapter.getItemCount()-1);
 
-                        chatRoomMessageAdapter.notifyDataSetChanged();
                     }
                 }
 
@@ -241,35 +251,27 @@ public class ChatMessageFragment extends Fragment {
 
 
 
-//    // 取得registration token後傳送至server
-//    private void getTokenSendServer() {
-//        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                if (task.getResult() != null) {
-//                    String token = task.getResult();
-//                    RemoteAccess.sendTokenToServer(token, activity);
-//                }
-//            }
-//        });
-//    }
-
 
     private  void showChatRoomMessage(List<ChatRoomMessage> chatRoomMessages) {
+        Log.d(TAG2,"chatRoomMessages : " + chatRoomMessages.size());
         if (chatRoomMessages == null || chatRoomMessages.isEmpty()) {
             Toast.makeText(activity, "沒有訊息", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
-        ChatRoomMessageAdapter chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
-        // 如果spotAdapter不存在就建立新的，否則續用舊有的
-        if (chatRoomMessageAdapter == null) {
-            chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, chatRoomMessages);
+        chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, chatRoomMessages);
             rvChatMessage.setAdapter(chatRoomMessageAdapter);
-        } else {
-            //更新Adapter資料,重刷
-            chatRoomMessageAdapter.setAdapter(chatRoomMessages);
-            //重新執行RecyclerView 三方法
-            chatRoomMessageAdapter.notifyDataSetChanged();
-        }
+
+//          chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
+//        // 如果spotAdapter不存在就建立新的，否則續用舊有的
+//        if (chatRoomMessageAdapter == null) {
+//            chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, chatRoomMessages);
+//            rvChatMessage.setAdapter(chatRoomMessageAdapter);
+//        } else {
+//            //更新Adapter資料,重刷
+//            chatRoomMessageAdapter.setAdapter(chatRoomMessages);
+//            //重新執行RecyclerView 三方法
+//            chatRoomMessageAdapter.notifyDataSetChanged();
+//        }
     }
 
     public class ChatRoomMessageAdapter extends RecyclerView.Adapter<ChatRoomMessageAdapter.MyViewHolder> {
@@ -301,22 +303,29 @@ public class ChatMessageFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ChatRoomMessageAdapter.MyViewHolder holder, int position) {
             ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
-//            Member member2 = members.get(position);
+//            Member member = members.get(position);
 //            memberToken = member.getToken();
-            if (!memberId.equals(chatRoom.getMemberId1())) {
+            if (memberId.equals(chatRoomMessage.getMemberId())) {
                 holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
-//            holder.chatRoom_message_ReadStatus_self.setText(chatRoomMessage.getRead().toString());
+                holder.chatRoom_message_ReadStatus_self.setText("未讀");
                 holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.otherMessage.setVisibility(View.GONE);
+                holder.otherMessage.setVisibility(View.GONE);
+                holder.selfMessage.setVisibility(View.VISIBLE);
 
             } else {
-//                downloadImage(holder.chatRoomMemberImg, member2.getHeadshot());
+//                downloadImage(holder.chatRoomMemberImg, member.getHeadshot());
                 holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
                 holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
-//                holder.selfMessage.setVisibility(View.GONE);
+                holder.selfMessage.setVisibility(View.GONE);
+                holder.otherMessage.setVisibility(View.VISIBLE);
 
             }
 
+        }
+
+        public void updateData(List<ChatRoomMessage> chatRoomMessages) {
+            this.chatRoomMessages = chatRoomMessages;
+            chatRoomMessageAdapter.notifyDataSetChanged();
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -340,35 +349,4 @@ public class ChatMessageFragment extends Fragment {
         }
     }
 
-//    public class FCMService extends FirebaseMessagingService {
-//        private static final String TAG = "TAG_FCMService";
-//
-//        @Override
-//        // 當Android裝置在前景收到FCM時呼叫
-//        public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-//            // 取得notification資料，主要為title與body這2個保留字
-//            RemoteMessage.Notification notification = remoteMessage.getNotification();
-//            String title = "";
-//            String body = "";
-//            if (notification != null) {
-//                title = notification.getTitle();
-//                body = notification.getBody();
-//                Message message = new Message();
-//                // 取得自訂資料
-////            Map<String, String> map = remoteMessage.getData();
-////            String data = map.get("data");
-////            Log.d(TAG, "onMessageReceived():\ntitle: " + title + ", body: " + body + ", data: " + data);
-//
-//                //主執行緒才能控制元件
-//                MainActivity.handler.sendMessage(message);
-////                onNewToken(memberToken);
-//            }
-//        }
-//
-//        @Override
-//        // 當registration token更新時呼叫，應該將新的token傳送至server
-//        public void onNewToken(@NonNull String token) {
-//            RemoteAccess.sendTokenToServer(token, activity);
-//        }
-//    }
 }
