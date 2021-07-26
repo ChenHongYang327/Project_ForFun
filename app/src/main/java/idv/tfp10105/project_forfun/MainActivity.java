@@ -164,7 +164,9 @@ public class MainActivity extends AppCompatActivity {
                         btBell.setVisibility(View.VISIBLE);
                         if (notify != 0) {
                             tvNotification.setVisibility(View.VISIBLE);
-                            ivCircle.setVisibility(View.VISIBLE);
+                            if(sharedPreferences.getInt("memberId", -1) != -1) {
+                                ivCircle.setVisibility(View.VISIBLE);
+                            }
                         }
                         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                     }
