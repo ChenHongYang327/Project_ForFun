@@ -72,12 +72,12 @@ public class NotificationFragment extends Fragment {
                 Type appointmentOwnerIdList=new TypeToken<List<Integer>>(){}.getType();
                 List<Notification>notifications=new Gson().fromJson(resp.get("Notifications").getAsString(),notificationList);
                 List<String>customersHeadShot=new Gson().fromJson(resp.get("CustomersHeadShot").getAsString(),customerList);
-                List<Integer>appointmentOwnerId=new Gson().fromJson(resp.get("appointmentOwnerId").getAsString(),appointmentOwnerIdList);
+                List<Integer>ownerId=new Gson().fromJson(resp.get("ownerId").getAsString(),appointmentOwnerIdList);
                 if(notifications.size()==0){
                     tvNotificationNote.setVisibility(View.VISIBLE);
                     rvNotification.setVisibility(View.GONE);
                 }
-                rvNotification.setAdapter(new NotificationAdapter(activity,notifications,customersHeadShot,appointmentOwnerId));
+                rvNotification.setAdapter(new NotificationAdapter(activity,notifications,customersHeadShot,ownerId));
                 //將通知狀態改成已讀
                     req.addProperty("action", "updateReaded");
                     req.addProperty("memberId", memberId);

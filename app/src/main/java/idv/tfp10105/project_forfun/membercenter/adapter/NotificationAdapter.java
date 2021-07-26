@@ -42,15 +42,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
    private Activity activity;
    private List<Notification> notifications;
    private List<String> customersHeadShot;
-   private List<Integer> appointmentOwnerId;
+   private List<Integer> ownerId;
    private SharedPreferences sharedPreferences;
    private int memberId;
 
-    public NotificationAdapter(Activity activity, List<Notification> notifications, List<String> customersHeadShot, List<Integer> appointmentOwnerId) {
+    public NotificationAdapter(Activity activity, List<Notification> notifications, List<String> customersHeadShot, List<Integer> ownerId) {
         this.activity = activity;
         this.notifications = notifications;
         this.customersHeadShot = customersHeadShot;
-        this.appointmentOwnerId = appointmentOwnerId;
+        this.ownerId = ownerId;
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId", -1);
     }
@@ -71,7 +71,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(@NonNull NotificationHodler holder, int position) {
         Notification notification=notifications.get(position);
         String headShot=customersHeadShot.get(position)==null?"/Project_ForFun/no image.jpg":customersHeadShot.get(position);
-        int ownerId=appointmentOwnerId.get(position);
+        int ownerId2=ownerId.get(position);
         //提醒者的頭像
         getImage(holder.ivNotification,headShot);
         final String url= Common.URL+"NotificationController";
@@ -88,7 +88,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             jsonObject.addProperty("action","getPublishTitle");
             jsonObject.addProperty("appointmentId",notification.getAppointmentId());
             String publishTitle=RemoteAccess.getJsonData(url,jsonObject.toString());
-            if(memberId==ownerId) {
+            if(memberId==ownerId2) {
                 holder.tvNotificationTitle.setText("您的" + "「" + publishTitle + "」" + "刊登單有新的看房預約");
             }
             else{
@@ -96,7 +96,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             }
         }
         else if(notification.getOrderId()!=0){
-            holder.tvNotificationTitle.setText("您有一筆新的訂單");
+            jsonObject.addProperty("action","getPublishTitle");
+            jsonObject.addProperty("orderId",notification.getOrderId());
+            String publishTitle=RemoteAccess.getJsonData(url,jsonObject.toString());
+            if(memberId==ownerId2) {
+                holder.tvNotificationTitle.setText("您的" + "「" + publishTitle + "」" + "有一筆新的訂單");
+            }
+            else{
+                holder.tvNotificationTitle.setText("您的" + "「" + publishTitle + "」" + "訂單有一筆需要簽約的合約");
+            }
         }
         else if(notification.getMessageId()!=0){
             holder.tvNotificationTitle.setText("您有一則新訊息");
@@ -131,7 +139,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     Navigation.findNavController(v).navigate(R.id.discussionDetailFragment,bundle);
                 } else if (notification.getAppointmentId() != 0) {
                     //看房預約單
-                    if(memberId==ownerId) {
+                    if(memberId==ownerId2) {
                         Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment_ho);
                     }
                     else{
@@ -140,7 +148,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                         Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment,bundle);
                     }
                 } else if (notification.getOrderId() != 0) {
-                    //新訂單
+                    Bundle bundle=new Bundle();
+                    if(memberId==ownerId2) {
+                        bundle.putString("postion","待下訂");
+                        Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment_ho,bundle);
+                    }
+                    else{
+                        bundle.putString("postion","待簽約");
+                        Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment,bundle);
+                    }
                 } else if (notification.getMessageId() != 0) {
                     //新訊息
                 }

@@ -23,12 +23,14 @@ import idv.tfp10105.project_forfun.orderconfirm.ocf_houseOwner.OcrHOAdapter;
 public class Orderconfirm_mainfragment_ho extends Fragment {
     private Activity activity;
     private View view;
+    private String bundle;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = getActivity();
+        bundle=getArguments()==null?"":getArguments().getString("postion");
     }
 
     @Override
@@ -87,6 +89,10 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 tabLayout.selectTab(tabLayout.getTabAt(position));
+                if(bundle.equals("待下訂")){
+                    viewPager2.setCurrentItem(1,true);
+                    bundle="";
+                }
             }
         });
 

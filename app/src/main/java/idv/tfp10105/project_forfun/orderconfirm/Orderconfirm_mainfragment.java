@@ -93,6 +93,10 @@ public class Orderconfirm_mainfragment extends Fragment {
                     viewPager2.setCurrentItem(1,true);
                     bundle="";
                 }
+                else if(bundle.equals("待簽約")){
+                    viewPager2.setCurrentItem(2,true);
+                    bundle="";
+                }
             }
         });
 
