@@ -119,11 +119,17 @@ public class MainActivity extends AppCompatActivity {
                 if (navController.getCurrentDestination().getId() == R.id.signinInFragment ||
                         navController.getCurrentDestination().getId() == R.id.registIntroductionFragment ||
                         navController.getCurrentDestination().getId() == R.id.registerFragment ||
-                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment ||
-                        navController.getCurrentDestination().getId() == R.id.customerServiceFragment
+                        navController.getCurrentDestination().getId() == R.id.signin_Guided_Tour_Fragment
                 ) {
                     getSupportActionBar().hide();
-
+                }
+                //客服頁面
+                else if (navController.getCurrentDestination().getId() == R.id.customerServiceFragment) {
+                    if (sharedPreferences.getInt("memberId", -1) == -1) {
+                        getSupportActionBar().hide();
+                    } else {
+                        getSupportActionBar().show();
+                    }
                 } else {
                     getSupportActionBar().show();
                 }
@@ -146,160 +152,170 @@ public class MainActivity extends AppCompatActivity {
                     btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } else {
-                    btBell.setVisibility(View.VISIBLE);
-                    if (notify != 0) {
+                    //客服頁面
+                    if (navController.getCurrentDestination().getId() == R.id.customerServiceFragment) {
+                        //非遊客狀態
+                        if (sharedPreferences.getInt("memberId", -1) != -1) {
+                            btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
+                            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                            return;
+                        }
+                    }
+                        btBell.setVisibility(View.VISIBLE);
+                        if (notify != 0) {
+                            tvNotification.setVisibility(View.VISIBLE);
+                            ivCircle.setVisibility(View.VISIBLE);
+                        }
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public boolean onOptionsItemSelected (@NonNull MenuItem item){
+            //返回鍵
+            if (item.getItemId() == android.R.id.home) {
+                //popBackStack(getCurrentDestination().getId(), true);
+                navController.popBackStack();
+            }
+            return true;
+        }
+
+        private void handleAccess () {
+            //需使用者允許的權限
+            String[] permissions = {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO};
+            //未同意的權限
+            Set<String> permissionsRequest = new HashSet<>();
+            //過濾權限狀態
+            for (String permission : permissions) {
+                int result = ContextCompat.checkSelfPermission(this, permission);
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    permissionsRequest.add(permission);
+                }
+            }
+            //詢問權限 (跳出對話框)
+            if (permissionsRequest.size() != 0) {
+                ActivityCompat.requestPermissions(this,
+                        permissionsRequest.toArray(new String[permissionsRequest.size()]),
+                        0);
+            }
+        }
+
+        @Override
+        public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions,
+        @NonNull int[] grantResults){
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (requestCode == 0) {
+                for (int index = 0; index < grantResults.length; index++) {
+                    if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
+                        // 已同意權限的後續處理
+                    } else {
+                        Toast.makeText(this, R.string.permission, Toast.LENGTH_SHORT).show();
+                        //讓使用者跳轉到應用程式設定開啟權限
+                        startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
+                    }
+                }
+            }
+        }
+
+
+        private void handleNotification () {
+            //新建一個執行緒-子執行緒無法直接使用UI執行緒因此須依靠Handler
+            //參考自https://codertw.com/android-%E9%96%8B%E7%99%BC/22997/#outline__1
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int memberId;
+                    final String url = Common.URL + "NotificationController";
+                    JsonObject req = new JsonObject();
+                    while (true) {
+                        memberId = sharedPreferences.getInt("memberId", -1);
+                        //如果不是遊客
+                        if (memberId != -1) {
+                            //對伺服器發請求
+                            req.addProperty("action", "getNotificationCouunt");
+                            req.addProperty("memberId", memberId);
+                            String resq = RemoteAccess.getJsonData(url, req.toString());
+                            if (!resq.equals("error")) {
+                                notify = Integer.parseInt(resq);
+                            }
+                            if (notify > 0) {
+                                //修改UI
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tvNotification.setVisibility(View.VISIBLE);
+                                        ivCircle.setVisibility(View.VISIBLE);
+                                        tvNotification.setText(notify + "");
+
+                                    }
+                                });
+                            }
+                        }
+                        //等待防止連續發請求
+                        try {
+                            //1000為1秒
+                            Thread.sleep(10 * 1000);
+                            Log.d("顯示通知服務", "通知服務執行中");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Log.d("顯示通知服務", "通知服務已停止");
+                            return;
+                        }
+                    }
+                }
+            }).start();
+        }
+
+        public void handleNotificationCount () {
+            int memberId;
+            final String url = Common.URL + "NotificationController";
+            JsonObject req = new JsonObject();
+            memberId = sharedPreferences.getInt("memberId", -1);
+            //如果不是遊客
+            if (memberId != -1) {
+                //對伺服器發請求
+                req.addProperty("action", "getNotificationCouunt");
+                req.addProperty("memberId", memberId);
+                String resq = RemoteAccess.getJsonData(url, req.toString());
+                if (!resq.equals("error")) {
+                    notify = Integer.parseInt(resq);
+                }
+                if (notify > 0) {
+                    tvNotification.setText(notify + "");
+                    if (navController.getCurrentDestination().getId() != R.id.notificationFragment) {
                         tvNotification.setVisibility(View.VISIBLE);
                         ivCircle.setVisibility(View.VISIBLE);
                     }
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                }
-            });
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        //返回鍵
-        if (item.getItemId() == android.R.id.home) {
-            //popBackStack(getCurrentDestination().getId(), true);
-            navController.popBackStack();
-        }
-        return true;
-    }
-
-    private void handleAccess() {
-        //需使用者允許的權限
-        String[] permissions = {
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO};
-        //未同意的權限
-        Set<String> permissionsRequest = new HashSet<>();
-        //過濾權限狀態
-        for (String permission : permissions) {
-            int result = ContextCompat.checkSelfPermission(this, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                permissionsRequest.add(permission);
-            }
-        }
-        //詢問權限 (跳出對話框)
-        if (permissionsRequest.size() != 0) {
-            ActivityCompat.requestPermissions(this,
-                    permissionsRequest.toArray(new String[permissionsRequest.size()]),
-                    0);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 0) {
-            for (int index = 0; index < grantResults.length; index++) {
-                if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
-                    // 已同意權限的後續處理
                 } else {
-                    Toast.makeText(this, R.string.permission, Toast.LENGTH_SHORT).show();
-                    //讓使用者跳轉到應用程式設定開啟權限
-                    startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
+                    tvNotification.setVisibility(View.INVISIBLE);
+                    ivCircle.setVisibility(View.INVISIBLE);
+                    tvNotification.setText(0 + "");
                 }
             }
-        }
-    }
 
-
-    private void handleNotification() {
-        //新建一個執行緒-子執行緒無法直接使用UI執行緒因此須依靠Handler
-        //參考自https://codertw.com/android-%E9%96%8B%E7%99%BC/22997/#outline__1
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int memberId;
-                final String url = Common.URL + "NotificationController";
-                JsonObject req = new JsonObject();
-                while (true) {
-                    memberId = sharedPreferences.getInt("memberId", -1);
-                    //如果不是遊客
-                    if (memberId != -1) {
-                        //對伺服器發請求
-                        req.addProperty("action", "getNotificationCouunt");
-                        req.addProperty("memberId", memberId);
-                        String resq = RemoteAccess.getJsonData(url, req.toString());
-                        if (!resq.equals("error")) {
-                            notify = Integer.parseInt(resq);
-                        }
-                        if (notify > 0) {
-                            //修改UI
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tvNotification.setVisibility(View.VISIBLE);
-                                    ivCircle.setVisibility(View.VISIBLE);
-                                    tvNotification.setText(notify + "");
-
-                                }
-                            });
-                        }
-                    }
-                    //等待防止連續發請求
-                    try {
-                        //1000為1秒
-                        Thread.sleep(10 * 1000);
-                        Log.d("顯示通知服務", "通知服務執行中");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        Log.d("顯示通知服務", "通知服務已停止");
-                        return;
-                    }
-                }
-            }
-        }).start();
-    }
-
-    public void handleNotificationCount() {
-        int memberId;
-        final String url = Common.URL + "NotificationController";
-        JsonObject req = new JsonObject();
-        memberId = sharedPreferences.getInt("memberId", -1);
-        //如果不是遊客
-        if (memberId != -1) {
-            //對伺服器發請求
-            req.addProperty("action", "getNotificationCouunt");
-            req.addProperty("memberId", memberId);
-            String resq = RemoteAccess.getJsonData(url, req.toString());
-            if (!resq.equals("error")) {
-                notify = Integer.parseInt(resq);
-            }
-            if (notify > 0) {
-                tvNotification.setText(notify + "");
-                if (navController.getCurrentDestination().getId() != R.id.notificationFragment) {
-                    tvNotification.setVisibility(View.VISIBLE);
-                    ivCircle.setVisibility(View.VISIBLE);
-                }
-            } else {
-                tvNotification.setVisibility(View.INVISIBLE);
-                ivCircle.setVisibility(View.INVISIBLE);
-                tvNotification.setText(0 + "");
-            }
         }
 
-    }
-
-    public void upadateMemberData() {
-        int memberId;
+        public void upadateMemberData () {
+            int memberId;
 //        final String url = Common.URL + "NotificationController";
-        JsonObject req = new JsonObject();
-        memberId = sharedPreferences.getInt("memberId", -1);
-        //如果不是遊客
-        if (memberId != -1) {
-            //對伺服器發請求
+            JsonObject req = new JsonObject();
+            memberId = sharedPreferences.getInt("memberId", -1);
+            //如果不是遊客
+            if (memberId != -1) {
+                //對伺服器發請求
 //            req.addProperty("action", "getNotificationCouunt");
-            req.addProperty("memberId", memberId);
+                req.addProperty("memberId", memberId);
 //            String resq = RemoteAccess.getJsonData(url, req.toString());
 //            if (!resq.equals("error")) {
 //                notify = Integer.parseInt(resq);
 //            }
-        }
+            }
 
+        }
     }
-}

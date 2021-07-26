@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
@@ -159,12 +160,13 @@ public class PersonalSnapshotFragment extends Fragment {
 
             //檢舉跳轉bundle
             btPSReport.setOnClickListener(v->{
-
-
+                Bundle bundle=new Bundle();
+                //檢舉者
+                bundle.putInt("WHISTLEBLOWER_ID",userId);
+                //被檢舉者
+                bundle.putInt("REPORTED_ID",selectUser.getMemberId());
+                Navigation.findNavController(v).navigate(R.id.reportFragment,bundle);
             });
-
-
-
 
         }
         else {

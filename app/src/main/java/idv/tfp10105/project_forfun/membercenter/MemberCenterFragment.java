@@ -32,7 +32,7 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 public class MemberCenterFragment extends Fragment {
     private Activity activity;
     private TextView tvPersonalInformation,tvFavoriteList,tvOrderList,
-            tvFunctionTour,tvMyRating,tvLogOut;
+            tvFunctionTour,tvMyRating,tvCustomer,tvLogOut;
     private SharedPreferences sharedPreferences;
     private FirebaseAuth auth;
     private int role;
@@ -66,6 +66,7 @@ public class MemberCenterFragment extends Fragment {
         tvOrderList=view.findViewById(R.id.tvOrderList);
         tvFunctionTour=view.findViewById(R.id. tvFunctionTour);
         tvMyRating=view.findViewById(R.id.tvMyRating);
+        tvCustomer=view.findViewById(R.id.tvCustomer);
         tvLogOut=view.findViewById(R.id.tvLogOut);
     }
 
@@ -110,6 +111,10 @@ public class MemberCenterFragment extends Fragment {
             }
         });
 
+        tvCustomer.setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(R.id.customerServiceFragment);
+        });
+
         tvLogOut.setOnClickListener(v->{
             if(role==3) {
                 Navigation.findNavController(tvLogOut)
@@ -133,13 +138,8 @@ public class MemberCenterFragment extends Fragment {
                         .apply();
                 auth.signOut();
                 Navigation.findNavController(v).navigate(R.id.action_memberCenterFragment_to_signinInFragment);
-
-
-
             });
-            logOutDialog.setNegativeButton(R.string.cancel, (dialog, which) -> {
-
-            });
+            logOutDialog.setNegativeButton(R.string.cancel, null);
             //設定對話框顏色
             Window window=logOutDialog.show().getWindow();
             Button btSure=window.findViewById(android.R.id.button1);

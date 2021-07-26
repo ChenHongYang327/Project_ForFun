@@ -90,6 +90,22 @@
         app:layout_constraintTop_toBottomOf="@+id/tvFunctionTour" />
 
     <TextView
+        android:id="@+id/tvCustomer"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:text="與客服聯絡"
+        android:textSize="21sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMyRating" />
+
+    <TextView
         android:id="@+id/tvLogOut"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -103,6 +119,6 @@
         android:text="@string/log_out"
         android:textSize="21sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyRating" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCustomer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
