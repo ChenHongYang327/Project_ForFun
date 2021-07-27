@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
 
+import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
@@ -137,7 +138,11 @@ public class MemberCenterFragment extends Fragment {
                         .putBoolean("firstOpen",false)
                         .apply();
                 auth.signOut();
+                //切換帳號時
+                MainActivity.notify=0;
+                activity.findViewById(R.id.ivCircle).setVisibility(View.GONE);
                 Navigation.findNavController(v).navigate(R.id.action_memberCenterFragment_to_signinInFragment);
+
             });
             logOutDialog.setNegativeButton(R.string.cancel, null);
             //設定對話框顏色
