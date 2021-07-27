@@ -43,7 +43,7 @@
         tools:layout="@layout/fragment_membercenter_personalinformation" />
     <fragment
         android:id="@+id/discussionBoardFragment"
-        android:name="idv.tfp10105.project_forfun.discussionboard.discussionBoardFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.DiscussionBoardFragment"
         android:label="討論區"
         tools:layout="@layout/fragment_discussion_board" >
         <action
@@ -129,12 +129,12 @@
         tools:layout="@layout/fragment_orderconfirm_otherpay" />
     <fragment
         android:id="@+id/discussionInsertFragment"
-        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionInsertFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionInsertFragment"
         android:label="fragment_discussion_insert"
         tools:layout="@layout/fragment_discussion_insert" />
     <fragment
         android:id="@+id/discussionDetailFragment"
-        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionDetailFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionDetailFragment"
         android:label="fragment_discussion_detail"
         tools:layout="@layout/fragment_discussion_detail" />
     <fragment
@@ -160,7 +160,7 @@
 
     <fragment
         android:id="@+id/discussionUpdateFragment"
-        android:name="idv.tfp10105.project_forfun.discussionboard.controller.discussionUpdateFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionUpdateFragment"
         android:label="discussionUpdateFragment" />
     <fragment
         android:id="@+id/publishDetailFragment"
@@ -188,7 +188,7 @@
         tools:layout="@layout/fragment_signin_guided_tour" />
     <fragment
         android:id="@+id/chatRoomFragment"
-        android:name="idv.tfp10105.project_forfun.chatroom.chatRoomFragment"
+        android:name="idv.tfp10105.project_forfun.chatroom.ChatRoomFragment"
         android:label="fragment_chat_room_message"
         tools:layout="@layout/fragment_chat_room_message" >
         <action
@@ -216,7 +216,7 @@
         tools:layout="@layout/fragment_ocr_pay_otherpay" />
     <fragment
         android:id="@+id/discussionBoard_RentSeeking_ListFragment"
-        android:name="idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeeking_ListFragment"
+        android:name="idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_RentSeeking_ListFragment"
         android:label="fragment_discussion_board__rent_seeking__list"
         tools:layout="@layout/fragment_discussion_board__rent_seeking__list" />
 </navigation>

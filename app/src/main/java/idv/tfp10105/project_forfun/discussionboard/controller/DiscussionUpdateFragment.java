@@ -61,7 +61,7 @@ import idv.tfp10105.project_forfun.common.bean.Post;
 
 import static android.app.Activity.RESULT_OK;
 
-public class discussionUpdateFragment extends Fragment {
+public class DiscussionUpdateFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
     private FragmentActivity activity;
     private EditText update_context_edtext, update_title_edtext;
@@ -76,7 +76,7 @@ public class discussionUpdateFragment extends Fragment {
     private ImageView update_bt_imageView;
     private String url = Common.URL + "DiscussionBoardController";
     private Post post;
-    private boolean pictureTaken = false ;
+    private boolean pictureTaken = false;
     private String name, headshot;
 
 
@@ -143,7 +143,7 @@ public class discussionUpdateFragment extends Fragment {
 
         if (imagePath != "") {
             downloadImage(post.getPostImg());
-           Log.d(TAG,"image:" + post.getPostImg());
+            Log.d(TAG, "image:" + post.getPostImg());
         } else {
             downloadImage(imagePath);
         }
@@ -221,15 +221,15 @@ public class discussionUpdateFragment extends Fragment {
                 Toast.makeText(activity, "請輸入標題", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(pictureTaken == true) {
+            if (pictureTaken == true) {
                 imagePath = getString(R.string.app_name) + "/Discussion_update/" + System.currentTimeMillis();
                 storage.getReference().child(imagePath).putFile(contentUri)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                Log.d(TAG,"圖已上傳");
+                                Log.d(TAG, "圖已上傳");
                                 post.setPostImg(imagePath);
                                 downloadImage(imagePath);
-                            }else {
+                            } else {
                                 String message = task.getException() == null ?
                                         "上傳失敗" :
                                         task.getException().getMessage();
@@ -242,28 +242,52 @@ public class discussionUpdateFragment extends Fragment {
             if (RemoteAccess.networkCheck(activity)) {
                 //用json傳至後端
                 int id = post.getPostId();
-                post.setFiles(id, post.getPosterId(), title, context,imagePath );
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("action", "postUpdate");
-                jsonObject.addProperty("postId", id);
-                jsonObject.addProperty("post", new Gson().toJson(post));
-                int count;
-                //執行緒池物件
-                String result = RemoteAccess.getJsonData(url, jsonObject.toString());
-                //新增筆數
-                count = Integer.parseInt(result);
-                //筆數為0
-                if (count == 0) {
-                    Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
-                } else {
+                if (post.getPostImg().isEmpty()) {
+                    Log.d(TAG, "postImg: " + post.getPostImg());
+                    post.setFilesNoImg(id, post.getPosterId(), title, context);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("action", "postUpdate");
+                    jsonObject.addProperty("postId", id);
+                    jsonObject.addProperty("post", new Gson().toJson(post));
+                    int count;
+                    //執行緒池物件
+                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
+                    //新增筆數
+                    count = Integer.parseInt(result);
+                    //筆數為0
+                    if (count == 0) {
+                        Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
+                    } else {
 
-                    Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
 
+                        //抽掉頁面
+                        Navigation.findNavController(v).popBackStack(R.id.discussionUpdateFragment, true);
+                        Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
 
-                    //抽掉頁面
-                    Navigation.findNavController(v).popBackStack(R.id.discussionUpdateFragment, true);
-                    Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+                    }
+                } else if (!post.getPostImg().isEmpty()) {
+                    post.setFiles(id, post.getPosterId(), title, context, imagePath);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("action", "postUpdate");
+                    jsonObject.addProperty("postId", id);
+                    jsonObject.addProperty("post", new Gson().toJson(post));
+                    int count;
+                    //執行緒池物件
+                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
+                    //新增筆數
+                    count = Integer.parseInt(result);
+                    //筆數為0
+                    if (count == 0) {
+                        Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
+                    } else {
 
+                        Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
+
+                        //抽掉頁面
+                        Navigation.findNavController(v).popBackStack(R.id.discussionUpdateFragment, true);
+                        Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+                    }
                 }
             } else {
                 Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
@@ -322,7 +346,6 @@ public class discussionUpdateFragment extends Fragment {
             }
         }
     }
-
 
 
     private void downloadImage(final String imagePath) {

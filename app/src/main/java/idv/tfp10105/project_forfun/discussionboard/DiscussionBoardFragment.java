@@ -1,16 +1,12 @@
 package idv.tfp10105.project_forfun.discussionboard;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -24,18 +20,16 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
-import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_KnowledgeFragment;
-import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentHouseFragment;
-import idv.tfp10105.project_forfun.discussionboard.disboard.discussionBoard_RentSeekingFragment;
+import idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_KnowledgeFragment;
+import idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_RentHouseFragment;
+import idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_RentSeekingFragment;
 
 
-public class discussionBoardFragment extends Fragment {
+public class DiscussionBoardFragment extends Fragment {
     private Activity activity;
     private List<Fragment> list = new ArrayList<>();
     private String[] title = {"租屋交流", "知識問答", "需求單"};
@@ -120,11 +114,11 @@ public class discussionBoardFragment extends Fragment {
             switch (position)
             {
                 case 0:
-                    return new discussionBoard_RentHouseFragment();
+                    return new DiscussionBoard_RentHouseFragment();
                 case 1:
-                    return new discussionBoard_KnowledgeFragment();
+                    return new DiscussionBoard_KnowledgeFragment();
                 default:
-                    return new discussionBoard_RentSeekingFragment();
+                    return new DiscussionBoard_RentSeekingFragment();
 
             }
         }

@@ -60,7 +60,7 @@ import idv.tfp10105.project_forfun.common.bean.Post;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.POWER_SERVICE;
 
-public class discussionInsertFragment extends Fragment {
+public class DiscussionInsertFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
     private FragmentActivity activity;
     private EditText etTitle, etContext;

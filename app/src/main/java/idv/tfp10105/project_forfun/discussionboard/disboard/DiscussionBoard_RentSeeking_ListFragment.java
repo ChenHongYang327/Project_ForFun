@@ -39,7 +39,7 @@ import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
-public class discussionBoard_RentSeeking_ListFragment extends Fragment {
+public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
     private final static String TAG = "TAG_RentSeekingFragmentList";
     private Post post;
     private RecyclerView rv_rentseekinglist;

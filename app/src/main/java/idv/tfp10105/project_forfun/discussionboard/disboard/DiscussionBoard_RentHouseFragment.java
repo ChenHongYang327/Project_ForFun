@@ -50,7 +50,7 @@ import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
-public class discussionBoard_RentHouseFragment extends Fragment {
+public class DiscussionBoard_RentHouseFragment extends Fragment {
     private final static String TAG = "TAG_RentSeekingFragment";
     private RecyclerView rv_rent;
     private Activity activity;
@@ -338,9 +338,29 @@ public class discussionBoard_RentHouseFragment extends Fragment {
 
             //設定點擊事件
             holder.disPostImg.setOnClickListener(v -> {
+
+                if (RemoteAccess.networkCheck(activity)) {
+                    String url2 = Common.URL+"NotificationController";
+                    int memberId = sharedPreferences.getInt("memberId", -1);
+                    JsonObject req = new JsonObject();
+                    req.addProperty("action", "getNotification");
+                    req.addProperty("memberId", memberId);
+
+                    //將通知狀態改成已讀
+                    req.addProperty("action", "updateReaded");
+                    req.addProperty("postId", post.getPostId());
+                    JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()),JsonObject.class);
+                    resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()), JsonObject.class);
+
+
+
+                }
+
+
                 Bundle bundle = new Bundle();
                 bundle.putString("name", member2.getNameL() + member2.getNameF());
                 bundle.putString("headshot", member2.getHeadshot());
+                bundle.putString("boardId", post.getBoardId());
                 bundle.putSerializable("post", post);
                 //轉至詳細頁面
                 Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
@@ -353,9 +373,24 @@ public class discussionBoard_RentHouseFragment extends Fragment {
 
             holder.disPostBtMore.setOnClickListener(v -> {
 
-                //選單
-                PopupMenu popupMenu = new PopupMenu(activity,v, Gravity.END);
+                PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
                 popupMenu.inflate(R.menu.popup_menu);
+
+                if (memberId == post.getPosterId()) {
+
+                    Log.d("posterId",":" + post.getPosterId());
+                    Log.d("memberId",":" + memberId);
+
+                    popupMenu.getMenu().getItem(0).setVisible(true);
+                    popupMenu.getMenu().getItem(1).setVisible(true);
+                    popupMenu.getMenu().getItem(2).setVisible(false);
+                } else {
+                    popupMenu.getMenu().getItem(0).setVisible(false);
+                    popupMenu.getMenu().getItem(1).setVisible(false);
+                    popupMenu.getMenu().getItem(2).setVisible(true);
+                }
+
+
                 popupMenu.setOnMenuItemClickListener(item -> {
                     int itemId = item.getItemId();
                     //新增
@@ -381,18 +416,18 @@ public class discussionBoard_RentHouseFragment extends Fragment {
                                 posts.remove(post);
                                 RentAdapter.this.notifyDataSetChanged();
                                 // 外面spots也必須移除選取的spot
-                                discussionBoard_RentHouseFragment.this.posts.remove(post);
-                                storage.getReference().child(post.getPostImg()).delete()
-                                        .addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "照片已刪除");
-                                            } else {
-                                                String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
-                                                        task.getException().getMessage() + ": " + post.getPostImg();
-                                                Log.e(TAG, message);
-                                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                DiscussionBoard_RentHouseFragment.this.posts.remove(post);
+//                                storage.getReference().child(post.getPostImg()).delete()
+//                                        .addOnCompleteListener(task -> {
+//                                            if (task.isSuccessful()) {
+//                                                Log.d(TAG, "照片已刪除");
+//                                            } else {
+//                                                String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
+//                                                        task.getException().getMessage() + ": " + post.getPostImg();
+//                                                Log.e(TAG, message);
+//                                                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        });
 
                                 Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
                             }

@@ -155,7 +155,21 @@ public class PersonalSnapshotFragment extends Fragment {
             getImage(ivPSHS,member.getHeadshot());
             //私訊跳轉bundle
             btPSMessage.setOnClickListener(v->{
-
+                if (RemoteAccess.networkCheck(activity)) {
+                    String url = Common.URL + "ChatRoomController";
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("action", "selectChatRoomId");
+                    jsonObject.addProperty("receivedMemberId", selectUser.getMemberId());
+                    jsonObject.addProperty("sendMemberId", userId);
+                    int count;
+                    String result = RemoteAccess.getJsonData(url,jsonObject.toString());
+                    count = Integer.parseInt(result);
+                    if (count == 0) {
+                        Toast.makeText(activity, "已有聊天室", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(activity, "聊天室新建成功", Toast.LENGTH_SHORT).show();
+                    }
+                }
             });
 
             //檢舉跳轉bundle

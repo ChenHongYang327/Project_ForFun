@@ -53,6 +53,14 @@ public class Post implements Serializable {
         this.postImg = postImg;
     }
 
+    public void setFilesNoImg(Integer postId, Integer posterId,String postTitle ,String postContext)
+    {
+        this.postId = postId;
+        this.posterId = posterId;
+        this.postTitle = postTitle;
+        this.postContext = postContext;
+    }
+
 
     public Integer getPostId() {
         return postId;
@@ -133,6 +141,5 @@ public class Post implements Serializable {
     public void setDeleteTime(Timestamp deleteTime) {
         this.deleteTime = deleteTime;
     }
-
 
 }

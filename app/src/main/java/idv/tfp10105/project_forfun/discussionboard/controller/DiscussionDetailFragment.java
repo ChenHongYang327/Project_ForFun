@@ -2,8 +2,6 @@ package idv.tfp10105.project_forfun.discussionboard.controller;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -16,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +23,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,13 +48,13 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
-import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
 import idv.tfp10105.project_forfun.common.bean.Comment;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
+import idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_RentSeekingFragment;
 
 
-public class discussionDetailFragment extends Fragment {
+public class DiscussionDetailFragment extends Fragment {
     private static final String TAG = "DetailFragment";
     private Activity activity;
     private TextView detailTitle, detailContext, detailMemberName, detailTime;
@@ -74,14 +70,13 @@ public class discussionDetailFragment extends Fragment {
     private List<Comment> comments;
     private List<Post> posts;
     private String url = Common.URL;
-    private String name, headshot;
+    private String name, headshot, boardId;
     private String imagePath = "Project_ForFun/Discussion_insert/no_image.jpg";
     private List<Member> members;
     private Integer memberId;
     private SharedPreferences sharedPreferences;
     private CommentAdapter commentAdapter;
-
-
+    private Member member;
 
 
     @Override
@@ -93,6 +88,7 @@ public class discussionDetailFragment extends Fragment {
         post = (Post) (getArguments() != null ? getArguments().getSerializable("post") : null);
         name = getArguments() != null ? getArguments().getString("name") : null;
         headshot = getArguments() != null ? getArguments().getString("headshot") : null;
+        boardId = getArguments() != null ? getArguments().getString("boardId") : null;
 
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId",-1);
@@ -208,7 +204,7 @@ public class discussionDetailFragment extends Fragment {
             Toast.makeText(activity, "尚未有留言", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
-        commentAdapter = new CommentAdapter(activity, comments ,members);
+        commentAdapter = new CommentAdapter(activity, comments ,getMembers());
         rvDetail.setAdapter(commentAdapter);
 //         commentAdapter = (CommentAdapter) rvDetail.getAdapter();
 //        // 如果spotAdapter不存在就建立新的，否則續用舊有的
@@ -228,6 +224,23 @@ public class discussionDetailFragment extends Fragment {
         detailBtMore.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
             popupMenu.inflate(R.menu.popup_menu);
+
+            if (memberId == post.getPosterId()) {
+
+                Log.d("posterId",":" + post.getPosterId());
+                Log.d("memberId",":" + memberId);
+
+                popupMenu.getMenu().getItem(0).setVisible(true);
+                popupMenu.getMenu().getItem(1).setVisible(true);
+                popupMenu.getMenu().getItem(2).setVisible(false);
+            } else {
+                popupMenu.getMenu().getItem(0).setVisible(false);
+                popupMenu.getMenu().getItem(1).setVisible(false);
+                popupMenu.getMenu().getItem(2).setVisible(true);
+            }
+
+
+
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 //新增
@@ -246,6 +259,7 @@ public class discussionDetailFragment extends Fragment {
                             .setPositiveButton("確定", (dialog, which) -> {
 
                                 if (RemoteAccess.networkCheck(activity)){
+                                    url = Common.URL + "DiscussionBoardController";
                                     JsonObject jsonDelete = new JsonObject();
                                     jsonDelete.addProperty("action","postDelete");
                                     jsonDelete.addProperty("postId",post.getPostId());
@@ -255,27 +269,21 @@ public class discussionDetailFragment extends Fragment {
                                     if (count == 0) {
                                         Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        posts = getPosts();
-                                        posts.remove(post);
+                                        Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
 
-                                        //刪除當前Fragment
-//                                        FragmentManager fm = activity.getFragmentManager();
-//                                        android.app.Fragment fragment = fm.findFragmentById(R.id.discussionDetailFragment);
-//                                        FragmentTransaction ft = fm.beginTransaction();
-//                                        ft.remove(fragment);
+                                        switch (boardId) {
+                                            case "需求單":
+                                                Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment,true);
+                                                Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
 
-                                        // 外面post也必須移除選取的spot
-                                        storage.getReference().child(post.getPostImg()).delete()
-                                                .addOnCompleteListener(task -> {
-                                                    if (task.isSuccessful()) {
-                                                        Log.d(TAG, "照片已刪除");
-                                                    } else {
-                                                        String message = task.getException() == null ? "照片刪除失敗" + ": " + post.getPostImg() :
-                                                                task.getException().getMessage() + ": " + post.getPostImg();
-                                                        Log.e(TAG, message);
-                                                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                            case "知識問答":
+                                                Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment,true);
+                                                Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+                                            default:
+                                                Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment,true);
+                                                Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+                                        }
+
 
                                         Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
                                     }
@@ -338,7 +346,7 @@ public class discussionDetailFragment extends Fragment {
         public void updateData(List<Comment> comments, List<Member> members) {
             this.comments = comments;
             this.members = members;
-            commentAdapter.notifyDataSetChanged();
+            CommentAdapter.this.notifyDataSetChanged();
         }
 
 
@@ -357,12 +365,12 @@ public class discussionDetailFragment extends Fragment {
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
-        public void onBindViewHolder(@NonNull @NotNull discussionDetailFragment.CommentAdapter.MyViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull @NotNull DiscussionDetailFragment.CommentAdapter.MyViewHolder holder, int position) {
             final Comment comment = comments.get(position);
-            Member member = members.get(position);
+            Member member2 = members.get(position);
             holder.comment_text.setText(comment.getCommentMsg());
-            holder.comment_memberName.setText(member.getNameL() + member.getNameF());
-            downloadImage(holder.comment_bt_membetHead, member.getHeadshot());
+            holder.comment_memberName.setText(member2.getNameL() + member2.getNameF());
+            downloadImage(holder.comment_bt_membetHead, member2.getHeadshot());
             holder.comment_bt_report.setOnClickListener(v -> {
                     Navigation.findNavController(v).navigate(R.id.reportFragment);
             });
@@ -464,8 +472,8 @@ public class discussionDetailFragment extends Fragment {
 //
 //                    commentAdapter.notifyDataSetChanged();
 
-                    comments = getComments();
-                    commentAdapter.updateData(comments , members);
+                        comments = getComments();
+                        commentAdapter.updateData(comments , members);
 
 
 
