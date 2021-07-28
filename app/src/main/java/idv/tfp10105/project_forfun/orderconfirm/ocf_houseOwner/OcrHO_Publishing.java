@@ -212,8 +212,8 @@ public class OcrHO_Publishing extends Fragment {
                                 if (RemoteAccess.networkCheck(activity)) {
                                     JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url, req.toString()), JsonObject.class);
                                     if (resp.get("result").getAsBoolean()) {
-                                        Navigation.findNavController(v).popBackStack(R.id.ocrHO_Publishing, true);
-                                        Navigation.findNavController(v).navigate(R.id.ocrHO_Publishing);
+                                        Navigation.findNavController(tvPublishlNote).popBackStack(R.id.ocrHO_Publishing, true);
+                                        Navigation.findNavController(tvPublishlNote).navigate(R.id.ocrHO_Publishing);
                                         publishes.remove(position);
                                         cityNames.remove(position);
                                         notifyDataSetChanged();
