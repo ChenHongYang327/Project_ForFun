@@ -4,12 +4,6 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
-import androidx.fragment.app.Fragment;
-
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +11,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -27,11 +24,9 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 
 
-
 public class Customer_Service_Fragment extends Fragment {
     private Activity activity;
     private Resources resources;
-
 
     private EditText edName, edMail, edPhone, edMessage;
     private ImageButton btCallCustomerService, btSendEmail;
@@ -47,11 +42,10 @@ public class Customer_Service_Fragment extends Fragment {
         resources = getResources();
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_customer_service, container, false);
+        View view = inflater.inflate(R.layout.fragment_customer__service_, container, false);
         return view;
     }
 
@@ -62,9 +56,7 @@ public class Customer_Service_Fragment extends Fragment {
         handleButton();
     }
 
-
-
-
+//
     private void findViews(View view) {
         edName = view.findViewById(R.id.customer_service_ed_name); // 姓名輸入欄位
         edMail = view.findViewById(R.id.customer_service_ed_mail); // 信箱輸入欄位
@@ -76,27 +68,27 @@ public class Customer_Service_Fragment extends Fragment {
     }
 
     private void handleButton() {
-        btSendEmail.setOnClickListener(V -> {
+        btSendEmail.setOnClickListener(v -> {
             // isEmpty() 是判斷長度的方法
-            // 請確認edName不可為空
+            // 確認edName不可為空
             final String username = String.valueOf(edName.getText());
             if (username.isEmpty()) {
                 edName.setError(resources.getString(R.string.textedNameRequired));
                 return;
             }
-            // 請確認edMail不可為空
+            // 確認edMail不可為空
             final String mail = String.valueOf(edMail.getText());
             if (mail.isEmpty()) {
                 edMail.setError(resources.getString(R.string.textedMailRequired));
                 return;
             }
-            // 請確認edPhone不可為空
+            // 確認edPhone不可為空
             final String phone = String.valueOf(edPhone.getText());
             if (phone.isEmpty()) {
                 edPhone.setError(resources.getString(R.string.textedPhoneRequired));
                 return;
             }
-            // 請確認edMessage不可為空
+            // 確認edMessage不可為空
             final String message = String.valueOf(edMessage.getText());
             if (message.isEmpty()) {
                 edMessage.setError(resources.getString(R.string.textMessageRequired));
@@ -121,6 +113,7 @@ public class Customer_Service_Fragment extends Fragment {
                 JsonObject jObject = new Gson().fromJson(jsonIn, JsonObject.class);
                 if (jObject.get("status").getAsBoolean()) {
                     Toast.makeText(activity, "Inserted Successfully", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(v).popBackStack();
                 } else {
                     Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
                 }
@@ -131,6 +124,5 @@ public class Customer_Service_Fragment extends Fragment {
         });
 
     }
-
 }
 
