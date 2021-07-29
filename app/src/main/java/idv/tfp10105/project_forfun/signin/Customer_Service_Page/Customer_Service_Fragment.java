@@ -119,7 +119,7 @@ public class Customer_Service_Fragment extends Fragment {
                 }
 
             } else {
-                Toast.makeText(activity, R.string.textNoNetwork, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "textNoNetwork", Toast.LENGTH_SHORT).show();
             }
         });
 

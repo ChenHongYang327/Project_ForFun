@@ -36,12 +36,20 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    // 客服頁面
-    <string name="textedNameRequired">請確認edName不可為空</string>
-    <string name="textedMailRequired">請確認edMail不可為空</string>
-    <string name="textedPhoneRequired">請確認edPhone不可為空</string>
-    <string name="textMessageRequired">請確認edMessage不可為空</string>
-    <string name="textNoNetwork">連線失敗</string>
+    <!--客服頁面-->
+    <string name="textedNameRequired">姓名不可空白</string>
+    <string name="textedMailRequired">信箱不可空白</string>
+    <string name="textedPhoneRequired">手機號碼不可空白</string>
+    <string name="textMessageRequired">留言不可空白</string>
+
+    <!--檢舉頁面-->
+    <string-array name="ReportFragment_Spinner">
+        <item>冒充他人</item>
+        <item>謾罵他人</item>
+        <item>不當檢舉</item>
+        <item>內容誇大</item>
+        <item>態度惡劣</item>
+    </string-array>
 
 
 </resources>

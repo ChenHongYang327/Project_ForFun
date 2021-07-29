@@ -251,7 +251,7 @@ public class ReportFragment extends Fragment {
 
 
                 default:
-                    Toast.makeText(activity, R.string.textNoNetwork, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "textNoNetwork", Toast.LENGTH_SHORT).show();
                     Navigation.findNavController(v).popBackStack();
                 break;
 
