@@ -36,7 +36,7 @@ public class ReportFragment extends Fragment {
     private EditText edDetailedStatus, textView;
     private ImageButton btConfirm, btCancel;
     private String options;
-    private int ITEM, POST_ID, REPORTED_ID, WHISTLEBLOWER_ID, CHATROOM_ID;
+    private int item, postId, reportedId, whistleblowerId, chatroomId;
 
 
     @Override
@@ -76,26 +76,26 @@ public class ReportFragment extends Fragment {
 //
         //會員ID(檢舉者）
         Bundle bundle = getArguments();
-        WHISTLEBLOWER_ID = bundle.getInt("WHISTLEBLOWER_ID");
+        whistleblowerId = bundle.getInt("WHISTLEBLOWER_ID");
 
         //會員ID（被檢舉者）
         Bundle bundle2 = getArguments();
-        REPORTED_ID = bundle2.getInt("REPORTED_ID");
+        reportedId = bundle2.getInt("REPORTED_ID");
 
 
         //貼文ID
 
         Bundle bundle3 = getArguments();
-        POST_ID = bundle3.getInt("POST_ID");
+        postId = bundle3.getInt("POST_ID");
 
         //留言ID
         Bundle bundle5 = getArguments();
-        CHATROOM_ID = bundle5.getInt("CHATROOM_ID");
+        chatroomId = bundle5.getInt("CHATROOM_ID");
 
 
         //檢舉項目
         Bundle bundle4 = getArguments();
-        ITEM = bundle4.getInt("ITEM");
+        item = bundle4.getInt("ITEM");
 
 
         //判斷進哪個
@@ -110,7 +110,6 @@ public class ReportFragment extends Fragment {
         edDetailedStatus = view.findViewById(R.id.report_page_ed_Detailed_status); // 詳細狀況輸入欄位
         btConfirm = view.findViewById(R.id.report_page_bt_confirm); // 按鈕 確認
         btCancel = view.findViewById(R.id.report_page_bt_cancel); // 按鈕 取消
-        textView = view.findViewById(R.id.report_page_ed_text);
 
 
     }
@@ -161,7 +160,7 @@ public class ReportFragment extends Fragment {
 //            }
 
 
-            switch (ITEM) {
+            switch (item) {
 
                 // 0 貼文類 (post)
                 case 0 :
@@ -169,13 +168,13 @@ public class ReportFragment extends Fragment {
                        String url = Common.URL + "REPORT_Servlet";
                        JsonObject jsonObject = new JsonObject();
                        jsonObject.addProperty("action", "Post");
-                       jsonObject.addProperty("WHISTLEBLOWER_ID", WHISTLEBLOWER_ID);//會員ID(檢舉者
-                       jsonObject.addProperty("REPORTED_ID", REPORTED_ID);//會員ID（被檢舉者）
+                       jsonObject.addProperty("WHISTLEBLOWER_ID", whistleblowerId);//會員ID(檢舉者
+                       jsonObject.addProperty("REPORTED_ID", reportedId);//會員ID（被檢舉者）
                        jsonObject.addProperty("MESSAGE", detailedStatus);//反應內容
                        jsonObject.addProperty("REPORT_CLASS", spinner.getSelectedItemPosition());//檢舉類別
-                       jsonObject.addProperty("POST_ID", POST_ID);//貼文ID
-                       jsonObject.addProperty("ITEM", ITEM);//檢舉項目
-                       Log.d("SSS", REPORTED_ID + "") ;
+                       jsonObject.addProperty("POST_ID", postId);//貼文ID
+                       jsonObject.addProperty("ITEM", item);//檢舉項目
+                       Log.d("SSS", reportedId + "") ;
 
 
                        String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
@@ -201,11 +200,11 @@ public class ReportFragment extends Fragment {
                     String url = Common.URL + "REPORT_Servlet";
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("action", "Charoom");
-                    jsonObject.addProperty("WHISTLEBLOWER_ID", WHISTLEBLOWER_ID);//會員ID(檢舉者
-                    jsonObject.addProperty("REPORTED_ID", REPORTED_ID);//會員ID（被檢舉者）
+                    jsonObject.addProperty("WHISTLEBLOWER_ID", whistleblowerId);//會員ID(檢舉者
+                    jsonObject.addProperty("REPORTED_ID", reportedId);//會員ID（被檢舉者）
                     jsonObject.addProperty("MESSAGE", detailedStatus);//反應內容
                     jsonObject.addProperty("REPORT_CLASS", spinner.getSelectedItemPosition());//檢舉類別
-                    jsonObject.addProperty("CHATROOM_ID", CHATROOM_ID);//檢舉項目
+                    jsonObject.addProperty("CHATROOM_ID", chatroomId);//檢舉項目
 
 
                         String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
@@ -229,11 +228,11 @@ public class ReportFragment extends Fragment {
                         String url = Common.URL + "REPORT_Servlet";
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("action", "User");
-                        jsonObject.addProperty("WHISTLEBLOWER_ID", WHISTLEBLOWER_ID);//會員ID(檢舉者
-                        jsonObject.addProperty("REPORTED_ID", REPORTED_ID);//會員ID（被檢舉者）
+                        jsonObject.addProperty("WHISTLEBLOWER_ID", whistleblowerId);//會員ID(檢舉者
+                        jsonObject.addProperty("REPORTED_ID", reportedId);//會員ID（被檢舉者）
                         jsonObject.addProperty("MESSAGE", detailedStatus);//反應內容
                         jsonObject.addProperty("REPORT_CLASS", spinner.getSelectedItemPosition());//檢舉類別
-                        jsonObject.addProperty("ITEM", ITEM);//檢舉項目
+                        jsonObject.addProperty("ITEM", item);//檢舉項目
 
 
                         String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());

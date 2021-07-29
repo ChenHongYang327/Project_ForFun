@@ -45,7 +45,7 @@ public class Customer_Service_Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_customer__service_, container, false);
+        View view = inflater.inflate(R.layout.fragment_customer_service, container, false);
         return view;
     }
 
