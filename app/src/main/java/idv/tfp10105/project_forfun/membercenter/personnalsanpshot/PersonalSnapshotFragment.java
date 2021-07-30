@@ -62,7 +62,6 @@ public class PersonalSnapshotFragment extends Fragment {
         activity=getActivity();
         //傳值
         selectUser=getArguments()!=null?(Member)getArguments().getSerializable("SelectUser"):null;
-
     }
 
     @Override
@@ -72,6 +71,14 @@ public class PersonalSnapshotFragment extends Fragment {
        findView(view);
        sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
        userId = sharedPreferences.getInt("memberId", -1);
+       //遊客
+       if(userId==-1){
+           btPSMessage.setEnabled(false);
+           //使用mutate()方法使該控件狀態不定，這樣不定狀態的控件就不會共享自己的狀態了
+           btPSMessage.getBackground().mutate().setAlpha(120);
+           btPSReport.setEnabled(false);
+           btPSReport.getBackground().mutate().setAlpha(120);
+       }
       if(selectUser!=null) {
           if (userId == selectUser.getMemberId()) {
                 btPSMessage.setEnabled(false);
