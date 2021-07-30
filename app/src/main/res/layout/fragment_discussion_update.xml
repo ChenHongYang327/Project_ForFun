@@ -8,9 +8,10 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="-38dp">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -20,26 +21,85 @@
                 android:id="@+id/update_bt_save"
                 android:layout_width="64dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:background="@drawable/shap"
                 android:src="@drawable/bt_save"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/update_time_text"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.038" />
+                app:layout_constraintVertical_bias="0.098" />
 
             <TextView
                 android:id="@+id/update_memberName_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
                 android:hint="name"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/update_bt_save"
-                app:layout_constraintHorizontal_bias="0.075"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
+                app:layout_constraintEnd_toStartOf="@+id/update_time_text"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/update_bt_memberhead"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.059" />
+                app:layout_constraintVertical_bias="0.13" />
+
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/update_bt_memberhead"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/post_memberhead"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
+                app:layout_constraintEnd_toStartOf="@+id/update_memberName_text"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.098" />
+
+            <TextView
+                android:id="@+id/update_time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="80dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginBottom="50dp"
+                android:hint="time"
+                app:layout_constraintBottom_toTopOf="@+id/update_title_edtext"
+                app:layout_constraintEnd_toStartOf="@+id/update_bt_save"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/update_memberName_text"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/update_title_edtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:background="@null"
+                android:hint="title"
+                android:inputType="textMultiLine"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/update_context_edtext"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/update_time_text" />
+
+            <EditText
+                android:id="@+id/update_context_edtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
+                android:background="@null"
+                android:hint="context"
+                android:inputType="textMultiLine"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/update_title_edtext" />
 
             <ImageView
                 android:id="@+id/update_imageView"
@@ -48,55 +108,9 @@
                 android:src="@drawable/post_houseimg_test"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <com.mikhaellopez.circularimageview.CircularImageView
-                android:id="@+id/update_bt_memberhead"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:src="@drawable/post_memberhead"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.038" />
-
-            <TextView
-                android:id="@+id/update_time_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="time"
-                app:layout_constraintEnd_toStartOf="@+id/update_bt_save"
-                app:layout_constraintHorizontal_bias="0.367"
-                app:layout_constraintStart_toEndOf="@+id/update_memberName_text"
-                tools:layout_editor_absoluteY="16dp" />
-
-            <EditText
-                android:id="@+id/update_title_edtext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:hint="title"
-                android:inputType="textMultiLine"
-                app:layout_constraintBottom_toTopOf="@+id/update_context_edtext"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.469"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/update_time_text" />
-
-            <EditText
-                android:id="@+id/update_context_edtext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:hint="context"
-                android:inputType="textMultiLine"
-                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.47"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/update_context_edtext" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

@@ -61,6 +61,10 @@ public class Post implements Serializable {
         this.postContext = postContext;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return this.posterId == ((Post) obj).posterId;
+    }
 
     public Integer getPostId() {
         return postId;

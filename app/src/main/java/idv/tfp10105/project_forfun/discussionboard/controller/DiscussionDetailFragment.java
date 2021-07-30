@@ -23,6 +23,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -253,10 +255,11 @@ public class DiscussionDetailFragment extends Fragment {
                     //刪除
                 } else if (itemId == R.id.delete) {
                     //實例化AlertDialog.Builder物件
-                    new AlertDialog.Builder(activity)
-                            .setTitle("是否刪除貼文")
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+
+                    alertDialog.setTitle("是否刪除貼文");
                             // 設定確定按鈕-顯示文字及點擊監聽器
-                            .setPositiveButton("確定", (dialog, which) -> {
+                    alertDialog.setPositiveButton("確定", (dialog, which) -> {
 
                                 if (RemoteAccess.networkCheck(activity)){
                                     url = Common.URL + "DiscussionBoardController";
@@ -288,20 +291,34 @@ public class DiscussionDetailFragment extends Fragment {
                                         Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                            })
+                            });
                             // 設定否定按鈕-顯示文字及點擊監聽器
-                            .setNegativeButton("取消", (dialog, which) ->
+                    alertDialog.setNegativeButton("取消", (dialog, which) ->
                             {
-                                dialog.cancel(); })
+                                dialog.cancel(); });
 
                             // 設定是否可點擊對話框以外之處離開對話框
-                            .setCancelable(false)
+                    alertDialog.setCancelable(false);
                             // 顯示對話框
-                            .show();
+                    Window window = alertDialog.show().getWindow();
+                    //設定對話框顏色
+                    Button btSure = window.findViewById(android.R.id.button1);
+                    Button btCancel = window.findViewById(android.R.id.button2);
+                    btSure.setTextColor(getResources().getColor(R.color.black));
+                    btCancel.setTextColor(getResources().getColor(R.color.black));
+                }
+                else if (itemId == R.id.report) {
+                    Bundle bundle = new Bundle();
+                    // 檢舉者
+                    bundle.putInt("WHISTLEBLOWER_ID", memberId);
+                    //被檢舉者
+                    bundle.putInt("REPORTED_ID", post.getPosterId());
+                    //檢舉貼文
+                    bundle.putInt("POST_ID", post.getPostId());
+                    //檢舉項目
+                    bundle.putInt("ITEM",0);
 
-
-                } else if (itemId == R.id.report) {
-                            Navigation.findNavController(v).navigate(R.id.reportFragment);
+                    Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
                 } else {
                     Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                 }
@@ -309,6 +326,7 @@ public class DiscussionDetailFragment extends Fragment {
             });
             popupMenu.show();
         });
+
     }
 
     public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder> {
@@ -367,11 +385,26 @@ public class DiscussionDetailFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull @NotNull DiscussionDetailFragment.CommentAdapter.MyViewHolder holder, int position) {
             final Comment comment = comments.get(position);
-            Member member2 = members.get(position);
+            Member member = members.get(position);
             holder.comment_text.setText(comment.getCommentMsg());
-            holder.comment_memberName.setText(member2.getNameL() + member2.getNameF());
-            downloadImage(holder.comment_bt_membetHead, member2.getHeadshot());
+            holder.comment_memberName.setText(member.getNameL() + member.getNameF());
+            downloadImage(holder.comment_bt_membetHead, member.getHeadshot());
             holder.comment_bt_report.setOnClickListener(v -> {
+
+                Bundle bundle = new Bundle();
+                // 檢舉者
+                bundle.putInt("WHISTLEBLOWER_ID", memberId);
+                //被檢舉者
+                bundle.putInt("REPORTED_ID", comment.getMemberId());
+                //檢舉貼文
+                bundle.putInt("CHATROOM_ID", comment.getCommentId());
+                //檢舉項目
+                bundle.putInt("ITEM",1);
+
+                Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+
+
+
                     Navigation.findNavController(v).navigate(R.id.reportFragment);
             });
 
@@ -473,7 +506,8 @@ public class DiscussionDetailFragment extends Fragment {
 //                    commentAdapter.notifyDataSetChanged();
 
                         comments = getComments();
-                        commentAdapter.updateData(comments , members);
+                        members = getMembers();
+                        commentAdapter.updateData(comments , getMembers());
 
 
 

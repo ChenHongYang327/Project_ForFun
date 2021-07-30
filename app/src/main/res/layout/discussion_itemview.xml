@@ -22,6 +22,9 @@
                 android:id="@+id/post_item_bt_memberhead"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/post_memberhead" />
 
             <LinearLayout
@@ -33,6 +36,9 @@
                     android:id="@+id/post_item_memberName_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_weight="1"
                     android:hint="name" />
 
@@ -40,6 +46,10 @@
                     android:id="@+id/post_item_time_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_weight="1"
                     android:hint="time" />
 
@@ -59,6 +69,9 @@
             android:id="@+id/post_item_title_text"
             android:layout_width="match_parent"
             android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
             android:hint="Title"
             android:textSize="16sp" />
 
@@ -66,6 +79,8 @@
             android:id="@+id/post_item_context_text"
             android:layout_width="match_parent"
             android:layout_height="84dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:hint="context" />
 
         <ImageView

@@ -45,6 +45,7 @@ import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
@@ -127,6 +128,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
+                KeyboardUtils.hideKeyboard(activity);
                 //如果輸入條件為空字串,就顯示原始資料,否則就顯示收尋後結果
                 if (newText.isEmpty()) {
                     showPosts(posts, members);

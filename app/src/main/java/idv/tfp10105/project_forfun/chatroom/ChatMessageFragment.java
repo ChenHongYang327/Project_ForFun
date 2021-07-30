@@ -38,7 +38,10 @@ import com.google.gson.reflect.TypeToken;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.lang.reflect.Type;
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +50,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.TimeUtil;
 import idv.tfp10105.project_forfun.common.bean.ChatRoom;
 import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
 import idv.tfp10105.project_forfun.common.bean.Member;
@@ -61,26 +65,37 @@ public class ChatMessageFragment extends Fragment {
     private ImageButton btSend;
     private  RecyclerView rvChatMessage;
     private List<ChatRoomMessage> chatRoomMessages;
-    private  ChatRoom chatRoom;
+    private int chatRoomId;
     private SharedPreferences sharedPreferences;
-    private  Integer memberId;
-    private String memberToken;
+    private  Integer memberId, selectUserId;
     private List<Member> members;
     private FirebaseStorage storage;
     private ChatRoomMessageAdapter chatRoomMessageAdapter;
     public static Handler handler;
     private String url = Common.URL + "MessageController";
+    private Member selectUser;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = getActivity();
+        storage = FirebaseStorage.getInstance();
         //取bundle資料
-        chatRoom = (ChatRoom) (getArguments() != null ? getArguments().getSerializable("chatRooms") : null);
+        chatRoomId = getArguments() != null ? getArguments().getInt("chatroomId") : null;
+        selectUser = (Member) (getArguments() != null ? getArguments().getSerializable("selectUser") : null);
+
+
 
         //取偏好設定檔
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId", -1);
+
+
+//        sharedPref = activity.getSharedPreferences("selectUser", Context.MODE_PRIVATE);
+//        selectUserId = sharedPref.getInt("selectUserId", -1);
+//        selectUserHeadShot = sharedPref.getString("selectUserHeadShot","");
+
         ChatMessageFragment.handler = new Handler(Looper.myLooper(), msg -> {
             Log.d(TAG,"handler");
             if (msg.what == 2) {
@@ -121,6 +136,13 @@ public class ChatMessageFragment extends Fragment {
         handlebtSend();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+    }
+
     private void findViews(View view) {
         memberImg = view.findViewById(R.id.chatRoomMemberImg);
         memberName = view.findViewById(R.id.chat_memberName);
@@ -139,7 +161,7 @@ public class ChatMessageFragment extends Fragment {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("action", "getAll");
 //            jsonObject.addProperty("MEMBER_ID", memberId);
-            jsonObject.addProperty("chatRoomId", chatRoom.getChatroomId());
+            jsonObject.addProperty("chatRoomId", chatRoomId);
 //            jsonObject.addProperty("MEMBER_ID", memberId);
 
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
@@ -168,12 +190,12 @@ public class ChatMessageFragment extends Fragment {
                 return;
             }
             if (RemoteAccess.networkCheck(activity)) {
-                if (memberId.equals(chatRoom.getMemberId1())) {
-                    ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoom.getChatroomId(), memberId, chatMSG);
+
+                    ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoomId, memberId, chatMSG);
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("action", "messageInsert");
                     jsonObject.addProperty("chatMessage", chatMSG);
-                    jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId2());
+                    jsonObject.addProperty("receivedMemberId", chatRoomId);
                     jsonObject.addProperty("MemberId", memberId);
                     jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
 
@@ -194,61 +216,10 @@ public class ChatMessageFragment extends Fragment {
                         rvChatMessage.scrollToPosition(chatRoomMessageAdapter.getItemCount()-1);
 
                     }
-
-                    } else if (memberId.equals(chatRoom.getMemberId2())) {
-                    ChatRoomMessage chatRoomMessage = new ChatRoomMessage(0, chatRoom.getChatroomId(), memberId, chatMSG);
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("action", "messageInsert");
-                    jsonObject.addProperty("chatMessage", chatMSG);
-                    jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
-                    jsonObject.addProperty("MemberId", memberId);
-                    jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
-
-                    int count;
-                    //執行緒池物件
-                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
-                    //新增筆數
-                    count = Integer.parseInt(result);
-                    //筆數為0
-                    if (count == 0) {
-                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
-
-                        chatRoomMessages = getChatRoomMessage();
-                        chatRoomMessageAdapter.updateData(chatRoomMessages);
-                        //更新數據和定位到最底部
-                        rvChatMessage.scrollToPosition(chatRoomMessageAdapter.getItemCount()-1);
-
-                    }
-                }
-
             }
 
         });
     }
-
-
-    // 下載Firebase storage的照片並顯示在ImageView上
-    private void downloadImage(final ImageView imageView, final String path) {
-        final int ONE_MEGABYTE = 1024 * 1024;
-        StorageReference imageRef = storage.getReference().child(path);
-        imageRef.getBytes(ONE_MEGABYTE)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        byte[] bytes = task.getResult();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        imageView.setImageBitmap(bitmap);
-                    } else {
-                        String message = task.getException() == null ?
-                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
-                        imageView.setImageResource(R.drawable.no_image);
-                        Log.e(TAG, message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
 
 
 
@@ -258,7 +229,7 @@ public class ChatMessageFragment extends Fragment {
             Toast.makeText(activity, "沒有訊息", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
-        chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, chatRoomMessages);
+        chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, getChatRoomMessage());
             rvChatMessage.setAdapter(chatRoomMessageAdapter);
 
 //          chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
@@ -308,14 +279,15 @@ public class ChatMessageFragment extends Fragment {
             if (memberId.equals(chatRoomMessage.getMemberId())) {
                 holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
                 holder.chatRoom_message_ReadStatus_self.setText("未讀");
-                holder.chatRoom_message_CreatTime_self.setText(chatRoomMessage.getCreateTime().toString());
+
+                holder.chatRoom_message_CreatTime_self.setText((TimeUtil.getChatTimeStr(chatRoomMessage.getCreateTime().getTime())));
                 holder.otherMessage.setVisibility(View.GONE);
                 holder.selfMessage.setVisibility(View.VISIBLE);
 
             } else {
-//                downloadImage(holder.chatRoomMemberImg, member.getHeadshot());
+                    downloadImage(holder.chatRoomMemberImg, selectUser.getHeadshot());
                 holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
-                holder.chatRoom_message_CreatTime.setText(chatRoomMessage.getCreateTime().toString());
+                holder.chatRoom_message_CreatTime.setText((TimeUtil.getChatTimeStr(chatRoomMessage.getCreateTime().getTime())));
                 holder.selfMessage.setVisibility(View.GONE);
                 holder.otherMessage.setVisibility(View.VISIBLE);
 
@@ -329,8 +301,8 @@ public class ChatMessageFragment extends Fragment {
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            //            public CircularImageView chatRoomMemberImg;
-            public ImageView chatRoomMemberImg;
+            public CircularImageView chatRoomMemberImg;
+//            public ImageView chatRoomMemberImg;
             public TextView chatRoom_message_context, chatRoom_message_CreatTime, chatRoom_message_context_self, chatRoom_message_CreatTime_self, chatRoom_message_ReadStatus_self;
             public LinearLayout otherMessage;
             public LinearLayout selfMessage;
@@ -347,6 +319,26 @@ public class ChatMessageFragment extends Fragment {
                 otherMessage = itemView.findViewById(R.id.other_message);
             }
         }
+    }
+
+    // 下載Firebase storage的照片並顯示在ImageView上
+    private void downloadImage(final ImageView imageView, final String path) {
+        final int ONE_MEGABYTE = 1024 * 1024;
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                        imageView.setImageResource(R.drawable.no_image);
+                        Log.e(TAG, message);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

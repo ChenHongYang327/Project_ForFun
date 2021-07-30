@@ -55,6 +55,11 @@ public class Member implements Serializable {
 
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return this.memberId == ((Member) obj).memberId;
+	}
+
 	public Integer getMemberId() {
 		return memberId;
 	}

@@ -27,50 +27,46 @@
             android:layout_height="wrap_content"
             android:hint="name"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/comment_text"
             app:layout_constraintStart_toEndOf="@+id/comment_bt_membetHead"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/comment_text"
-            android:layout_width="270dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginLeft="40dp"
-            android:hint="comment"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.449"
-            app:layout_constraintStart_toStartOf="@+id/comment_bt_membetHead"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center_vertical|center"
+            android:gravity="center_horizontal"
+            android:hint="comment"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/comment_bt_membetHead"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
         <ImageButton
             android:id="@+id/comment_bt_report"
-            android:layout_width="30dp"
-            android:layout_height="20dp"
+            android:layout_width="32dp"
+            android:layout_height="22dp"
             android:background="@drawable/shap"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.376"
             app:layout_constraintStart_toEndOf="@+id/comment_text"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintVertical_bias="0.888"
             app:srcCompat="@drawable/bt_more_comment" />
 
         <ImageButton
             android:id="@+id/comment_bt_more"
             android:layout_width="20dp"
             android:layout_height="10dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginLeft="36dp"
             android:background="@drawable/shap"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/comment_bt_report"
+            app:layout_constraintStart_toEndOf="@+id/comment_bt_report"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.966"
+            app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/bt_report_comment" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

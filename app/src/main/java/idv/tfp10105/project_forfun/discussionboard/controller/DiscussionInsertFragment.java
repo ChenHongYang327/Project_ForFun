@@ -54,6 +54,7 @@ import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Post;
 
@@ -206,10 +207,12 @@ public class DiscussionInsertFragment extends Fragment {
             contentUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".fileProvider", file);
             //取得原圖
             intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+            bottomSheetDialog.dismiss();
             try {
                 takePictureLauncher.launch(intent);
             } catch (ActivityNotFoundException e) {
                 Toast.makeText(activity, "找不到相機應用程式", Toast.LENGTH_SHORT).show();
+                bottomSheetDialog.dismiss();
             }
         });
 
@@ -235,11 +238,13 @@ public class DiscussionInsertFragment extends Fragment {
         insert_bt_push.setOnClickListener(v -> {
             //取得user輸入的值
             String title = etTitle.getText().toString().trim();
+            KeyboardUtils.hideKeyboard(activity);
             if (title.length() <= 0) {
                 etTitle.setError("請輸入標題");
                 return;
             }
             String context = etContext.getText().toString().trim();
+            KeyboardUtils.hideKeyboard(activity);
             if (context.length() <= 0){
                 etContext.setError("請輸入內文");
                 return;

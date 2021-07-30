@@ -19,23 +19,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="name"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
             app:layout_constraintEnd_toStartOf="@+id/detail_time_text"
-            app:layout_constraintHorizontal_bias="0.217"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/detail_bt_memberHead"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.047" />
+            app:layout_constraintVertical_bias="0.14" />
 
         <ImageView
             android:id="@+id/detail_imageView"
             android:layout_width="409dp"
             android:layout_height="161dp"
-            android:layout_marginBottom="216dp"
             android:src="@drawable/post_houseimg_test"
-            app:layout_constraintBottom_toTopOf="@+id/detail_et_comment"
+            app:layout_constraintBottom_toTopOf="@+id/detail_recyclerView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_context_text" />
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/detail_bt_memberHead"
@@ -44,10 +43,12 @@
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:src="@drawable/post_memberhead"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
+            app:layout_constraintEnd_toStartOf="@+id/detail_memberName_text"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.038" />
+            app:layout_constraintVertical_bias="0.086" />
 
         <TextView
             android:id="@+id/detail_time_text"
@@ -55,7 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:hint="time"
+            app:layout_constraintBottom_toTopOf="@+id/detail_title_text"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/detail_bt_memberHead"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,9 +69,11 @@
             android:background="@null"
             android:hint="title"
             android:inputType="textMultiLine"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/detail_context_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_time_text"
             app:layout_constraintVertical_bias="0.592" />
@@ -82,35 +87,37 @@
             android:inputType="textMultiLine"
             app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_title_text"
             app:layout_constraintVertical_bias="0.659" />
 
         <ImageButton
             android:id="@+id/detail_bt_more"
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
+            android:layout_width="14dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginRight="28dp"
             android:background="@drawable/shap"
             android:src="@drawable/bt_more"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/detail_imageView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.913"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.906"
+            app:layout_constraintStart_toEndOf="@+id/detail_time_text"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.037" />
+            app:layout_constraintVertical_bias="0.104" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/detail_recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="211dp"
+            android:layout_width="413dp"
+            android:layout_height="192dp"
             android:layout_marginTop="60dp"
             app:layout_constraintBottom_toTopOf="@+id/detail_et_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_imageView"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintVertical_bias="0.0">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -118,14 +125,16 @@
             android:id="@+id/detail_et_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/et_comment"
             android:ems="10"
             android:hint="留言"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.431"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_recyclerView" />
 
         <ImageButton
             android:id="@+id/detail_bt_sent"

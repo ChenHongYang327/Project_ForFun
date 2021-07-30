@@ -46,9 +46,11 @@ import java.util.List;
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
+import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
+import idv.tfp10105.project_forfun.common.bean.Posthome;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
 public class DiscussionBoard_RentSeekingFragment extends Fragment {
@@ -69,6 +71,8 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     private Member member;
     private int memberId;
     private ImageButton dis_bt_needHistory;
+    private List<Posthome> posthomeList;
+    private boolean searchPost = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +105,23 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+
         posts = getPosts();
-        showPosts(posts, members);
+        members = getMembers();
+
+        posthomeList = new ArrayList<>();
+        for (int i = 0; i < posts.size(); i++){
+            Posthome posthome = new Posthome();
+            posthome.setPost(posts.get(i));
+            posthome.setMember(members.get(i));
+            posthomeList.add(posthome);
+        }
+
+        showPosts(posthomeList);
+
+
+
     }
 
 
@@ -128,7 +147,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             //開始動畫
             swipeRefreshLayout.setRefreshing(true);
             //重新載入recycleView
-            showPosts(posts, members);
+            showPosts(posthomeList);
             //結束動畫
             swipeRefreshLayout.setRefreshing(false);
 
@@ -136,31 +155,36 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     }
 
     private void handleSearchView() {
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //如果輸入條件為空字串,就顯示原始資料,否則就顯示收尋後結果
-                if (newText.isEmpty()) {
-                    showPosts(posts, members);
-                } else {
-                    List<Post> searchPosts = new ArrayList<>();
-                    //搜尋原始資料內有無包含關鍵字（不區分大小寫）
-                    for (Post post : posts) {
-                        if (post.getPostTitle().toUpperCase().contains(newText.toUpperCase())) {
-                            searchPosts.add(post);
-                        }
-                    }
-                    showPosts(searchPosts, members);
-                }
-                return true;
-            }
 
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-        });
-    }
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+
+                    KeyboardUtils.hideKeyboard(activity);
+                    //如果輸入條件為空字串,就顯示原始資料,否則就顯示收尋後結果
+                    if (newText.isEmpty()) {
+                        showPosts(posthomeList);
+                    } else {
+                        List<Posthome> searchPosts = new ArrayList<>();
+                        //搜尋原始資料內有無包含關鍵字（不區分大小寫）
+                        for (Posthome posthome : posthomeList) {
+                            if (posthome.getPost().getPostTitle().toUpperCase().contains(newText.toUpperCase())) {
+                                searchPosts.add(posthome);
+                            }
+                        }
+                        showPosts(searchPosts);
+                    }
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+            });
+        }
 
 
     private void handleBtAdd() {
@@ -250,7 +274,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         return members;
     }
 
-    private void showPosts(List<Post> posts, List<Member> members) {
+    private void showPosts(List<Posthome> posthomeList) {
         if (posts == null || posts.isEmpty()) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
@@ -258,10 +282,10 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         SeekAdapter seekAdapter = (SeekAdapter) rv_seeking.getAdapter();
         // 如果spotAdapter不存在就建立新的，否則續用舊有的
         if (seekAdapter == null) {
-            rv_seeking.setAdapter(new SeekAdapter(activity, posts, getMembers()));
+            rv_seeking.setAdapter(new SeekAdapter(activity, posthomeList));
         } else {
             //更新Adapter資料,重刷
-            seekAdapter.setAdapter(posts, members);
+            seekAdapter.setAdapter(posthomeList);
 
             //重新執行RecyclerView 三方法
             seekAdapter.notifyDataSetChanged();
@@ -275,20 +299,32 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         //內部列表（搜尋後）
         private List<Post> posts;
         private List<Member> members;
+        private List<Posthome> posthomeList;
 
 
-        public SeekAdapter(Context context, List<Post> posts, List<Member> members) {
+
+        public SeekAdapter(Context context, List<Posthome> posthomeList) {
             layoutInflater = LayoutInflater.from(context);
-            this.posts = posts;
-            this.members = members;
+            this.posthomeList = posthomeList;
+            posts = new ArrayList<>();
+            members = new ArrayList<>();
+            for (int i = 0; i < posthomeList.size(); i++){
+                posts.add(posthomeList.get(i).getPost());
+                members.add(posthomeList.get(i).getMember());
+            }
             //螢幕寬度除以四當圖片尺寸
             imageSize = getResources().getDisplayMetrics().widthPixels / 4;
         }
 
         // 重刷RecyclerView畫面
-        public void setAdapter(List<Post> posts, List<Member> members) {
-            this.posts = posts;
-            this.members = members;
+        public void setAdapter(List<Posthome> posthomeList) {
+            this.posthomeList = posthomeList;
+            posts.clear();
+            members.clear();
+            for (int i = 0; i < posthomeList.size(); i++){
+                posts.add(posthomeList.get(i).getPost());
+                members.add(posthomeList.get(i).getMember());
+            }
         }
 
 
@@ -421,20 +457,23 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
 
                         //刪除
                     } else if (itemId == R.id.delete) {
-                        if (RemoteAccess.networkCheck(activity)) {
-                            JsonObject jsonDelete = new JsonObject();
-                            jsonDelete.addProperty("action", "postDelete");
-                            jsonDelete.addProperty("postId", post.getPostId());
-                            int count;
-                            String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
-                            count = Integer.parseInt(result);
-                            if (count == 0) {
-                                Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
-                            } else {
-                                posts.remove(post);
-                                SeekAdapter.this.notifyDataSetChanged();
-                                // 外面spots也必須移除選取的spot
-                                DiscussionBoard_RentSeekingFragment.this.posts.remove(post);
+
+                            if (RemoteAccess.networkCheck(activity)) {
+                                JsonObject jsonDelete = new JsonObject();
+                                jsonDelete.addProperty("action", "postDelete");
+                                jsonDelete.addProperty("postId", post.getPostId());
+                                int count;
+                                String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
+                                count = Integer.parseInt(result);
+                                if (count == 0) {
+                                    Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    posts.remove(post);
+                                    members.remove(member2);
+                                    SeekAdapter.this.notifyDataSetChanged();
+                                    // 外面posts也必須移除選取的post
+                                    DiscussionBoard_RentSeekingFragment.this.posts.remove(post);
+                                    DiscussionBoard_RentSeekingFragment.this.members.remove(member2);
 //                                storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {
@@ -447,10 +486,11 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
 //                                            }
 //                                        });
 
-                                Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                             //檢舉
-                        }
                     } else if (itemId == R.id.report) {
 
                         Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
