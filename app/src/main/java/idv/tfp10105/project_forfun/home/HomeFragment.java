@@ -1,6 +1,7 @@
 package idv.tfp10105.project_forfun.home;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -27,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -585,6 +587,22 @@ public class HomeFragment extends Fragment {
 
                 homePublishLike.setImageResource(favorite == null ? R.drawable.icon_unfavorite : R.drawable.icon_favorite);
                 homePublishLike.setOnClickListener(v -> {
+                    // 遊客不可收藏
+                    int role = sharedPreferences.getInt("role", -1);
+                    if (role == 3) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                        dialog.setTitle("無法收藏");
+                        dialog.setMessage("請先註冊為房客");
+                        dialog.setPositiveButton("確定", null);
+
+                        Window window = dialog.show().getWindow();
+                        // 修改按鈕顏色
+                        Button btnOK = window.findViewById(android.R.id.button1);
+                        btnOK.setTextColor(getResources().getColor(R.color.black));
+
+                        return;
+                    }
+
                     if (favorite == null) {
                         favorite = addMyFavorite(userId, publishHome.getPublish().getPublishId());
                         homePublishLike.setImageResource(R.drawable.icon_favorite);
