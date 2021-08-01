@@ -186,6 +186,7 @@ public class PersonalSnapshotFragment extends Fragment {
                 bundle.putInt("WHISTLEBLOWER_ID",userId);
                 //被檢舉者
                 bundle.putInt("REPORTED_ID",selectUser.getMemberId());
+                bundle.putInt("ITEM",2);
                 Navigation.findNavController(v).navigate(R.id.reportFragment,bundle);
             });
 
