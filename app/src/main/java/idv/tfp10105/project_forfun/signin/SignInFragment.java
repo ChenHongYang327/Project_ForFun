@@ -76,7 +76,6 @@ public class SignInFragment extends Fragment {
         View view=inflater.inflate(R.layout.fragment_signin, container, false);
         return view;
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -114,6 +113,7 @@ public class SignInFragment extends Fragment {
         super.onStart();
         // 檢查電話號碼是否驗證成功過
         FirebaseUser user = auth.getCurrentUser();
+        int memberId=sharedPreferences.getInt("memberId", -1);
         //判斷是否第一次開啟
         if (sharedPreferences.getBoolean("firstOpen", true)) {
             Navigation.findNavController(btSignIn)
@@ -121,26 +121,28 @@ public class SignInFragment extends Fragment {
             sharedPreferences.edit().putBoolean("firstOpen", false).apply();
         }
         //登入狀態
-        else if (user != null||sharedPreferences.getInt("memberId", -1)!=-1) {
+        else if (user != null||memberId!=-1) {
             //檢查帳號
-            if (sharedPreferences.getInt("memberId", -1) > 0) {
+            if (memberId > 0) {
+                //重新開啟app時更新資料
+                MainActivity.updateInfo(memberId,sharedPreferences);
                 //先判斷是否超過一小時
-                if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
-                    JsonObject req = new JsonObject();
-                    req.addProperty("action", "clearToken");
-                    req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
-                    if(RemoteAccess.getJsonData(url, req.toString()).equals("error")) {
-                        Toast.makeText(activity, "請檢查伺服器連線狀態", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
-                    auth.signOut();
-                    sharedPreferences.edit().clear().apply();
-                    sharedPreferences.edit()
-                            .putBoolean("firstOpen", false)
-                            .apply();
-                    return;
-                }
+//                if (new Date().getTime() - sharedPreferences.getLong("lastlogin", new Date().getTime()) > 60 * 60 * 1000) {
+//                    JsonObject req = new JsonObject();
+//                    req.addProperty("action", "clearToken");
+//                    req.addProperty("memberId", sharedPreferences.getInt("memberId", -1));
+//                    if(RemoteAccess.getJsonData(url, req.toString()).equals("error")) {
+//                        Toast.makeText(activity, "請檢查伺服器連線狀態", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                    Toast.makeText(activity, "離上次登入超過ㄧ小時", Toast.LENGTH_SHORT).show();
+//                    auth.signOut();
+//                    sharedPreferences.edit().clear().apply();
+//                    sharedPreferences.edit()
+//                            .putBoolean("firstOpen", false)
+//                            .apply();
+//                    return;
+//                }
                 //判斷帳號權限
                     JsonObject req = new JsonObject();
                     req.addProperty("action", "checkType");
@@ -160,6 +162,7 @@ public class SignInFragment extends Fragment {
                         return;
                     }
                     //帳號正常
+                    //更新偏好設定檔
                     Navigation.findNavController(btSignIn)
                                 .navigate(R.id.homeFragment);
 

@@ -35,14 +35,22 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
         }
         Message msg = new Message();
        if(notification==null|| title.equals("新通知")) {
-//           Log.d("FirebaseService","觸發更新通知");
+//           Log.d("FirebaseService","新通知");
            //自定義消息代碼
            msg.what = 1;
            //要傳送的物件
 //        msg.obj=1;
            //主執行緒才能控制元件
            MainActivity.handler.sendMessage(msg);
-       } else {
+       }
+
+       else if(title.equals("系統通知")) {
+//           Log.d("FirebaseService","系統通知");
+           msg.what = 2;
+           MainActivity.handler.sendMessage(msg);
+       }
+       else {
+
            //自定義消息代碼
            msg.what = 2;
            //要傳送的物件
