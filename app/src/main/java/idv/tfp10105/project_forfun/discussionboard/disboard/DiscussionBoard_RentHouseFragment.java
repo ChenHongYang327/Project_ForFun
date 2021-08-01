@@ -340,25 +340,6 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
 
             //設定點擊事件
             holder.disPostImg.setOnClickListener(v -> {
-
-                if (RemoteAccess.networkCheck(activity)) {
-                    String url2 = Common.URL+"NotificationController";
-                    int memberId = sharedPreferences.getInt("memberId", -1);
-                    JsonObject req = new JsonObject();
-                    req.addProperty("action", "getNotification");
-                    req.addProperty("memberId", memberId);
-
-                    //將通知狀態改成已讀
-                    req.addProperty("action", "updateReaded");
-                    req.addProperty("postId", post.getPostId());
-                    JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()),JsonObject.class);
-                    resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()), JsonObject.class);
-
-
-
-                }
-
-
                 Bundle bundle = new Bundle();
                 bundle.putString("name", member2.getNameL() + member2.getNameF());
                 bundle.putString("headshot", member2.getHeadshot());
