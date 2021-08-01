@@ -45,7 +45,7 @@ public class Customer_Service_Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_customer_service, container, false);
+        View view = inflater.inflate(R.layout.fragment_customer__service_, container, false);
         return view;
     }
 
@@ -62,7 +62,6 @@ public class Customer_Service_Fragment extends Fragment {
         edMail = view.findViewById(R.id.customer_service_ed_mail); // 信箱輸入欄位
         edPhone = view.findViewById(R.id.customer_service_ed_phone); // 手機號碼輸入欄位
         edMessage = view.findViewById(R.id.customer_service_ed_message); // 留言輸入欄位
-        btCallCustomerService = view.findViewById(R.id.customer_service_bt_CallCustomerService); // 按鈕 撥打客服電話
         btSendEmail = view.findViewById(R.id.customer_service_bt_sendEmail); // 按鈕 發送郵件
 
     }

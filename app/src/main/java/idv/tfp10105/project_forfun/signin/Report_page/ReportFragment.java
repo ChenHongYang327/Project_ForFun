@@ -95,7 +95,7 @@ public class ReportFragment extends Fragment {
 
         //檢舉項目
         Bundle bundle4 = getArguments();
-        item = bundle4.getInt("ITEM");
+        item = bundle4.getInt("ITEM",-1);
 
 
         //判斷進哪個
