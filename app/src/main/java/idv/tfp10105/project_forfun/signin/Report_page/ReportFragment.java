@@ -144,7 +144,7 @@ public class ReportFragment extends Fragment {
             // 確認詳細狀況不可為空
             final String detailedStatus = String.valueOf(edDetailedStatus.getText());
             if (detailedStatus.isEmpty()) {
-                edDetailedStatus.setError(resources.getString(R.string.textedMailRequired));
+                edDetailedStatus.setError(resources.getString(R.string.textedMGSRequired));
                 return;
             }
 

@@ -198,7 +198,7 @@
     <fragment
         android:id="@+id/reportFragment"
         android:name="idv.tfp10105.project_forfun.signin.Report_page.ReportFragment"
-        android:label="fragment_report"
+        android:label="檢舉頁面"
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/chatMessageFragment"
@@ -207,7 +207,7 @@
     <fragment
         android:id="@+id/customerServiceFragment"
         android:name="idv.tfp10105.project_forfun.signin.Customer_Service_Page.Customer_Service_Fragment"
-        android:label="客服"
+        android:label="客服頁面"
         tools:layout="@layout/fragment_customer_service" />
     <fragment
         android:id="@+id/ocr_pay_otherpay"

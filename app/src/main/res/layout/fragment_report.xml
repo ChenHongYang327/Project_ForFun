@@ -13,10 +13,12 @@
         android:id="@+id/report_page_spinner"
         android:layout_width="230dp"
         android:layout_height="25dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:background="@drawable/spinner"
-        android:foreground="@drawable/shap"
         android:entries="@array/ReportFragment_Spinner"
-        app:layout_constraintStart_toEndOf="@+id/textView46"
+        android:foreground="@drawable/shap"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView46" />
 
     <TextView
@@ -25,13 +27,13 @@
         android:layout_height="25dp"
         android:layout_marginTop="140dp"
         android:background="#FFFFFF"
-        android:text="詳細狀況："
+        android:text="詳細內容："
         android:textColor="#000000"
         android:textSize="18dp"
         app:backgroundTint="#FFFFFF"
+        app:layout_constraintStart_toStartOf="@+id/textView46"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="53dp" />
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/report_page_ed_Detailed_status"
@@ -41,17 +43,6 @@
         android:ems="10"
         android:inputType="text"
         app:layout_constraintStart_toEndOf="@+id/textView43"
-        app:layout_constraintTop_toTopOf="@+id/textView43" />
-
-    <EditText
-        android:id="@+id/report_page_ed_text"
-        android:layout_width="230dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="60dp"
-        android:background="#FFFFFF"
-        android:ems="10"
-        android:inputType="number"
-        app:layout_constraintStart_toStartOf="@+id/textView43"
         app:layout_constraintTop_toTopOf="@+id/textView43" />
 
     <TextView
@@ -64,9 +55,9 @@
         android:textColor="#000000"
         android:textSize="18dp"
         app:backgroundTint="#FFFFFF"
+        app:layout_constraintEnd_toStartOf="@+id/report_page_spinner"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="53dp" />
+        tools:ignore="MissingConstraints" />
 
     <ImageButton
         android:id="@+id/report_page_bt_confirm"
