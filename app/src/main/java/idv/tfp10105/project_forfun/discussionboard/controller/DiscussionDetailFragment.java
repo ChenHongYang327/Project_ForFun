@@ -406,25 +406,40 @@ public class DiscussionDetailFragment extends Fragment {
             downloadImage(holder.comment_bt_membetHead, member.getHeadshot());
             holder.comment_bt_report.setOnClickListener(v -> {
 
-                Bundle bundle = new Bundle();
-                // 檢舉者
-                bundle.putInt("WHISTLEBLOWER_ID", memberId);
-                //被檢舉者
-                bundle.putInt("REPORTED_ID", comment.getMemberId());
-                //檢舉貼文
-                bundle.putInt("CHATROOM_ID", comment.getCommentId());
-                //檢舉項目
-                bundle.putInt("ITEM", 1);
+                int role = sharedPreferences.getInt("role", -1);
+                if (role == 3) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                    dialog.setTitle("無法檢舉");
+                    dialog.setMessage("請先註冊為房客");
+                    dialog.setPositiveButton("確定", null);
 
-                Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+                    Window window = dialog.show().getWindow();
+                    // 修改按鈕顏色
+                    Button btnOK = window.findViewById(android.R.id.button1);
+                    btnOK.setTextColor(getResources().getColor(R.color.black));
 
+                    return;
+                } else {
 
-                Navigation.findNavController(v).navigate(R.id.reportFragment);
+                    Bundle bundle = new Bundle();
+                    // 檢舉者
+                    bundle.putInt("WHISTLEBLOWER_ID", memberId);
+                    //被檢舉者
+                    bundle.putInt("REPORTED_ID", comment.getMemberId());
+                    //檢舉貼文
+                    bundle.putInt("CHATROOM_ID", comment.getCommentId());
+                    //檢舉項目
+                    bundle.putInt("ITEM", 1);
+
+                    Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+
+                }
+
             });
 
             holder.comment_bt_more.setOnClickListener(v -> {
 
-                // 遊客不可收藏
+                // 遊客不可使用
                 int role = sharedPreferences.getInt("role", -1);
                 if (role == 3) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(activity);

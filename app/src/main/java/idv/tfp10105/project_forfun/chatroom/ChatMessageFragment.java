@@ -6,16 +6,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
@@ -38,14 +33,9 @@ import com.google.gson.reflect.TypeToken;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.lang.reflect.Type;
-import java.security.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.KeyboardUtils;
@@ -65,15 +55,19 @@ public class ChatMessageFragment extends Fragment {
     private ImageButton btSend;
     private  RecyclerView rvChatMessage;
     private List<ChatRoomMessage> chatRoomMessages;
-    private int chatRoomId;
+    private int chatRoomId, chatroomMemberId1, chatroomMemberId2;
     private SharedPreferences sharedPreferences;
-    private  Integer memberId, selectUserId;
+    private  Integer memberId;
     private List<Member> members;
     private FirebaseStorage storage;
     private ChatRoomMessageAdapter chatRoomMessageAdapter;
     public static Handler handler;
     private String url = Common.URL + "MessageController";
     private Member selectUser;
+    private ChatRoom chatRoom;
+    private int messageReadType;
+
+
 
 
     @Override
@@ -83,9 +77,10 @@ public class ChatMessageFragment extends Fragment {
         storage = FirebaseStorage.getInstance();
         //取bundle資料
         chatRoomId = getArguments() != null ? getArguments().getInt("chatroomId") : null;
+        chatroomMemberId1 = getArguments() != null ? getArguments().getInt("chatroomMemberId1") : null;
+        chatroomMemberId2 = getArguments() != null ? getArguments().getInt("chatroomMemberId2") : null;
         selectUser = (Member) (getArguments() != null ? getArguments().getSerializable("selectUser") : null);
-
-
+        chatRoom = (ChatRoom) (getArguments() != null ? getArguments().getSerializable("chatRoom") : null);
 
         //取偏好設定檔
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
@@ -130,6 +125,8 @@ public class ChatMessageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
+        memberName.setText(selectUser.getNameL() + selectUser.getNameF());
+        downloadImage(memberImg, selectUser.getHeadshot());
         handleRecycleView();
         chatRoomMessages = getChatRoomMessage();
         showChatRoomMessage(chatRoomMessages);
@@ -141,6 +138,12 @@ public class ChatMessageFragment extends Fragment {
         super.onStart();
 
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ChatMessageFragment.handler = null;
     }
 
     private void findViews(View view) {
@@ -162,10 +165,15 @@ public class ChatMessageFragment extends Fragment {
             jsonObject.addProperty("action", "getAll");
 //            jsonObject.addProperty("MEMBER_ID", memberId);
             jsonObject.addProperty("chatRoomId", chatRoomId);
+            jsonObject.addProperty("MemberId", memberId);
+//            jsonObject.addProperty("chatroomMemberId1", chatroomMemberId1);
+//            jsonObject.addProperty("chatroomMemberId2", chatroomMemberId2);
+
 //            jsonObject.addProperty("MEMBER_ID", memberId);
 
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
             Type listType = new TypeToken<List<ChatRoomMessage>>() {}.getType();
+
 
             //解析後端傳回資料
             chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
@@ -195,7 +203,7 @@ public class ChatMessageFragment extends Fragment {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("action", "messageInsert");
                     jsonObject.addProperty("chatMessage", chatMSG);
-                    jsonObject.addProperty("receivedMemberId", chatRoomId);
+                    jsonObject.addProperty("receivedMemberId", selectUser.getMemberId());
                     jsonObject.addProperty("MemberId", memberId);
                     jsonObject.addProperty("chatRoomMessage", new Gson().toJson(chatRoomMessage));
 
@@ -277,15 +285,16 @@ public class ChatMessageFragment extends Fragment {
 //            Member member = members.get(position);
 //            memberToken = member.getToken();
             if (memberId.equals(chatRoomMessage.getMemberId())) {
+                String readStatus = !chatRoomMessage.getRead() ? "未讀" : "已讀";
+                holder.chatRoom_message_ReadStatus_self.setText(readStatus);
                 holder.chatRoom_message_context_self.setText(chatRoomMessage.getMsgChat());
-                holder.chatRoom_message_ReadStatus_self.setText("未讀");
-
+                downloadImage(holder.chatRoomMemberImg, selectUser.getHeadshot());
                 holder.chatRoom_message_CreatTime_self.setText((TimeUtil.getChatTimeStr(chatRoomMessage.getCreateTime().getTime())));
                 holder.otherMessage.setVisibility(View.GONE);
                 holder.selfMessage.setVisibility(View.VISIBLE);
 
             } else {
-                    downloadImage(holder.chatRoomMemberImg, selectUser.getHeadshot());
+                downloadImage(holder.chatRoomMemberImg, selectUser.getHeadshot());
                 holder.chatRoom_message_context.setText(chatRoomMessage.getMsgChat());
                 holder.chatRoom_message_CreatTime.setText((TimeUtil.getChatTimeStr(chatRoomMessage.getCreateTime().getTime())));
                 holder.selfMessage.setVisibility(View.GONE);

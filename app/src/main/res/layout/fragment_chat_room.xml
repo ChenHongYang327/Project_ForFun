@@ -4,85 +4,88 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
 
 
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/chatRoomMemberImg"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.305"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/post_memberhead" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
-        android:id="@+id/chat_memberName"
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/chatRoomMemberImg"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:srcCompat="@drawable/post_memberhead" />
+
+        <TextView
+            android:id="@+id/chat_memberName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="memberName"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="memberName"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/border"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.413"
-        app:layout_constraintStart_toEndOf="@+id/chatRoomMemberImg"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/border"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/chatRoomMemberImg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chatRoomMemberImg" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_chatMessage"
-        android:layout_width="0dp"
-        android:layout_height="567dp"
-        app:layout_constraintBottom_toTopOf="@+id/edit_message"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.448"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/border"
-        app:layout_constraintVertical_bias="0.512">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <EditText
-        android:id="@+id/edit_message"
-        android:layout_width="360dp"
-        android:layout_height="53dp"
-        android:layout_marginBottom="28dp"
-        android:background="@drawable/et_comment"
-        android:ems="10"
-        android:inputType="textMultiLine"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.313"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_chatMessage">
+
+        <EditText
+            android:id="@+id/edit_message"
+            android:layout_width="300dp"
+            android:layout_height="53dp"
+            android:background="@drawable/et_comment"
+            android:ems="10"
+            android:inputType="textMultiLine" />
+
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/bt_message_send"
-        android:layout_width="35dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="47dp"
-        android:layout_marginBottom="28dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="#00FFFFFF"
         android:src="@drawable/bt_send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/edit_message"
-        app:layout_constraintTop_toBottomOf="@+id/rv_chatMessage"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout3"
+        app:layout_constraintTop_toBottomOf="@+id/rv_chatMessage" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chatMessage"
+        android:layout_width="359dp"
+        android:layout_height="455dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,24 +1,14 @@
 package idv.tfp10105.project_forfun.membercenter.Notification;
 
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Map;
-
 import idv.tfp10105.project_forfun.MainActivity;
 import idv.tfp10105.project_forfun.chatroom.ChatMessageFragment;
-import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
 
 public class NotificaitonFCMService extends FirebaseMessagingService{
     //在前景執行時會呼叫(背景時不會)
@@ -49,14 +39,16 @@ public class NotificaitonFCMService extends FirebaseMessagingService{
            msg.what = 2;
            MainActivity.handler.sendMessage(msg);
        }
-       else {
+       else  {
 
            //自定義消息代碼
            msg.what = 2;
            //要傳送的物件
 //        msg.obj=1;
            //主執行緒才能控制元件
-           ChatMessageFragment.handler.sendMessage(msg);
+           if (ChatMessageFragment.handler != null) {
+               ChatMessageFragment.handler.sendMessage(msg);
+           }
 //           Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
        }
 

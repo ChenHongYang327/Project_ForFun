@@ -533,7 +533,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                             //檢舉項目
                             bundle.putInt("ITEM", 0);
 
-                            Navigation.findNavController(v).navigate(R.id.reportFragment);
+                            Navigation.findNavController(v).navigate(R.id.reportFragment,bundle);
 
                         } else {
 

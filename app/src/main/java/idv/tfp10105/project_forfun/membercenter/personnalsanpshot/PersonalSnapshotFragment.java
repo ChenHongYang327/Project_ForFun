@@ -6,13 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +14,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -162,21 +161,25 @@ public class PersonalSnapshotFragment extends Fragment {
             getImage(ivPSHS,member.getHeadshot());
             //私訊跳轉bundle
             btPSMessage.setOnClickListener(v->{
-                if (RemoteAccess.networkCheck(activity)) {
-                    String url = Common.URL + "ChatRoomController";
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("action", "selectChatRoomId");
-                    jsonObject.addProperty("receivedMemberId", selectUser.getMemberId());
-                    jsonObject.addProperty("sendMemberId", userId);
-                    int count;
-                    String result = RemoteAccess.getJsonData(url,jsonObject.toString());
-                    count = Integer.parseInt(result);
-                    if (count == 0) {
-                        Toast.makeText(activity, "已有聊天室", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(activity, "聊天室新建成功", Toast.LENGTH_SHORT).show();
-                    }
+                String url = Common.URL + "ChatRoomController";
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("action", "selectChatRoomId");
+                jsonObject.addProperty("receivedMemberId", selectUser.getMemberId());
+                jsonObject.addProperty("sendMemberId", userId);
+                int chatroomId;
+                String result = RemoteAccess.getJsonData(url,jsonObject.toString());
+                chatroomId = Integer.parseInt(result);
+                if (chatroomId == 0) {
+                    Toast.makeText(activity, "已有聊天室", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(activity, "聊天室新建成功", Toast.LENGTH_SHORT).show();
+
                 }
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectUser", member);
+                bundle.putInt("chatroomId", chatroomId);
+                Navigation.findNavController(v).navigate(R.id.chatMessageFragment,bundle);
             });
 
             //檢舉跳轉bundle
