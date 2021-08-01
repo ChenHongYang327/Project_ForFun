@@ -29,15 +29,20 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.bean.Member;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
@@ -66,9 +71,13 @@ public class MainActivity extends AppCompatActivity {
             if (msg.what == 1) {
                 handleNotificationCount();
             }
-//            else if (msg.what == 2) {
-//                //更新用戶資料
-//            }
+            else if (msg.what == 2) {
+                int memberId=sharedPreferences.getInt("memberId",-1);
+                if(memberId!=-1) {
+                    //更新用戶資料
+                    updateInfo(memberId,sharedPreferences);
+                }
+            }
             return true;
         });
         //開一個新執行緒控制小鈴鐺通知
@@ -80,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         handleAccess();
         handleNotificationCount();
+        //若非登入狀態就不執行
+        int memberId=sharedPreferences.getInt("memberId",-1);
+        if(memberId>0) {
+            updateInfo(memberId,sharedPreferences);
+        }
 
     }
 
@@ -302,21 +316,16 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        public void upadateMemberData () {
-            int memberId;
-//        final String url = Common.URL + "NotificationController";
+        public static void updateInfo(int memberId,SharedPreferences sharedPreferences){
+           String url = Common.URL + "signInController";
             JsonObject req = new JsonObject();
-            memberId = sharedPreferences.getInt("memberId", -1);
-            //如果不是遊客
-            if (memberId != -1) {
-                //對伺服器發請求
-//            req.addProperty("action", "getNotificationCouunt");
-                req.addProperty("memberId", memberId);
-//            String resq = RemoteAccess.getJsonData(url, req.toString());
-//            if (!resq.equals("error")) {
-//                notify = Integer.parseInt(resq);
-//            }
-            }
-
+            req.addProperty("action","updateInfo");
+            req.addProperty("memberId",memberId);//X
+            Member member=new Gson().fromJson(RemoteAccess.getJsonData(url,req.toString()),Member.class);
+            sharedPreferences.edit()
+                    .putInt("role", member.getRole())
+                    .putInt("phone",member.getPhone())
+                    .putInt("type", member.getType())
+                    .apply();
         }
     }
