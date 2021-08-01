@@ -108,7 +108,6 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-
         posts = getPosts();
         members = getMembers();
 
@@ -119,20 +118,9 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             posthome.setMember(members.get(i));
             posthomeList.add(posthome);
         }
-
         showPosts(posthomeList);
-
-
     }
 
-
-    //    @Override
-//    public void onResume() {
-//        super.onResume();
-////        Log.d(TAG,"onResume");
-//        posts = getPosts();
-//        showPosts(posts, members);
-//    }
 
 
     private void findViews(View view) {
@@ -156,7 +144,6 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     }
 
     private void handleSearchView() {
-
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -191,7 +178,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
 
     private void handleBtAdd() {
         //跳轉至新增頁面
-        // 遊客不可收藏
+        // 遊客不可使用
 
         bt_Add.setOnClickListener(v -> {
             int role = sharedPreferences.getInt("role", -1);
@@ -242,7 +229,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-//        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
+
         return posts;
     }
 
@@ -306,7 +293,6 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             rv_seeking.setAdapter(new SeekAdapter(activity, posthomeList));
         } else {
 
-
             //更新Adapter資料,重刷
             seekAdapter.setAdapter(posthomeList);
 
@@ -323,7 +309,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         private List<Post> posts;
         private List<Member> members;
         private List<Posthome> posthomeList;
-        private Boolean showSearchPost = false;
+
 
 
         public SeekAdapter(Context context, List<Posthome> posthomeList) {

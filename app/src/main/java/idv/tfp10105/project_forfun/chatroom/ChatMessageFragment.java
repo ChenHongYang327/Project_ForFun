@@ -239,18 +239,7 @@ public class ChatMessageFragment extends Fragment {
         //取得Adapter
         chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, getChatRoomMessage());
             rvChatMessage.setAdapter(chatRoomMessageAdapter);
-
-//          chatRoomMessageAdapter = (ChatRoomMessageAdapter) rvChatMessage.getAdapter();
-//        // 如果spotAdapter不存在就建立新的，否則續用舊有的
-//        if (chatRoomMessageAdapter == null) {
-//            chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, chatRoomMessages);
-//            rvChatMessage.setAdapter(chatRoomMessageAdapter);
-//        } else {
-//            //更新Adapter資料,重刷
-//            chatRoomMessageAdapter.setAdapter(chatRoomMessages);
-//            //重新執行RecyclerView 三方法
-//            chatRoomMessageAdapter.notifyDataSetChanged();
-//        }
+            
     }
 
     public class ChatRoomMessageAdapter extends RecyclerView.Adapter<ChatRoomMessageAdapter.MyViewHolder> {
