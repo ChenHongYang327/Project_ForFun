@@ -9,15 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,6 +23,14 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
@@ -42,7 +41,6 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +51,6 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Comment;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
-import idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_RentSeekingFragment;
 
 
 public class DiscussionDetailFragment extends Fragment {
@@ -93,7 +90,7 @@ public class DiscussionDetailFragment extends Fragment {
         boardId = getArguments() != null ? getArguments().getString("boardId") : null;
 
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
-        memberId = sharedPreferences.getInt("memberId",-1);
+        memberId = sharedPreferences.getInt("memberId", -1);
     }
 
     @Override
@@ -116,7 +113,6 @@ public class DiscussionDetailFragment extends Fragment {
     }
 
 
-
     private void findViews(View view) {
 
         detailTitle = view.findViewById(R.id.detail_title_text);
@@ -133,19 +129,18 @@ public class DiscussionDetailFragment extends Fragment {
     }
 
 
-
     //顯示貼文內容
     private void showPost() {
         if (imagePath != "") {
             showImage(post.getPostImg());
-            Log.d("post","post: " + post.toString());
+            Log.d("post", "post: " + post.toString());
         } else {
             detailImageView.setImageResource(R.drawable.no_image);
         }
         detailTitle.setText(post.getPostTitle());
         detailContext.setText(post.getPostContext());
         detailTime.setText(post.getCreateTime().toString());
-        downloadImage(detailBtMemberHead,headshot);
+        downloadImage(detailBtMemberHead, headshot);
         detailMemberName.setText(name);
     }
 
@@ -159,13 +154,14 @@ public class DiscussionDetailFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "CommentController";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("postId",post.getPostId());
+            jsonObject.addProperty("postId", post.getPostId());
             jsonObject.addProperty("action", "getAll");
             //通知功能用
             jsonObject.addProperty("reqMemberId", memberId);
             //------
-            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-            Type listType = new TypeToken<List<Comment>>() {}.getType();
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+            Type listType = new TypeToken<List<Comment>>() {
+            }.getType();
 
             //解析後端傳回資料
             comments = new Gson().fromJson(jsonIn.get("commentList").getAsString(), listType);
@@ -182,15 +178,16 @@ public class DiscussionDetailFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "CommentController";
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("postId",post.getPostId());
+            jsonObject.addProperty("postId", post.getPostId());
             jsonObject.addProperty("action", "getAll");
             //通知功能用
             jsonObject.addProperty("reqMemberId", memberId);
-            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-            Type listMember = new TypeToken<List<Member>>() {}.getType();
+            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+            Type listMember = new TypeToken<List<Member>>() {
+            }.getType();
 
             //解析後端傳回資料
-            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(),listMember);
+            members = new Gson().fromJson(jsonIn.get("memberList").getAsString(), listMember);
 
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
@@ -206,7 +203,7 @@ public class DiscussionDetailFragment extends Fragment {
             Toast.makeText(activity, "尚未有留言", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
-        commentAdapter = new CommentAdapter(activity, comments ,getMembers());
+        commentAdapter = new CommentAdapter(activity, comments, getMembers());
         rvDetail.setAdapter(commentAdapter);
 //         commentAdapter = (CommentAdapter) rvDetail.getAdapter();
 //        // 如果spotAdapter不存在就建立新的，否則續用舊有的
@@ -224,109 +221,127 @@ public class DiscussionDetailFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void handleBtMore() {
         detailBtMore.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
-            popupMenu.inflate(R.menu.popup_menu);
+            // 遊客不可收藏
+            int role = sharedPreferences.getInt("role", -1);
+            if (role == 3) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                dialog.setTitle("無法檢舉");
+                dialog.setMessage("請先註冊為房客");
+                dialog.setPositiveButton("確定", null);
+                Window window = dialog.show().getWindow();
+                // 修改按鈕顏色
+                Button btnOK = window.findViewById(android.R.id.button1);
+                btnOK.setTextColor(getResources().getColor(R.color.black));
 
-            if (memberId == post.getPosterId()) {
-
-                Log.d("posterId",":" + post.getPosterId());
-                Log.d("memberId",":" + memberId);
-
-                popupMenu.getMenu().getItem(0).setVisible(true);
-                popupMenu.getMenu().getItem(1).setVisible(true);
-                popupMenu.getMenu().getItem(2).setVisible(false);
+                return;
             } else {
-                popupMenu.getMenu().getItem(0).setVisible(false);
-                popupMenu.getMenu().getItem(1).setVisible(false);
-                popupMenu.getMenu().getItem(2).setVisible(true);
-            }
 
+                PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
+                popupMenu.inflate(R.menu.popup_menu);
 
+                if (memberId == post.getPosterId()) {
 
-            popupMenu.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                //新增
-                if (itemId == R.id.update) {
-                    Bundle bundle2 = new Bundle();
-                    bundle2.putString("name", name);
-                    bundle2.putString("headshot", headshot);
-                    bundle2.putSerializable("post", post);
-                    Navigation.findNavController(v).navigate(R.id.discussionUpdateFragment, bundle2);
-                    //刪除
-                } else if (itemId == R.id.delete) {
-                    //實例化AlertDialog.Builder物件
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+                    Log.d("posterId", ":" + post.getPosterId());
+                    Log.d("memberId", ":" + memberId);
 
-                    alertDialog.setTitle("是否刪除貼文");
-                            // 設定確定按鈕-顯示文字及點擊監聽器
-                    alertDialog.setPositiveButton("確定", (dialog, which) -> {
-
-                                if (RemoteAccess.networkCheck(activity)){
-                                    url = Common.URL + "DiscussionBoardController";
-                                    JsonObject jsonDelete = new JsonObject();
-                                    jsonDelete.addProperty("action","postDelete");
-                                    jsonDelete.addProperty("postId",post.getPostId());
-                                    int count;
-                                    String result = RemoteAccess.getJsonData(url,jsonDelete.toString());
-                                    count = Integer.parseInt(result);
-                                    if (count == 0) {
-                                        Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
-
-                                        switch (boardId) {
-                                            case "需求單":
-                                                Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment,true);
-                                                Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
-
-                                            case "知識問答":
-                                                Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment,true);
-                                                Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
-                                            default:
-                                                Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment,true);
-                                                Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
-                                        }
-
-
-                                        Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                            // 設定否定按鈕-顯示文字及點擊監聽器
-                    alertDialog.setNegativeButton("取消", (dialog, which) ->
-                            {
-                                dialog.cancel(); });
-
-                            // 設定是否可點擊對話框以外之處離開對話框
-                    alertDialog.setCancelable(false);
-                            // 顯示對話框
-                    Window window = alertDialog.show().getWindow();
-                    //設定對話框顏色
-                    Button btSure = window.findViewById(android.R.id.button1);
-                    Button btCancel = window.findViewById(android.R.id.button2);
-                    btSure.setTextColor(getResources().getColor(R.color.black));
-                    btCancel.setTextColor(getResources().getColor(R.color.black));
-                }
-                else if (itemId == R.id.report) {
-                    Bundle bundle = new Bundle();
-                    // 檢舉者
-                    bundle.putInt("WHISTLEBLOWER_ID", memberId);
-                    //被檢舉者
-                    bundle.putInt("REPORTED_ID", post.getPosterId());
-                    //檢舉貼文
-                    bundle.putInt("POST_ID", post.getPostId());
-                    //檢舉項目
-                    bundle.putInt("ITEM",0);
-
-                    Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+                    popupMenu.getMenu().getItem(0).setVisible(true);
+                    popupMenu.getMenu().getItem(1).setVisible(true);
+                    popupMenu.getMenu().getItem(2).setVisible(false);
                 } else {
-                    Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+                    popupMenu.getMenu().getItem(0).setVisible(false);
+                    popupMenu.getMenu().getItem(1).setVisible(false);
+                    popupMenu.getMenu().getItem(2).setVisible(true);
                 }
-                return true;
-            });
-            popupMenu.show();
-        });
 
+
+                popupMenu.setOnMenuItemClickListener(item -> {
+
+                    int itemId = item.getItemId();
+                    //新增
+                    if (itemId == R.id.update) {
+                        Bundle bundle2 = new Bundle();
+                        bundle2.putString("name", name);
+                        bundle2.putString("headshot", headshot);
+                        bundle2.putSerializable("post", post);
+                        Navigation.findNavController(v).navigate(R.id.discussionUpdateFragment, bundle2);
+                        //刪除
+                    } else if (itemId == R.id.delete) {
+                        //實例化AlertDialog.Builder物件
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+
+                        alertDialog.setTitle("是否刪除貼文");
+                        // 設定確定按鈕-顯示文字及點擊監聽器
+                        alertDialog.setPositiveButton("確定", (dialog, which) -> {
+
+                            if (RemoteAccess.networkCheck(activity)) {
+                                url = Common.URL + "DiscussionBoardController";
+                                JsonObject jsonDelete = new JsonObject();
+                                jsonDelete.addProperty("action", "postDelete");
+                                jsonDelete.addProperty("postId", post.getPostId());
+                                int count;
+                                String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
+                                count = Integer.parseInt(result);
+                                if (count == 0) {
+                                    Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+
+                                    switch (boardId) {
+                                        case "需求單":
+                                            Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment, true);
+                                            Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+
+                                        case "知識問答":
+                                            Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment, true);
+                                            Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+                                        default:
+                                            Navigation.findNavController(v).popBackStack(R.id.discussionDetailFragment, true);
+                                            Navigation.findNavController(v).navigate(R.id.discussionBoardFragment);
+                                    }
+
+
+                                    Toast.makeText(activity, "刪除成功", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        // 設定否定按鈕-顯示文字及點擊監聽器
+                        alertDialog.setNegativeButton("取消", (dialog, which) ->
+                        {
+                            dialog.cancel();
+                        });
+
+                        // 設定是否可點擊對話框以外之處離開對話框
+                        alertDialog.setCancelable(false);
+                        // 顯示對話框
+                        Window window = alertDialog.show().getWindow();
+                        //設定對話框顏色
+                        Button btSure = window.findViewById(android.R.id.button1);
+                        Button btCancel = window.findViewById(android.R.id.button2);
+                        btSure.setTextColor(getResources().getColor(R.color.black));
+                        btCancel.setTextColor(getResources().getColor(R.color.black));
+                    } else if (itemId == R.id.report) {
+                        Bundle bundle = new Bundle();
+                        // 檢舉者
+                        bundle.putInt("WHISTLEBLOWER_ID", memberId);
+                        //被檢舉者
+                        bundle.putInt("REPORTED_ID", post.getPosterId());
+                        //檢舉貼文
+                        bundle.putInt("POST_ID", post.getPostId());
+                        //檢舉項目
+                        bundle.putInt("ITEM", 0);
+
+                        Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+                    } else {
+                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                });
+
+                popupMenu.show();
+
+
+            }
+        });
     }
 
     public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder> {
@@ -377,7 +392,7 @@ public class DiscussionDetailFragment extends Fragment {
         @NotNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-            View itemView = layoutInflater.inflate(R.layout.comment_itemview,null, false);
+            View itemView = layoutInflater.inflate(R.layout.comment_itemview, null, false);
             return new MyViewHolder(itemView);
         }
 
@@ -399,107 +414,150 @@ public class DiscussionDetailFragment extends Fragment {
                 //檢舉貼文
                 bundle.putInt("CHATROOM_ID", comment.getCommentId());
                 //檢舉項目
-                bundle.putInt("ITEM",1);
+                bundle.putInt("ITEM", 1);
 
                 Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
 
 
-
-                    Navigation.findNavController(v).navigate(R.id.reportFragment);
+                Navigation.findNavController(v).navigate(R.id.reportFragment);
             });
 
             holder.comment_bt_more.setOnClickListener(v -> {
-                PopupMenu popupComment = new PopupMenu(activity, v, Gravity.END);
-                popupComment.inflate(R.menu.comment_popup_menu);
-                popupComment.setOnMenuItemClickListener(item -> {
-                    int itemId = item.getItemId();
-                    //新增
-                    if (itemId == R.id.updateComment) {
-                        final EditText et = new EditText(activity);
-                        new AlertDialog.Builder(activity).setTitle("請更新留言")
-                                .setView(et)
-                                .setPositiveButton("確定", new DialogInterface.OnClickListener() {
 
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        //按下確定键後的事件
-                                        if (RemoteAccess.networkCheck(activity)){
-                                            String msg = et.getText().toString().trim();
-                                            Comment comment = comments.get(position);
-                                            comment.setCommentMsg(msg);
-                                            int commentId = comment.getCommentId();
-                                            url = Common.URL + "CommentController";
+                // 遊客不可收藏
+                int role = sharedPreferences.getInt("role", -1);
+                if (role == 3) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                    dialog.setTitle("無法檢舉");
+                    dialog.setMessage("請先註冊為房客");
+                    dialog.setPositiveButton("確定", null);
+
+                    Window window = dialog.show().getWindow();
+                    // 修改按鈕顏色
+                    Button btnOK = window.findViewById(android.R.id.button1);
+                    btnOK.setTextColor(getResources().getColor(R.color.black));
+
+                    return;
+                } else {
+                    PopupMenu popupComment = new PopupMenu(activity, v, Gravity.END);
+                    popupComment.inflate(R.menu.comment_popup_menu);
+                    popupComment.setOnMenuItemClickListener(item -> {
+                        int itemId = item.getItemId();
+                        //新增
+                        if (itemId == R.id.updateComment) {
+                            final EditText et = new EditText(activity);
+                            AlertDialog.Builder alert = new AlertDialog.Builder(activity).setTitle("請更新留言");
+                            alert.setView(et);
+                            alert.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //按下確定键後的事件
+                                    if (RemoteAccess.networkCheck(activity)) {
+                                        String msg = et.getText().toString().trim();
+                                        Comment comment = comments.get(position);
+                                        comment.setCommentMsg(msg);
+                                        int commentId = comment.getCommentId();
+                                        url = Common.URL + "CommentController";
 //                                            Comment comment = new Comment(commentId,1,post.getPostId(),msg);
-                                            JsonObject jsonInsert = new JsonObject();
-                                            jsonInsert.addProperty("action","commentUpdate");
-                                            jsonInsert.addProperty("commentId", commentId);
-                                            jsonInsert.addProperty("comment", new Gson().toJson(comment));
-                                            int count;
-                                            //執行緒池物件
-                                            String result = RemoteAccess.getJsonData(url, jsonInsert.toString());
-                                            //新增筆數
-                                            count = Integer.parseInt(result);
-                                            //筆數為0
-                                            if (count == 0) {
-                                                Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                CommentAdapter.this.notifyDataSetChanged();
-                                                Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
-                                            }
+                                        JsonObject jsonInsert = new JsonObject();
+                                        jsonInsert.addProperty("action", "commentUpdate");
+                                        jsonInsert.addProperty("commentId", commentId);
+                                        jsonInsert.addProperty("comment", new Gson().toJson(comment));
+                                        int count;
+                                        //執行緒池物件
+                                        String result = RemoteAccess.getJsonData(url, jsonInsert.toString());
+                                        //新增筆數
+                                        count = Integer.parseInt(result);
+                                        //筆數為0
+                                        if (count == 0) {
+                                            Toast.makeText(activity, "修改失敗", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+                                            CommentAdapter.this.notifyDataSetChanged();
+                                            Toast.makeText(activity, "修改成功", Toast.LENGTH_SHORT).show();
                                         }
+                                    } else {
+                                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                                     }
-                                }).setNegativeButton("取消",null).show();
-                    } else if (itemId == R.id.deleteComment) {
-                        if (RemoteAccess.networkCheck(activity)) {
-                            url = Common.URL + "CommentController";
-                            Log.d(TAG,"URL: " + url);
-                            JsonObject jsonDelete = new JsonObject();
-                            jsonDelete.addProperty("action", "commentDelete");
-                            jsonDelete.addProperty("commentId", comment.getCommentId());
-                            int count;
-                            String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
-                            count = Integer.parseInt(result);
-                            if (count == 0) {
-                                Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
-                            } else {
-                                comments.remove(comment);
-                                CommentAdapter.this.notifyDataSetChanged();
+                                }
+                            });
+                            alert.setNegativeButton("取消", null);
+                            // 顯示對話框
+                            Window window = alert.show().getWindow();
+                            //設定對話框顏色
+                            Button btSure = window.findViewById(android.R.id.button1);
+                            Button btCancel = window.findViewById(android.R.id.button2);
+                            btSure.setTextColor(getResources().getColor(R.color.black));
+                            btCancel.setTextColor(getResources().getColor(R.color.black));
+
+                        } else if (itemId == R.id.deleteComment) {
+                            if (RemoteAccess.networkCheck(activity)) {
+                                url = Common.URL + "CommentController";
+                                Log.d(TAG, "URL: " + url);
+                                JsonObject jsonDelete = new JsonObject();
+                                jsonDelete.addProperty("action", "commentDelete");
+                                jsonDelete.addProperty("commentId", comment.getCommentId());
+                                int count;
+                                String result = RemoteAccess.getJsonData(url, jsonDelete.toString());
+                                count = Integer.parseInt(result);
+                                if (count == 0) {
+                                    Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    comments.remove(comment);
+                                    CommentAdapter.this.notifyDataSetChanged();
+                                }
                             }
                         }
-                    }
-                    return true;
-                });
-                popupComment.show();
+                        return true;
+                    });
+                    popupComment.show();
+                }
+
+
             });
         }
     }
 
     private void handleBtSent() {
         detailBtSent.setOnClickListener(v -> {
-            String commentMgs = detail_et_comment.getText().toString().trim();
-            KeyboardUtils.hideKeyboard(activity);
-            if (commentMgs.length() <= 0) {
-                Toast.makeText(activity, "Comment is invalid", Toast.LENGTH_SHORT).show();
+
+            // 遊客不可收藏
+            int role = sharedPreferences.getInt("role", -1);
+            if (role == 3) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                dialog.setTitle("無法留言");
+                dialog.setMessage("請先註冊為房客");
+                dialog.setPositiveButton("確定", null);
+
+                Window window = dialog.show().getWindow();
+                // 修改按鈕顏色
+                Button btnOK = window.findViewById(android.R.id.button1);
+                btnOK.setTextColor(getResources().getColor(R.color.black));
+
                 return;
-            }
-            if (RemoteAccess.networkCheck(activity)) {
-                url = Common.URL + "CommentController";
-                Comment comment = new Comment(0, memberId, post.getPostId(), commentMgs);
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("action","commentInsert");
-                jsonObject.addProperty("comment", new Gson().toJson(comment));
-                int count;
-                //執行緒池物件
-                String result = RemoteAccess.getJsonData(url,jsonObject.toString());
-                //新增筆數
-                count = Integer.parseInt(result);
-                //筆數為0
-                if (count == 0) {
-                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+            } else {
+                String commentMgs = detail_et_comment.getText().toString().trim();
+                KeyboardUtils.hideKeyboard(activity);
+                if (commentMgs.length() <= 0) {
+                    Toast.makeText(activity, "Comment is invalid", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (RemoteAccess.networkCheck(activity)) {
+                    url = Common.URL + "CommentController";
+                    Comment comment = new Comment(0, memberId, post.getPostId(), commentMgs);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("action", "commentInsert");
+                    jsonObject.addProperty("comment", new Gson().toJson(comment));
+                    int count;
+                    //執行緒池物件
+                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
+                    //新增筆數
+                    count = Integer.parseInt(result);
+                    //筆數為0
+                    if (count == 0) {
+                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
 //                    CommentAdapter commentAdapter = (CommentAdapter) rvDetail.getAdapter();
 //
@@ -507,12 +565,14 @@ public class DiscussionDetailFragment extends Fragment {
 
                         comments = getComments();
                         members = getMembers();
-                        commentAdapter.updateData(comments , getMembers());
+                        commentAdapter.updateData(comments, getMembers());
 
 
-
+                    }
                 }
             }
+
+
         });
     }
 

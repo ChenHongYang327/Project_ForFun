@@ -1,12 +1,26 @@
 package idv.tfp10105.project_forfun.discussionboard.disboard;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,18 +30,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
@@ -42,7 +44,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
@@ -73,6 +74,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     private ImageButton dis_bt_needHistory;
     private List<Posthome> posthomeList;
     private boolean searchPost = false;
+    private String newText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,7 +113,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         members = getMembers();
 
         posthomeList = new ArrayList<>();
-        for (int i = 0; i < posts.size(); i++){
+        for (int i = 0; i < posts.size(); i++) {
             Posthome posthome = new Posthome();
             posthome.setPost(posts.get(i));
             posthome.setMember(members.get(i));
@@ -119,7 +121,6 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         }
 
         showPosts(posthomeList);
-
 
 
     }
@@ -157,43 +158,62 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     private void handleSearchView() {
 
 
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
+            @Override
+            public boolean onQueryTextChange(String newText) {
 
-                    KeyboardUtils.hideKeyboard(activity);
-                    //如果輸入條件為空字串,就顯示原始資料,否則就顯示收尋後結果
-                    if (newText.isEmpty()) {
-                        showPosts(posthomeList);
-                    } else {
-                        List<Posthome> searchPosts = new ArrayList<>();
-                        //搜尋原始資料內有無包含關鍵字（不區分大小寫）
-                        for (Posthome posthome : posthomeList) {
-                            if (posthome.getPost().getPostTitle().toUpperCase().contains(newText.toUpperCase())) {
-                                searchPosts.add(posthome);
-                            }
+                KeyboardUtils.hideKeyboard(activity);
+                //如果輸入條件為空字串,就顯示原始資料,否則就顯示收尋後結果
+                if (newText.isEmpty()) {
+                    showPosts(posthomeList);
+                } else {
+                    List<Posthome> searchPosts = new ArrayList<>();
+                    //搜尋原始資料內有無包含關鍵字（不區分大小寫）
+                    for (Posthome posthome : posthomeList) {
+                        if (posthome.getPost().getPostTitle().toUpperCase().contains(newText.toUpperCase())) {
+                            searchPosts.add(posthome);
                         }
-                        showPosts(searchPosts);
                     }
-                    return true;
-                }
+                    showPosts(searchPosts);
 
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
                 }
-            });
-        }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+        });
+    }
 
 
     private void handleBtAdd() {
-//        Bundle bundle = new Bundle();
-//        bundle.putString("signin_name", signin_name);
-//        bundle.putString("signin_headshot", signin_headshot);
         //跳轉至新增頁面
-        bt_Add.setOnClickListener(v -> Navigation.findNavController(v)
-                .navigate(R.id.action_discussionBoardFragment_to_discussionInsertFragment));
+        // 遊客不可收藏
+
+        bt_Add.setOnClickListener(v -> {
+            int role = sharedPreferences.getInt("role", -1);
+            if (role == 3) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                dialog.setTitle("無法發文");
+                dialog.setMessage("請先註冊為房客");
+                dialog.setPositiveButton("確定", null);
+
+                Window window = dialog.show().getWindow();
+                // 修改按鈕顏色
+                Button btnOK = window.findViewById(android.R.id.button1);
+                btnOK.setTextColor(getResources().getColor(R.color.black));
+
+                return;
+
+            } else {
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_discussionBoardFragment_to_discussionInsertFragment);
+            }
+        });
+
     }
 
     private void handleRecyclerView() {
@@ -275,6 +295,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     }
 
     private void showPosts(List<Posthome> posthomeList) {
+
         if (posts == null || posts.isEmpty()) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
@@ -284,6 +305,8 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         if (seekAdapter == null) {
             rv_seeking.setAdapter(new SeekAdapter(activity, posthomeList));
         } else {
+
+
             //更新Adapter資料,重刷
             seekAdapter.setAdapter(posthomeList);
 
@@ -300,7 +323,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         private List<Post> posts;
         private List<Member> members;
         private List<Posthome> posthomeList;
-
+        private Boolean showSearchPost = false;
 
 
         public SeekAdapter(Context context, List<Posthome> posthomeList) {
@@ -308,7 +331,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             this.posthomeList = posthomeList;
             posts = new ArrayList<>();
             members = new ArrayList<>();
-            for (int i = 0; i < posthomeList.size(); i++){
+            for (int i = 0; i < posthomeList.size(); i++) {
                 posts.add(posthomeList.get(i).getPost());
                 members.add(posthomeList.get(i).getMember());
             }
@@ -321,7 +344,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             this.posthomeList = posthomeList;
             posts.clear();
             members.clear();
-            for (int i = 0; i < posthomeList.size(); i++){
+            for (int i = 0; i < posthomeList.size(); i++) {
                 posts.add(posthomeList.get(i).getPost());
                 members.add(posthomeList.get(i).getMember());
             }
@@ -362,7 +385,8 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void onBindViewHolder(@NonNull @NotNull DiscussionBoard_RentSeekingFragment.SeekAdapter.MyViewHolder holder, int position) {
-
+            searchView.getQuery().length();
+            Log.d(TAG, "searchView" + searchView.getQuery().length());
             final Post post = posts.get(position);
             Member member2 = members.get(position);
 
@@ -395,28 +419,27 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             //設定點擊事件
             holder.disPostImg.setOnClickListener(v -> {
                 if (RemoteAccess.networkCheck(activity)) {
-                    String url2 = Common.URL+"NotificationController";
+                    String url2 = Common.URL + "NotificationController";
                     int memberId = sharedPreferences.getInt("memberId", -1);
-                        JsonObject req = new JsonObject();
-                        req.addProperty("action", "getNotification");
-                        req.addProperty("memberId", memberId);
+                    JsonObject req = new JsonObject();
+                    req.addProperty("action", "getNotification");
+                    req.addProperty("memberId", memberId);
 
-                        //將通知狀態改成已讀
-                        req.addProperty("action", "updateReaded");
-                        req.addProperty("postId", post.getPostId());
-                        JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()),JsonObject.class);
-                        resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()), JsonObject.class);
-
+                    //將通知狀態改成已讀
+                    req.addProperty("action", "updateReaded");
+                    req.addProperty("postId", post.getPostId());
+                    JsonObject resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()), JsonObject.class);
+                    resp = new Gson().fromJson(RemoteAccess.getJsonData(url2, req.toString()), JsonObject.class);
 
 
                 }
-                    Bundle bundle = new Bundle();
-                    bundle.putString("name", member2.getNameL() + member2.getNameF());
-                    bundle.putString("headshot", member2.getHeadshot());
-                    bundle.putString("boardId", post.getBoardId());
-                    bundle.putSerializable("post", post);
-                    //轉至詳細頁面
-                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
+                Bundle bundle = new Bundle();
+                bundle.putString("name", member2.getNameL() + member2.getNameF());
+                bundle.putString("headshot", member2.getHeadshot());
+                bundle.putString("boardId", post.getBoardId());
+                bundle.putSerializable("post", post);
+                //轉至詳細頁面
+                Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionDetailFragment, bundle);
             });
 
             if (jsonImg != null) {
@@ -425,38 +448,61 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                 holder.disPostImg.setImageResource(R.drawable.no_image);
             }
 
+            //如在收尋狀態下不要顯示MoreButton
+            if (searchView.getQuery().length() == 0) {
+                holder.disPostBtMore.setVisibility(View.VISIBLE);
+            } else {
+                holder.disPostBtMore.setVisibility(View.INVISIBLE);
+            }
+
             holder.disPostBtMore.setOnClickListener(v -> {
-                //選單
-                PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
-                popupMenu.inflate(R.menu.popup_menu);
 
-                if (memberId == post.getPosterId()) {
+                // 遊客不可用檢舉等...
+                int role = sharedPreferences.getInt("role", -1);
+                if (role == 3) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                    dialog.setTitle("無法操作");
+                    dialog.setMessage("請先註冊為房客");
+                    dialog.setPositiveButton("確定", null);
 
-                    Log.d("posterId",":" + post.getPosterId());
-                    Log.d("memberId",":" + memberId);
+                    Window window = dialog.show().getWindow();
+                    // 修改按鈕顏色
+                    Button btnOK = window.findViewById(android.R.id.button1);
+                    btnOK.setTextColor(getResources().getColor(R.color.black));
 
-                    popupMenu.getMenu().getItem(0).setVisible(true);
-                    popupMenu.getMenu().getItem(1).setVisible(true);
-                    popupMenu.getMenu().getItem(2).setVisible(false);
+                    return;
                 } else {
-                    popupMenu.getMenu().getItem(0).setVisible(false);
-                    popupMenu.getMenu().getItem(1).setVisible(false);
-                    popupMenu.getMenu().getItem(2).setVisible(true);
-                }
+                    //選單
+                    PopupMenu popupMenu = new PopupMenu(activity, v, Gravity.END);
+                    popupMenu.inflate(R.menu.popup_menu);
 
-                popupMenu.setOnMenuItemClickListener(item -> {
+                    if (memberId == post.getPosterId()) {
 
-                    int itemId = item.getItemId();
-                    //新增
-                    if (itemId == R.id.update) {
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("post", post);
-                        bundle.putString("name", member2.getNameL() + member2.getNameF());
-                        bundle.putString("headshot", member2.getHeadshot());
-                        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment, bundle);
+                        Log.d("posterId", ":" + post.getPosterId());
+                        Log.d("memberId", ":" + memberId);
 
-                        //刪除
-                    } else if (itemId == R.id.delete) {
+                        popupMenu.getMenu().getItem(0).setVisible(true);
+                        popupMenu.getMenu().getItem(1).setVisible(true);
+                        popupMenu.getMenu().getItem(2).setVisible(false);
+                    } else {
+                        popupMenu.getMenu().getItem(0).setVisible(false);
+                        popupMenu.getMenu().getItem(1).setVisible(false);
+                        popupMenu.getMenu().getItem(2).setVisible(true);
+                    }
+
+                    popupMenu.setOnMenuItemClickListener(item -> {
+
+                        int itemId = item.getItemId();
+                        //新增
+                        if (itemId == R.id.update) {
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("post", post);
+                            bundle.putString("name", member2.getNameL() + member2.getNameF());
+                            bundle.putString("headshot", member2.getHeadshot());
+                            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionUpdateFragment, bundle);
+
+                            //刪除
+                        } else if (itemId == R.id.delete) {
 
                             if (RemoteAccess.networkCheck(activity)) {
                                 JsonObject jsonDelete = new JsonObject();
@@ -491,17 +537,20 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
 
                             }
                             //檢舉
-                    } else if (itemId == R.id.report) {
+                        } else if (itemId == R.id.report) {
 
-                        Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
+                            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
 
-                    } else {
+                        } else {
 
-                        Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
-                    }
-                    return true;
-                });
-                popupMenu.show();
+                            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    });
+                    popupMenu.show();
+                }
+
+
             });
 
         }
