@@ -130,12 +130,12 @@
     <fragment
         android:id="@+id/discussionInsertFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionInsertFragment"
-        android:label="fragment_discussion_insert"
+        android:label="新增貼文"
         tools:layout="@layout/fragment_discussion_insert" />
     <fragment
         android:id="@+id/discussionDetailFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionDetailFragment"
-        android:label="fragment_discussion_detail"
+        android:label="討論區"
         tools:layout="@layout/fragment_discussion_detail" />
     <fragment
         android:id="@+id/publishFragment"
@@ -161,7 +161,7 @@
     <fragment
         android:id="@+id/discussionUpdateFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionUpdateFragment"
-        android:label="discussionUpdateFragment" />
+        android:label="討論區" />
     <fragment
         android:id="@+id/publishDetailFragment"
         android:name="idv.tfp10105.project_forfun.publish.PublishDetailFragment"
@@ -189,8 +189,8 @@
     <fragment
         android:id="@+id/chatRoomFragment"
         android:name="idv.tfp10105.project_forfun.chatroom.ChatRoomFragment"
-        android:label="fragment_chat_room_message"
-        tools:layout="@layout/fragment_chat_room_message" >
+        android:label="私訊"
+        tools:layout="@layout/fragment_chat_room_message">
         <action
             android:id="@+id/action_chatRoomFragment_to_chatMessageFragment"
             app:destination="@id/chatMessageFragment" />
@@ -203,7 +203,7 @@
     <fragment
         android:id="@+id/chatMessageFragment"
         android:name="idv.tfp10105.project_forfun.chatroom.ChatMessageFragment"
-        android:label="chatMessageFragment" />
+        android:label="私訊" />
     <fragment
         android:id="@+id/customerServiceFragment"
         android:name="idv.tfp10105.project_forfun.signin.Customer_Service_Page.Customer_Service_Fragment"
@@ -217,7 +217,7 @@
     <fragment
         android:id="@+id/discussionBoard_RentSeeking_ListFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.disboard.DiscussionBoard_RentSeeking_ListFragment"
-        android:label="fragment_discussion_board__rent_seeking__list"
+        android:label="需求單清單"
         tools:layout="@layout/fragment_discussion_board__rent_seeking__list" />
 </navigation>
 

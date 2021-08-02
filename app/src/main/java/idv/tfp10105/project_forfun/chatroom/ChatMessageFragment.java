@@ -163,13 +163,9 @@ public class ChatMessageFragment extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("action", "getAll");
-//            jsonObject.addProperty("MEMBER_ID", memberId);
             jsonObject.addProperty("chatRoomId", chatRoomId);
             jsonObject.addProperty("MemberId", memberId);
-//            jsonObject.addProperty("chatroomMemberId1", chatroomMemberId1);
-//            jsonObject.addProperty("chatroomMemberId2", chatroomMemberId2);
 
-//            jsonObject.addProperty("MEMBER_ID", memberId);
 
             JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
             Type listType = new TypeToken<List<ChatRoomMessage>>() {}.getType();
@@ -181,7 +177,7 @@ public class ChatMessageFragment extends Fragment {
         }else {
             Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
         }
-//        Toast.makeText(activity, "chatRoomMessages : " + chatRoomMessages, Toast.LENGTH_SHORT).show();
+
         return chatRoomMessages;
 
     }
@@ -271,8 +267,7 @@ public class ChatMessageFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ChatRoomMessageAdapter.MyViewHolder holder, int position) {
             ChatRoomMessage chatRoomMessage = chatRoomMessages.get(position);
-//            Member member = members.get(position);
-//            memberToken = member.getToken();
+
             if (memberId.equals(chatRoomMessage.getMemberId())) {
                 String readStatus = !chatRoomMessage.getRead() ? "未讀" : "已讀";
                 holder.chatRoom_message_ReadStatus_self.setText(readStatus);
@@ -300,7 +295,6 @@ public class ChatMessageFragment extends Fragment {
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             public CircularImageView chatRoomMemberImg;
-//            public ImageView chatRoomMemberImg;
             public TextView chatRoom_message_context, chatRoom_message_CreatTime, chatRoom_message_context_self, chatRoom_message_CreatTime_self, chatRoom_message_ReadStatus_self;
             public LinearLayout otherMessage;
             public LinearLayout selfMessage;

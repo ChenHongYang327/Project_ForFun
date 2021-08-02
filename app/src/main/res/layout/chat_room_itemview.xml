@@ -8,18 +8,35 @@
     android:layout_height="90dp">
 
 
-    <ImageView
-        android:id="@+id/img_ocr_pay_redcircle2"
-        android:layout_width="29dp"
-        android:layout_height="103dp"
-        android:layout_gravity="clip_horizontal|right|center_horizontal"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="90dp"
-        android:foregroundGravity="center_vertical"
-        android:src="@drawable/iv_circle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/img_chatroom_circle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/chatroom_cricle_img"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/chat_room_number_circle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:foregroundGravity="center"
+            android:textColor="#E7FFFFFF"
+            app:layout_constraintBottom_toBottomOf="@+id/img_chatroom_circle"
+            app:layout_constraintEnd_toEndOf="@+id/img_chatroom_circle"
+            app:layout_constraintStart_toStartOf="@+id/img_chatroom_circle"
+            app:layout_constraintTop_toTopOf="@+id/img_chatroom_circle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/chatRoomItemView"
@@ -47,6 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
+                android:foregroundGravity="center"
                 android:gravity="center|left"
                 android:hint="memberName"
                 android:textSize="24sp" />

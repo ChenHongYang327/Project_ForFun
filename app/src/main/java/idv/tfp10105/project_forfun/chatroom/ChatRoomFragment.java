@@ -41,6 +41,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.ChatRoom;
+import idv.tfp10105.project_forfun.common.bean.ChatRoomMessage;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
@@ -137,26 +138,6 @@ public class ChatRoomFragment extends Fragment {
     }
 
 
-//    public List<ChatRoom> getChatRooms2() {
-//        List<ChatRoom> chatRooms = new ArrayList<>();
-//        if (RemoteAccess.networkCheck(activity)) {
-//            String url = Common.URL + "ChatRoomController";
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("action","getAll");
-//            jsonObject.addProperty("receivedMemberId", memberId);
-//            JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()),JsonObject.class);
-//            Type listType = new TypeToken<List<ChatRoom>>() {}.getType();
-//
-//            //解析後端傳回資料
-//            chatRooms = new Gson().fromJson(jsonIn.get("equalMember2"), listType);
-//        } else {
-//            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
-//        }
-//        Toast.makeText(activity, "chatRooms : " + chatRooms, Toast.LENGTH_SHORT).show();
-//        return chatRooms;
-//    }
-
-
     // 抓資料
     private void showChatRooms(List<ChatRoom> chatRooms) {
         if (chatRooms == null || chatRooms.isEmpty()) {
@@ -216,6 +197,7 @@ public class ChatRoomFragment extends Fragment {
         private List<ChatRoom> chatRooms;
 
 
+
         public ChatRoomAdapter(Context context, List<ChatRoom> chatRooms) {
             layoutInflater = LayoutInflater.from(context);
             this.chatRooms = chatRooms;
@@ -241,11 +223,8 @@ public class ChatRoomFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-           ChatRoom chatRoom2 = chatRooms.get(position);
-//            Log.d(TAG,"member1" + chatRoom.getMemberId1());
-//            Log.d(TAG,"member2" + chatRoom.getMemberId2());
-//            holder.chatRoomMemberImg.setImageResource(R.drawable.post_memberhead);
-            downloadImage(holder.chatRoomMemberImg,getMember(chatRoom2).getHeadshot());
+            ChatRoom chatRoom2 = chatRooms.get(position);
+            downloadImage(holder.chatRoomMemberImg, getMember(chatRoom2).getHeadshot());
             holder.chatRoom_memberName.setText(getMember(chatRoom2).getNameL() + getMember(chatRoom2).getNameF());
 
             holder.chatRoomItemView.setOnLongClickListener(v -> {
@@ -295,78 +274,64 @@ public class ChatRoomFragment extends Fragment {
 
                 member = getMember(chatRoom2);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("selectUser",  member);
+                bundle.putSerializable("selectUser", member);
                 bundle.putSerializable("chatRoom", chatRoom2);
                 bundle.putInt("chatroomId", chatRoom2.getChatroomId());
-//                Log.d(TAG,"1111111: " + chatRoom2.getChatroomId());
-//                    bundle.putInt("chatroomMemberId1", chatRoom.getMemberId1());
-//                    bundle.putInt("chatroomMemberId2", chatRoom.getMemberId2());
+                ;
                 Navigation.findNavController(v).navigate(R.id.chatMessageFragment, bundle);
-
-//                if (RemoteAccess.networkCheck(activity)) {
-//                    String url = Common.URL + "MessageController";
-//                    JsonObject jsonObject = new JsonObject();
-//                    jsonObject.addProperty("action", "updateRead");
-//                    jsonObject.addProperty("chatRoomId", chatRoom2.getChatroomId());
-//                    int messageReadType;
-//                    String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
-//                    //解析後端傳回資料
-//                    messageReadType = Integer.parseInt(jsonIn);
-//                    if (messageReadType >= 0) {
-//                        Toast.makeText(activity, "已讀", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        Toast.makeText(activity, "沒有留言", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
-//                }
-//                Toast.makeText(activity, "chatRooms : " + chatRooms, Toast.LENGTH_SHORT).show();
-
-
-//                if (RemoteAccess.networkCheck(activity)) {
-//                    String url = Common.URL + "ChatRoomController";
-//                    JsonObject jsonObject = new JsonObject();
-//                    jsonObject.addProperty("action", "selectChatRoomId");
-//                    if (memberId == chatRoom.getMemberId1()) {
-//                        jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId2());
-//                    } else {
-//                        jsonObject.addProperty("receivedMemberId", chatRoom.getMemberId1());
-//                    }
-//                    jsonObject.addProperty("sendMemberId", memberId);
-//                    int chatroomId;
-//                    String result = RemoteAccess.getJsonData(url, jsonObject.toString());
-//                    chatroomId = Integer.parseInt(result);
-//                    Log.d(TAG, "chatroomId" + chatroomId);
-//                    if (chatroomId == 0) {
-//                        Toast.makeText(activity, "已有聊天室", Toast.LENGTH_SHORT).show();
-//
-//                    } else {
-//                        Toast.makeText(activity, "聊天室新建成功", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//
-////
-//                }
 
 
             });
+            //判斷是否有otherpay 付款資訊
+            List<ChatRoomMessage> chatRoomMessages = new ArrayList<>();
+            if (RemoteAccess.networkCheck(activity)) {
+                String url = Common.URL + "MessageController";
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("action", "getAll");
+                jsonObject.addProperty("chatRoomId", chatRoom2.getChatroomId());
+                jsonObject.addProperty("MemberId", memberId);
+
+
+                JsonObject jsonIn = new Gson().fromJson(RemoteAccess.getJsonData(url, jsonObject.toString()), JsonObject.class);
+                Type listType = new TypeToken<List<ChatRoomMessage>>() {
+                }.getType();
+
+
+                //解析後端傳回資料
+                chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
+                if (chatRoomMessages.isEmpty()) {
+                    holder.img_chatroom_circle.setVisibility(View.GONE);
+                    holder.chat_room_number_circle_text.setText("");
+                } else {
+                    holder.chat_room_number_circle_text.setText(String.valueOf(chatRoomMessages.size()));
+                }
+
+            } else {
+                Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
+            }
+
 
         }
 
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             CircularImageView chatRoomMemberImg;
-            TextView chatRoom_memberName, chatRoomCreatTime, chatRoomReadStatus;
+            TextView chatRoom_memberName;
             LinearLayout chatRoomItemView;
+            ImageView img_chatroom_circle;
+            TextView chat_room_number_circle_text;
 
             public MyViewHolder(@NonNull View itemView) {
                 super(itemView);
                 chatRoomMemberImg = itemView.findViewById(R.id.chatRoomMemberImg);
                 chatRoom_memberName = itemView.findViewById(R.id.chatRoom_memberName);
                 chatRoomItemView = itemView.findViewById(R.id.chatRoomItemView);
+                chat_room_number_circle_text = itemView.findViewById(R.id.chat_room_number_circle_text);
+                img_chatroom_circle = itemView.findViewById(R.id.img_chatroom_circle);
 
             }
         }
+
 
         // 下載Firebase storage的照片並顯示在ImageView上
         private void downloadImage(final ImageView imageView, final String path) {

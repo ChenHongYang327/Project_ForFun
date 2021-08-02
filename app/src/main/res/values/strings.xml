@@ -49,10 +49,10 @@
         <item>不當檢舉</item>
         <item>內容誇大</item>
         <item>態度惡劣</item>
-        <string name="textedMGSRequired">內容不可空白</string>
 
 
     </string-array>
+    <string name="textedMGSRequired">內容不可空白</string>
 
 
 </resources>
