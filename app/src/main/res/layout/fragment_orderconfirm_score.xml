@@ -111,17 +111,18 @@
                     app:layout_constraintStart_toEndOf="@+id/textView11"
                     app:layout_constraintTop_toBottomOf="@+id/ratingBar_ocrScore_people" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_ocrScore_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginRight="16dp"
-                    android:src="@drawable/bt_14050blank"
+                    android:background="@drawable/bt_14050blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/bt_ocrScore_cancel" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_ocrScore_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -129,7 +130,8 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="150dp"
                     android:layout_marginBottom="24dp"
-                    android:src="@drawable/bt_14050blank"
+                    android:background="@drawable/bt_14050blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_ocrScore_HouseMsg" />

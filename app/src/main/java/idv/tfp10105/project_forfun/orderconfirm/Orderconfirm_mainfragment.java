@@ -57,7 +57,7 @@ public class Orderconfirm_mainfragment extends Fragment {
         switch1.toggle();
         switch1.setOnClickListener(v->{
             Navigation.findNavController(view).navigate(R.id.action_orderconfirm_mainfragment_to_orderconfirm_mainfragment_ho);
-            Navigation.findNavController(view).popBackStack(R.id.orderconfirm_mainfragment,true);
+//            Navigation.findNavController(view).popBackStack(R.id.orderconfirm_mainfragment,true);
             switch1.toggle();
         });
 
@@ -104,6 +104,10 @@ public class Orderconfirm_mainfragment extends Fragment {
                 }
                 else if(bundle.equals("待簽約")){
                     viewPager2.setCurrentItem(2,true);
+                    bundle="";
+                }
+                else if(bundle.equals("房客要付錢")){
+                    viewPager2.setCurrentItem(3,true);
                     bundle="";
                 }
             }

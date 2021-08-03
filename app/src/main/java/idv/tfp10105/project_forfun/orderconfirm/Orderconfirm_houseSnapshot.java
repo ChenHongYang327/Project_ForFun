@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +37,7 @@ import idv.tfp10105.project_forfun.common.bean.Publish;
 
 public class Orderconfirm_houseSnapshot extends Fragment {
     private Activity activity;
-    private ImageView btcon0, btCon1, btCon2, btCon3, btConn;
+    private ImageButton btcon0, btCon1, btCon2, btCon3, btConn;
     private TextView tvcon0, tvCon1, tvCon2, tvCon3, tvConntText, tv_bottomsheet_Title;
     private Button bt_bottomsheet_Confirm, bt_bottomsheet_Cancel;
     private TextView tvTitle, tvArea, tvSquare, tvType, tvName;
@@ -351,7 +352,7 @@ public class Orderconfirm_houseSnapshot extends Fragment {
     private void ocrHOOrder12() {
         btCon3.setVisibility(View.GONE);
         tvConntText.setText("聯絡房客");
-        tvCon1.setText("確認下定");
+        tvCon1.setText("確認下訂");
         tvCon2.setText("取消此次交易");
 
         btcon0.setOnClickListener(this::navgateToPublishDetail);
@@ -359,11 +360,13 @@ public class Orderconfirm_houseSnapshot extends Fragment {
             tv_bottomsheet_Title.setText("是否同意房客訂單？");
             bottomSheetDialog.show();
             bt_bottomsheet_Confirm.setOnClickListener(view -> {
-                Toast.makeText(activity, "請去開啟合約", Toast.LENGTH_SHORT).show();
-                //改變訂單狀態12->12  跳完回首頁
+                Toast.makeText(activity, "請去開啟合約", Toast.LENGTH_LONG).show();
+                //改變訂單狀態12->12
                 orderStatus = 13;
                 orderChangeStatus(orderStatus);
-                Navigation.findNavController(v).navigate(R.id.homeFragment);
+                Bundle bundle = new Bundle();
+                bundle.putString("postion","房東去開啟新合約");
+                Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment_ho,bundle);
                 bottomSheetDialog.dismiss();
             });
             bt_bottomsheet_Cancel.setOnClickListener(view -> {
