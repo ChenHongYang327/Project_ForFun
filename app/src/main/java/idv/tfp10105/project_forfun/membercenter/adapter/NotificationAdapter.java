@@ -134,6 +134,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     String bHeadshot=resp.get("headshot").getAsString();
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("post",post);
+                    bundle.putString("boardId",post.getBoardId());
                     bundle.putString("name",bName);
                     bundle.putString("headshot",bHeadshot);
                     Navigation.findNavController(v).navigate(R.id.discussionDetailFragment,bundle);
