@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="350dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center|top">
 
     <LinearLayout
@@ -46,7 +46,6 @@
                     android:id="@+id/post_item_time_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
@@ -67,7 +66,7 @@
 
         <TextView
             android:id="@+id/post_item_title_text"
-            android:layout_width="match_parent"
+            android:layout_width="312dp"
             android:layout_height="38dp"
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
@@ -77,7 +76,7 @@
 
         <TextView
             android:id="@+id/post_item_context_text"
-            android:layout_width="match_parent"
+            android:layout_width="312dp"
             android:layout_height="84dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
@@ -89,4 +88,5 @@
             android:layout_height="166dp"
             tools:srcCompat="@drawable/post_houseimg_test" />
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

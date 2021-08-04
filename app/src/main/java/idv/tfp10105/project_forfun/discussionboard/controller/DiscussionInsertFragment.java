@@ -9,6 +9,21 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,25 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
@@ -59,7 +56,6 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Post;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.POWER_SERVICE;
 
 public class DiscussionInsertFragment extends Fragment {
     private static final String TAG = "TAG_dis_InsertFragment";
@@ -134,7 +130,7 @@ public class DiscussionInsertFragment extends Fragment {
         etTitle = view.findViewById(R.id.insert_et_title);
         etContext = view.findViewById(R.id.insert_et_context);
         insert_MemberName = view.findViewById(R.id.insert_memberName_text);
-        insert_board = view.findViewById(R.id.insert_board);
+//        insert_board = view.findViewById(R.id.insert_board);
 
     }
 
@@ -157,7 +153,7 @@ public class DiscussionInsertFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                insert_board.setText(insert_spinner.getSelectedItem().toString());
+//                insert_board.setText(insert_spinner.getSelectedItem().toString());
 
             }
 

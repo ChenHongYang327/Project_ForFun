@@ -49,6 +49,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.TimeUtil;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 import idv.tfp10105.project_forfun.common.bean.Posthome;
@@ -266,7 +267,7 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
 
     private void showPosts(List<Posthome> posthomeList) {
 
-        if (posts == null || posts.isEmpty()) {
+        if (posthomeList == null || posthomeList.isEmpty()) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
@@ -360,7 +361,7 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
             //TODO
             holder.disPostName.setText(member2.getNameL() + member2.getNameF());
             holder.disPostContext.setText(post.getPostContext());
-            holder.disPostTime.setText(post.getCreateTime().toString());
+            holder.disPostTime.setText("時間："+ TimeUtil.getChatTimeStr(post.getCreateTime().getTime()));
             showImage(holder.disPostMemberImg, member2.getHeadshot());
 
             holder.disPostMemberImg.setOnClickListener(v -> {
@@ -465,9 +466,18 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
                                         } else {
                                             posts.remove(post);
                                             RentAdapter.this.notifyDataSetChanged();
-                                            // 外面spots也必須移除選取的spot
+
+                                            // 外面spots也必須移除選取的post
+                                            for (Posthome posthome : posthomeList) {
+                                                if (posthome.getPost() == post) {
+                                                    posthomeList.remove(posthome);
+                                                }
+                                            }
                                             DiscussionBoard_RentHouseFragment.this.posts.remove(post);
-//                                storage.getReference().child(post.getPostImg()).delete()
+
+
+
+//                                           storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {
 //                                                Log.d(TAG, "照片已刪除");

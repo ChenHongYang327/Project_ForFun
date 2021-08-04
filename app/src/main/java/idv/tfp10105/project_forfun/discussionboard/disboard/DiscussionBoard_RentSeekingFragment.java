@@ -49,6 +49,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.TimeUtil;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 import idv.tfp10105.project_forfun.common.bean.Posthome;
@@ -101,7 +102,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         handleBtAdd();
         handleSearchView();
         handleSwipeRefresh();
-        handleDis_bt_needHistory();
+//        handleDis_bt_needHistory();
     }
 
     @Override
@@ -120,7 +121,6 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         }
         showPosts(posthomeList);
     }
-
 
 
     private void findViews(View view) {
@@ -233,13 +233,14 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         return posts;
     }
 
-    private void handleDis_bt_needHistory() {
-        dis_bt_needHistory.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("post", post);
-            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionBoard_RentSeeking_ListFragment, bundle);
-        });
-    }
+//    private void handleDis_bt_needHistory() {
+//        dis_bt_needHistory.setOnClickListener(v -> {
+//            Bundle bundle = new Bundle();
+//            bundle.putSerializable("post", post);
+//            bundle.putSerializable("member",);
+//            Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionBoard_RentSeeking_ListFragment, bundle);
+//        });
+//    }
 
     private Member getMemberByOwnerId(int ownerId) {
         Member membershot = null;
@@ -283,7 +284,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
 
     private void showPosts(List<Posthome> posthomeList) {
 
-        if (posts == null || posts.isEmpty()) {
+        if (posthomeList == null || posthomeList.isEmpty()) {
             Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
@@ -309,7 +310,6 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
         private List<Post> posts;
         private List<Member> members;
         private List<Posthome> posthomeList;
-
 
 
         public SeekAdapter(Context context, List<Posthome> posthomeList) {
@@ -381,7 +381,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             //TODO
             holder.disPostName.setText(member2.getNameL() + member2.getNameF());
             holder.disPostContext.setText(post.getPostContext());
-            holder.disPostTime.setText(post.getCreateTime().toString());
+            holder.disPostTime.setText("時間："+TimeUtil.getChatTimeStr(post.getCreateTime().getTime()));
             showImage(holder.disPostMemberImg, member2.getHeadshot());
 
             holder.disPostMemberImg.setOnClickListener(v -> {
@@ -486,11 +486,16 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                                     Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
                                 } else {
                                     posts.remove(post);
-                                    members.remove(member2);
                                     SeekAdapter.this.notifyDataSetChanged();
+
                                     // 外面posts也必須移除選取的post
+                                    for (Posthome posthome : posthomeList) {
+                                        if (posthome.getPost() == post) {
+                                            posthomeList.remove(posthome);
+                                        }
+                                    }
                                     DiscussionBoard_RentSeekingFragment.this.posts.remove(post);
-                                    DiscussionBoard_RentSeekingFragment.this.members.remove(member2);
+
 //                                storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {
@@ -519,7 +524,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                             //檢舉項目
                             bundle.putInt("ITEM", 0);
 
-                            Navigation.findNavController(v).navigate(R.id.reportFragment,bundle);
+                            Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
 
                         } else {
 
@@ -533,28 +538,36 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
 
             });
 
+            dis_bt_needHistory.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("post", post);
+                bundle.putString("name", member2.getNameL() + member2.getNameF());
+                bundle.putString("headshot", member2.getHeadshot());
+                bundle.putString("boardId", post.getBoardId());
+                Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionBoard_RentSeeking_ListFragment, bundle);
+            });
         }
 
-
-        // 下載Firebase storage的照片並顯示在ImageView上
-        private void showImage(final ImageView imageView, final String path) {
-            final int ONE_MEGABYTE = 1024 * 1024;
-            StorageReference imageRef = storage.getReference().child(path);
-            imageRef.getBytes(ONE_MEGABYTE)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            byte[] bytes = task.getResult();
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            imageView.setImageBitmap(bitmap);
-                        } else {
-                            String message = task.getException() == null ?
-                                    "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
-                            imageView.setImageResource(R.drawable.no_image);
-                            Log.e(TAG, message);
-                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
     }
 
+
+    // 下載Firebase storage的照片並顯示在ImageView上
+    private void showImage(final ImageView imageView, final String path) {
+        final int ONE_MEGABYTE = 1024 * 1024;
+        StorageReference imageRef = storage.getReference().child(path);
+        imageRef.getBytes(ONE_MEGABYTE)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        String message = task.getException() == null ?
+                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                        imageView.setImageResource(R.drawable.no_image);
+//                        Log.e(TAG, message);
+//                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

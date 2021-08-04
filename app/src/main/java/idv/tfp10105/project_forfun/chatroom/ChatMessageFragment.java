@@ -187,6 +187,7 @@ public class ChatMessageFragment extends Fragment {
     private void handlebtSend() {
         btSend.setOnClickListener(v -> {
             String chatMSG = edMessage.getText().toString().trim();
+            edMessage.setText("");
             //收起鍵盤
             KeyboardUtils.hideKeyboard(activity);
             if (chatMSG.length() <= 0) {

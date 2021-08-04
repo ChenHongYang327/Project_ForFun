@@ -7,13 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +14,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,7 +35,6 @@ import java.util.List;
 import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
-import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
 import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
@@ -48,6 +47,7 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
     private List<Post> posts;
     private SharedPreferences sharedPreferences;
     private int memberId;
+    private String name, headshot, boardId;
 
 
     @Override
@@ -58,6 +58,9 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
         sharedPreferences = activity.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE);
         memberId = sharedPreferences.getInt("memberId" , -1);
         post = (Post) (getArguments() != null ? getArguments().getSerializable("post") : null);
+        name = getArguments() != null ? getArguments().getString("name") : null;
+        headshot = getArguments() != null ? getArguments().getString("headshot") : null;
+        boardId = getArguments() != null ? getArguments().getString("boardId") : null;
 
     }
 
@@ -160,7 +163,14 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
             Log.d("12333","post2: " + post2.getPostImg());
             showImage(holder.rentSeekImg, post2.getPostImg());
             holder.rentSeekingPostTitle.setText(post2.getPostTitle());
-            holder.rentSeekingPostContext.setText(post2.getPostContext());
+            holder.rentSeekingPostContext.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putString("name", name);
+                bundle.putString("headshot", headshot);
+                bundle.putString("boardId", boardId);
+                bundle.putSerializable("post", post);
+                Navigation.findNavController(v).navigate(R.id.discussionDetailFragment,bundle);
+            });
         }
 
 

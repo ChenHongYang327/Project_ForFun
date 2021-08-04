@@ -534,8 +534,8 @@ public class DiscussionDetailFragment extends Fragment {
     }
 
     private void handleBtSent() {
-        detailBtSent.setOnClickListener(v -> {
 
+        detailBtSent.setOnClickListener(v -> {
             // 遊客不可收藏
             int role = sharedPreferences.getInt("role", -1);
             if (role == 3) {
@@ -548,10 +548,11 @@ public class DiscussionDetailFragment extends Fragment {
                 // 修改按鈕顏色
                 Button btnOK = window.findViewById(android.R.id.button1);
                 btnOK.setTextColor(getResources().getColor(R.color.black));
-
                 return;
+
             } else {
                 String commentMgs = detail_et_comment.getText().toString().trim();
+                detail_et_comment.setText("");
                 KeyboardUtils.hideKeyboard(activity);
                 if (commentMgs.length() <= 0) {
                     Toast.makeText(activity, "Comment is invalid", Toast.LENGTH_SHORT).show();
@@ -573,10 +574,6 @@ public class DiscussionDetailFragment extends Fragment {
                         Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
-
-//                    CommentAdapter commentAdapter = (CommentAdapter) rvDetail.getAdapter();
-//
-//                    commentAdapter.notifyDataSetChanged();
 
                         comments = getComments();
                         members = getMembers();

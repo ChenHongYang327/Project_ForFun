@@ -28,7 +28,7 @@
                 android:layout_height="33dp"
                 android:foregroundGravity="center_vertical"
                 android:gravity="center_vertical"
-                android:hint="板塊選擇"
+                android:text="板塊選擇"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
@@ -36,7 +36,7 @@
                 app:layout_constraintHorizontal_bias="0.75"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/insert_bt_memberHead"
-                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintVertical_bias="0.346"
                 tools:ignore="MissingConstraints" />
 
             <com.mikhaellopez.circularimageview.CircularImageView
@@ -67,10 +67,10 @@
                 android:textColor="#000000"
                 app:layout_constraintBottom_toTopOf="@+id/insert_board"
                 app:layout_constraintEnd_toStartOf="@+id/insert_bt_insert"
-                app:layout_constraintHorizontal_bias="0.037"
+                app:layout_constraintHorizontal_bias="0.044"
                 app:layout_constraintStart_toEndOf="@+id/insert_bt_memberHead"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.464"
+                app:layout_constraintVertical_bias="0.217"
                 tools:ignore="MissingConstraints,UnknownId" />
 
             <ImageView
@@ -94,9 +94,9 @@
                 android:text="點擊此處更換圖片"
                 android:textColor="#FFFFFF"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/insert_bt_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/insert_bt_image"
+                app:layout_constraintStart_toStartOf="@+id/insert_bt_image" />
 
             <EditText
                 android:id="@+id/insert_et_title"
@@ -140,7 +140,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
-                android:src="@drawable/bt_post"
+                android:background="@drawable/bt_post"
+                android:src="?android:attr/selectableItemBackground"
                 app:layout_constraintBottom_toTopOf="@+id/insert_bt_image"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

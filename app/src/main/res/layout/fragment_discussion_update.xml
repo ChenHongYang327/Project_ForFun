@@ -9,6 +9,10 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -17,12 +21,53 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/txtPublishTitleImage3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:background="#390B0101"
+                android:text="請點擊下方更換圖片"
+                android:textColor="#FFFFFF"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="@+id/update_imageView" />
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
+                android:hint="修改內文："
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
+                app:layout_constraintEnd_toStartOf="@+id/update_context_edtext"
+                app:layout_constraintHorizontal_bias="0.794"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView51"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/textView51"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="修改標題："
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/update_imageView"
+                app:layout_constraintEnd_toStartOf="@+id/update_title_edtext"
+                app:layout_constraintHorizontal_bias="0.775"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/update_bt_memberhead"
+                app:layout_constraintVertical_bias="0.213" />
+
             <ImageButton
                 android:id="@+id/update_bt_save"
                 android:layout_width="64dp"
                 android:layout_height="40dp"
-                android:background="@drawable/shap"
-                android:src="@drawable/bt_save"
+                android:background="@drawable/bt_save"
+                android:src="?android:attr/selectableItemBackground"
                 app:layout_constraintBottom_toTopOf="@+id/update_imageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -64,7 +109,6 @@
                 android:layout_marginEnd="80dp"
                 android:layout_marginRight="80dp"
                 android:layout_marginBottom="50dp"
-                android:hint="time"
                 app:layout_constraintBottom_toTopOf="@+id/update_title_edtext"
                 app:layout_constraintEnd_toStartOf="@+id/update_bt_save"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -108,7 +152,6 @@
                 android:src="@drawable/post_houseimg_test"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/update_context_edtext" />
         </androidx.constraintlayout.widget.ConstraintLayout>

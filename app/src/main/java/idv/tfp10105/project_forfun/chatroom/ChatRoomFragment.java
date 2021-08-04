@@ -282,7 +282,7 @@ public class ChatRoomFragment extends Fragment {
 
 
             });
-            //判斷是否有otherpay 付款資訊
+            //判斷是否有Message 付款資訊
             List<ChatRoomMessage> chatRoomMessages = new ArrayList<>();
             if (RemoteAccess.networkCheck(activity)) {
                 String url = Common.URL + "MessageController";
