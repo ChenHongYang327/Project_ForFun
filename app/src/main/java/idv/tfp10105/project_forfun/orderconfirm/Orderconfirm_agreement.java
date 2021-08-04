@@ -9,11 +9,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +51,8 @@ public class Orderconfirm_agreement extends Fragment {
     private Activity activity;
 
     private TextView tvDateStart, tvDateEnd, tvRent, tvSignHO, tvSignCus, tvAddress, tvConfirmText, tvCancelText;
-    private ImageView btConfirm, btCancel, imgSignHO, imgSignCus;
+    private ImageView imgSignHO, imgSignCus;
+    private ImageButton btConfirm, btCancel;
     private int orderId, resultcode, agreementId, tapNum;
     private String result_Add, imgPath;
     private Gson gson = new Gson();
@@ -59,6 +64,9 @@ public class Orderconfirm_agreement extends Fragment {
     private Date dateE = new Date();
     private byte[] bytes;
     private Boolean ifdown = false;
+    private ScrollView scrollView;
+    private LinearLayout linearLayout;
+    private final Handler handler = new Handler();
 
 
     @Override
@@ -93,6 +101,9 @@ public class Orderconfirm_agreement extends Fragment {
         tvConfirmText = view.findViewById(R.id.tv_ocrAgreement_confirmText);
         tvCancelText = view.findViewById(R.id.tv_ocrAgreement_cancelText);
 
+        scrollView = view.findViewById(R.id.scrollView_Agreement);
+        linearLayout = view.findViewById(R.id.linerLayout_Agreement);
+
         Bundle bundleIn = getArguments();
         tapNum = bundleIn.getInt("OCR",-1);
         orderId = bundleIn.getInt("ORDERID",-1);
@@ -104,7 +115,10 @@ public class Orderconfirm_agreement extends Fragment {
                 /**
                  * 訂單table “訂單狀態”要調整 -> 3 待簽約
                  */
-                houseOwnweEvent();
+                houseOwnerEvent();
+                btConfirm.setVisibility(View.GONE);
+                tvConfirmText.setText("");
+                tvSignHO.setText("簽名處");
                 break;
 
             case 3:
@@ -113,6 +127,9 @@ public class Orderconfirm_agreement extends Fragment {
                  * 訂單table “訂單狀態”要調整 -> 4 待付款
                  */
                 agreementId = bundleIn.getInt("AGREEMENTID",-1);
+                btConfirm.setVisibility(View.GONE);
+                tvConfirmText.setText("");
+                tvSignCus.setText("簽名處");
                 tenantEvent();
                 break;
 
@@ -158,7 +175,7 @@ public class Orderconfirm_agreement extends Fragment {
         });
     }
 
-    private void houseOwnweEvent() {
+    private void houseOwnerEvent() {
 
         imgSignCus.setEnabled(false);
 
@@ -166,7 +183,7 @@ public class Orderconfirm_agreement extends Fragment {
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "Agreement";
             //預載地址
-            tvAddress.setText(getAddress(orderId));
+            tvAddress.setText(getAddressAndSetRent(orderId));
 
             // set Date
             tvDateStart.setOnClickListener(view -> {
@@ -219,6 +236,20 @@ public class Orderconfirm_agreement extends Fragment {
 
                                 imgSignHO.setImageBitmap(bitmap);
                                 tvSignHO.setText("");
+                                btConfirm.setVisibility(View.VISIBLE);
+                                tvConfirmText.setText("確認");
+
+                                // 點擊後，頁面轉至最下層
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int off = linearLayout.getMeasuredHeight() - scrollView.getHeight();
+                                        if (off > 0) {
+                                            scrollView.scrollTo(0, off);
+                                        }
+                                    }
+                                };
+                                handler.post(runnable);
 
                                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
@@ -251,7 +282,7 @@ public class Orderconfirm_agreement extends Fragment {
                 agreement.setAgreementMoney(rent);
                 agreement.setLandlordSign(imgPath);
 
-                //resultcode 3
+                //resultcode 3 要改publish table 的 合約中(1)
                 JsonObject objectH = new JsonObject();
                 String agmtStr = gson.toJson(agreement);
                 objectH.addProperty("AGREEMENT", agmtStr);
@@ -292,7 +323,7 @@ public class Orderconfirm_agreement extends Fragment {
         tvRent.setText(String.valueOf(agrmt.getAgreementMoney()));
 
         //set Address
-        tvAddress.setText(getAddress(orderId));
+        tvAddress.setText(getAddressAndSetRent(orderId));
         //set img
         String imgPathHO = agrmt.getLandlordSign();
         setImgFromFireStorage(imgPathHO, imgSignHO);
@@ -310,6 +341,21 @@ public class Orderconfirm_agreement extends Fragment {
 
                             imgSignCus.setImageBitmap(bitmap);
                             tvSignCus.setText("");
+
+                            btConfirm.setVisibility(View.VISIBLE);
+                            tvConfirmText.setText("確認");
+
+                            // 點擊後，頁面轉至最下層
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    int off = linearLayout.getMeasuredHeight() - scrollView.getHeight();
+                                    if (off > 0) {
+                                        scrollView.scrollTo(0, off);
+                                    }
+                                }
+                            };
+                            handler.post(runnable);
 
                             ByteArrayOutputStream bos = new ByteArrayOutputStream();
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
@@ -347,7 +393,12 @@ public class Orderconfirm_agreement extends Fragment {
 
                 if (resultcode == 200) {
                     Toast.makeText(activity, "合約已完成，請記得付款", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(v).navigate(R.id.homeFragment);
+//                    Navigation.findNavController(v).navigate(R.id.homeFragment);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("postion","房客要付錢");
+                    Navigation.findNavController(v).navigate(R.id.orderconfirm_mainfragment,bundle);
+
                 } else {
                     Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
                 }
@@ -386,7 +437,7 @@ public class Orderconfirm_agreement extends Fragment {
 
     //拿地址 訂單id->刊登單id->地址
     //resultcode 1
-    private String getAddress(int orderId) {
+    private String getAddressAndSetRent(int orderId) {
 
         if (RemoteAccess.networkCheck(activity)) {
             String url = Common.URL + "Agreement";
@@ -398,6 +449,10 @@ public class Orderconfirm_agreement extends Fragment {
             JsonObject jsonAdd = gson.fromJson(add, JsonObject.class);
             result_Add = jsonAdd.get("ADDRESS").getAsString();
             resultcode = jsonAdd.get("RESULT").getAsInt();
+            int tmpRent = jsonAdd.get("RENT").getAsInt();
+            tvRent.setText(String.valueOf(tmpRent));
+            tvRent.setEnabled(false);
+
             if (resultcode != 200) {
                 Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
             }
@@ -461,7 +516,7 @@ public class Orderconfirm_agreement extends Fragment {
         Agreement agmt = getAgreementInfo(agreementId);
         tvDateStart.setText(sdf.format(agmt.getStartDate()));
         tvDateEnd.setText(sdf.format(agmt.getEndDate()));
-        tvRent.setText(String.valueOf(agmt.getAgreementMoney()));
+        //tvRent.setText(String.valueOf(agmt.getAgreementMoney()));
         String imgPathHO = agmt.getLandlordSign();
         String imgPath = agmt.getTenantSign();
 
@@ -472,7 +527,7 @@ public class Orderconfirm_agreement extends Fragment {
         tvSignCus.setText("");
 
         //set Address
-        tvAddress.setText(getAddress(orderId));
+        tvAddress.setText(getAddressAndSetRent(orderId));
     }
 
 }

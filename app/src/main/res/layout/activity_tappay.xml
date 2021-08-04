@@ -7,13 +7,15 @@
     tools:context=".orderconfirm.TappayActivity">
 
     <ScrollView
+        android:id="@+id/scrollView_TapPay"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/linearLayout_TapPay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="360dp"
@@ -109,17 +111,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tView5" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_ocrTapPay_return"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:src="@drawable/bt_9044blank"
+                    android:background="@drawable/bt_9044blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_ocrTapPay_result" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_ocrTapPay_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -127,12 +130,13 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginBottom="32dp"
-                    android:src="@drawable/bt_9044blank"
+                    android:background="@drawable/bt_9044blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_ocrTapPay_result" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_ocrTapPay_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -140,7 +144,8 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="32dp"
-                    android:src="@drawable/bt_9044blank"
+                    android:background="@drawable/bt_9044blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_ocrTapPay_result" />

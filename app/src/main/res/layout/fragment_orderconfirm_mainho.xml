@@ -31,14 +31,13 @@
             android:layout_height="44dp"
             android:layout_weight="1">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/bt_orderconfirm_mainHO_Publishing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="90dp"
+                android:layout_height="44dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
-                android:layout_weight="1"
-                android:src="@drawable/bt_9044blank"
+                android:src="?android:attr/selectableItemBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/simpleSwitch_hosewOwner"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -50,7 +49,7 @@
                 android:text="刊登中物件"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/bt_orderconfirm_mainHO_Publishing"
                 app:layout_constraintEnd_toEndOf="@+id/bt_orderconfirm_mainHO_Publishing"
                 app:layout_constraintStart_toStartOf="@+id/bt_orderconfirm_mainHO_Publishing"
                 app:layout_constraintTop_toTopOf="@+id/bt_orderconfirm_mainHO_Publishing" />

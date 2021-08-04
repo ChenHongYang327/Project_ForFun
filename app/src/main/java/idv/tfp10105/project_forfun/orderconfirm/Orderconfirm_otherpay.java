@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +54,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class Orderconfirm_otherpay extends Fragment {
     private TextView tvAccount, tvMsg, tvConfirmText, tvCancelText, tvTitle;
-    private ImageView imgPic, btConfirm, btCancel;
+    private ImageView imgPic;
+    private ImageButton btConfirm, btCancel;
     private SharedPreferences sharedPreferences;
     private Gson gson = new Gson();
     private Activity activity;
@@ -126,6 +128,8 @@ public class Orderconfirm_otherpay extends Fragment {
         switch (tapNum) {
             case 15:
                 handleViews();
+                btConfirm.setVisibility(View.GONE);
+                tvConfirmText.setText("");
                 break;
             case 7: //房客預覽
                 handlePreViews();
@@ -202,6 +206,8 @@ public class Orderconfirm_otherpay extends Fragment {
 
     private void handleViews() {
         tvTitle.setVisibility(View.GONE);
+        btConfirm.setVisibility(View.GONE);
+        tvConfirmText.setText("");
 
         imgPic.setOnClickListener(v -> {
             bottomSheetDialog.show();
@@ -331,6 +337,8 @@ public class Orderconfirm_otherpay extends Fragment {
                     bitmap = ImageDecoder.decodeBitmap(source);
                 }
                 imgPic.setImageBitmap(bitmap);
+                btConfirm.setVisibility(View.VISIBLE);
+                tvConfirmText.setText("確認");
 
             } catch (IOException e) {
                 Log.e("顯示cropPictureResult的錯誤", e.toString());

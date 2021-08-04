@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
@@ -44,9 +45,11 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ImageButton imageButton;
 
         //跳轉至刊登物件
-        view.findViewById(R.id.bt_orderconfirm_mainHO_Publishing).setOnClickListener(v->{
+        imageButton = view.findViewById(R.id.bt_orderconfirm_mainHO_Publishing);
+        imageButton.setOnClickListener(v->{
             Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_ho_to_ocrHO_Publishing);
         });
 
@@ -54,6 +57,7 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
         Switch switch2 = view.findViewById(R.id.simpleSwitch_hosewOwner);
         switch2.setOnClickListener(v->{
             Navigation.findNavController(v).navigate(R.id.action_orderconfirm_mainfragment_ho_to_orderconfirm_mainfragment);
+            Navigation.findNavController(view).popBackStack(R.id.orderconfirm_mainfragment_ho,true);
             switch2.toggle();
         });
 
@@ -97,6 +101,10 @@ public class Orderconfirm_mainfragment_ho extends Fragment {
                 tabLayout.selectTab(tabLayout.getTabAt(position));
                 if(bundle.equals("待下訂")){
                     viewPager2.setCurrentItem(1,true);
+                    bundle="";
+                }
+                if(bundle.equals("房東去開啟新合約")){
+                    viewPager2.setCurrentItem(2,true);
                     bundle="";
                 }
             }

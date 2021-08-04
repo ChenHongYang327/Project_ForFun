@@ -164,11 +164,12 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1">
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/bt_HSShot_Conn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/bt_14050blank"
+                        android:background="@drawable/bt_14050blank"
+                        android:src="?android:attr/selectableItemBackground"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -199,11 +200,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_HSShot_con0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/bt_36045blank"
+                    android:background="@drawable/bt_36045blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -220,12 +222,13 @@
                     app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con0"
                     app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con0" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_HSShot_con1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:src="@drawable/bt_36045blank"
+                    android:background="@drawable/bt_36045blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con0" />
@@ -240,12 +243,13 @@
                     app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con1"
                     app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con1" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_HSShot_con2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:src="@drawable/bt_36045blank"
+                    android:background="@drawable/bt_36045blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.49"
                     app:layout_constraintStart_toStartOf="parent"
@@ -262,12 +266,13 @@
                     app:layout_constraintStart_toStartOf="@+id/bt_HSShot_con2"
                     app:layout_constraintTop_toTopOf="@+id/bt_HSShot_con2" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bt_HSShot_con3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:src="@drawable/bt_36045blank"
+                    android:background="@drawable/bt_36045blank"
+                    android:src="?android:attr/selectableItemBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/bt_HSShot_con2" />

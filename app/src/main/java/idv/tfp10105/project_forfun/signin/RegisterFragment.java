@@ -390,6 +390,7 @@ public class RegisterFragment extends Fragment {
             }
         });
         btCancel.setOnClickListener(v->{
+            //關閉bottomsheet
             bottomSheetDialog.dismiss();
             clickHeadshot=false;
             clickIdPicF=false;
@@ -397,6 +398,7 @@ public class RegisterFragment extends Fragment {
             clickGoodPeople=false;
         });
        bottomSheetDialog.setOnCancelListener(dialog -> {
+           //關閉bottomsheet
            clickHeadshot=false;
            clickIdPicF=false;
            clickIdPicB=false;
@@ -404,38 +406,41 @@ public class RegisterFragment extends Fragment {
        });
 
     }
-
+    //拍照
     private void takePictureResult(ActivityResult result) {
         if (result.getResultCode() == RESULT_OK) {
             crop(contentUri);
         }
-        else{
-            clickHeadshot=false;
-            clickIdPicF=false;
-            clickIdPicB=false;
-            clickGoodPeople=false;
-        }
+        //透過bottomsheet判斷即可
+//        else{
+//            clickHeadshot=false;
+//            clickIdPicF=false;
+//            clickIdPicB=false;
+//            clickGoodPeople=false;
+//        }
     }
 
-
+    //選取照片
     private void pickPictureResult(ActivityResult result) {
         if (result.getResultCode() == RESULT_OK) {
             if (result.getData() != null) {
                 crop(result.getData().getData());
             }
-            else{
-                clickHeadshot=false;
-                clickIdPicF=false;
-                clickIdPicB=false;
-                clickGoodPeople=false;
-            }
+            //透過bottomsheet判斷即可
+//            else{
+//                clickHeadshot=false;
+//                clickIdPicF=false;
+//                clickIdPicB=false;
+//                clickGoodPeople=false;
+//            }
         }
-        else{
-            clickHeadshot=false;
-            clickIdPicF=false;
-            clickIdPicB=false;
-            clickGoodPeople=false;
-        }
+        //透過bottomsheet判斷即可
+//        else{
+//            clickHeadshot=false;
+//            clickIdPicF=false;
+//            clickIdPicB=false;
+//            clickGoodPeople=false;
+//        }
     }
 
     private void crop(Uri sourceImageUri) {
@@ -478,10 +483,11 @@ public class RegisterFragment extends Fragment {
                     ivRgIdPicF.setImageBitmap(bitmap);
                     uploadIdPicF=true;
                 }
-                else if(clickGoodPeople){
+                else if(clickGoodPeople) {
                     ivRgGoodPeople.setImageBitmap(bitmap);
-                   uploadGoodPeople=true;
+                    uploadGoodPeople = true;
                 }
+                //  ucrop編輯完成
                 bottomSheetDialog.dismiss();
                 clickHeadshot=false;
                 clickIdPicF=false;
@@ -494,13 +500,14 @@ public class RegisterFragment extends Fragment {
             }
 
         }
-        //使用者取消
-        else {
-            clickHeadshot=false;
-            clickIdPicF=false;
-            clickIdPicB=false;
-            clickGoodPeople=false;
-        }
+        //透過bottomsheet判斷即可
+//        else {
+//            Log.d("測試","509");
+//            clickHeadshot=false;
+//            clickIdPicF=false;
+//            clickIdPicB=false;
+//            clickGoodPeople=false;
+//        }
     }
 
     //上傳Firebase storage的照片

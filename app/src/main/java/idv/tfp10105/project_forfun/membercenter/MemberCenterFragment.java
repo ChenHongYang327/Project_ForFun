@@ -93,8 +93,14 @@ public class MemberCenterFragment extends Fragment {
 
         tvOrderList.setOnClickListener(v->{
             if(checkAccess()) {
-                Navigation.findNavController(v)
-                        .navigate(R.id.orderconfirm_mainfragment_ho);
+                if(role==1){
+                    Navigation.findNavController(v)
+                            .navigate(R.id.orderconfirm_mainfragment);
+                }
+                else if(role==2) {
+                    Navigation.findNavController(v)
+                            .navigate(R.id.orderconfirm_mainfragment_ho);
+                }
             }
         });
 

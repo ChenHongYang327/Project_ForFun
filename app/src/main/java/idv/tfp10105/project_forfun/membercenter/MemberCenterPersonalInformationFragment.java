@@ -504,10 +504,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
         if (result.getResultCode() == RESULT_OK) {
             crop(contentUri);
         }
-        else{
-            HSisClick=false;
-            GPisClick=false;
-        }
+        //透過bottomsheet判斷即可
+//        else{
+//            HSisClick=false;
+//            GPisClick=false;
+//        }
     }
 
 
@@ -517,11 +518,11 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                 crop(result.getData().getData());
             }
         }
-        //都沒選照片
-        else{
-            HSisClick=false;
-            GPisClick=false;
-        }
+        //透過bottomsheet判斷即可
+//        else{
+//            HSisClick=false;
+//            GPisClick=false;
+//        }
     }
 
     private void crop(Uri sourceImageUri) {
@@ -575,10 +576,10 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
             }
 
         }
-        //使用者取消
-        else{
-            HSisClick=false;
-            GPisClick=false;
-        }
+        //透過bottomsheet判斷即可
+//        else{
+//            HSisClick=false;
+//            GPisClick=false;
+//        }
     }
 }

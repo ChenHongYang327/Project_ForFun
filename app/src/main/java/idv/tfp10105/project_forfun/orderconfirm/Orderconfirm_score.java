@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +27,7 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 public class Orderconfirm_score extends Fragment {
     private Activity activity;
     private RatingBar ratingBarP, ratingBarH;
-    private ImageView btConfirm, btCancel; //button
+    private ImageButton btConfirm, btCancel; //button
     private TextView tvHOmsg, tvmsg, tvbtConfirmText, tvHouseMsgText, tvHouseTitle, tvTitle, tvCancelText;
     private Bundle bundleOut = new Bundle();
     private int tapNum = -1, orderId = -1, signInId = -1;

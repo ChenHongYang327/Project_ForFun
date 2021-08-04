@@ -8,9 +8,13 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,8 +54,8 @@ public class TappayActivity extends AppCompatActivity {
     public ProgressDialog mProgressDialog; //轉圈圈元件
     private TPDGooglePay tpdGooglePay;
     private PaymentData paymentData;
-
-    private ImageView btBuy, btCancel, btReturn, btConfirm, imgPic; //button用圖片表示
+    private ImageView btBuy, imgPic; //button用圖片表示
+    private ImageButton btCancel, btReturn, btConfirm; //button用圖片表示
     private TextView tvAccount, tvNotes, tvCardInfo, tvResult;
     private TextView tvReturnText, tvConfirmText, tvCncelText;
     private SharedPreferences sharedPreferences, shardToMainActivity;
@@ -62,6 +66,10 @@ public class TappayActivity extends AppCompatActivity {
     private Bitmap bitmapPic;
     private int payObjID;
     private Boolean isorder = false, isotherPay = false;
+
+    private ScrollView scrollView;
+    private LinearLayout linearLayout;
+    private final Handler handler = new Handler();
 
 
     //設定信用卡類別
@@ -83,7 +91,6 @@ public class TappayActivity extends AppCompatActivity {
         btConfirm = findViewById(R.id.bt_ocrTapPay_confirm);
         btReturn = findViewById(R.id.bt_ocrTapPay_return);
         imgPic = findViewById(R.id.img_ocrTapPay_pic);
-
         tvAccount = findViewById(R.id.tv_ocrTapPay_account);
         tvCardInfo = findViewById(R.id.tv_ocrTapPay_cardinfo);
         tvNotes = findViewById(R.id.tv_ocrTapPay_notes);
@@ -92,12 +99,9 @@ public class TappayActivity extends AppCompatActivity {
         tvConfirmText = findViewById(R.id.tv_ocrTapPay_confirmText);
         tvReturnText = findViewById(R.id.tv_ocrTapPay_returnText);
 
-
         storage = FirebaseStorage.getInstance();
-
-        //隱藏 action bar
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.hide();
+        scrollView = findViewById(R.id.scrollView_TapPay);
+        linearLayout = findViewById(R.id.linearLayout_TapPay);
 
         // bt 初始設定
         btConfirm.setVisibility(View.GONE);
@@ -196,7 +200,7 @@ public class TappayActivity extends AppCompatActivity {
             notes = orderMember.get("NOTEINFO").getAsString();
             getImgPath = orderMember.get("IMGPATH").getAsString();
 
-            isorder = true;
+            isorder = true; //for 存擋
 
             // set TEXT
             tvAccount.setText(TAPPATACCOUNY);
@@ -279,6 +283,7 @@ public class TappayActivity extends AppCompatActivity {
         if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
+
                     btConfirm.setVisibility(View.VISIBLE);
                     tvConfirmText.setText("確認付款");
                     // 取得支付資訊
@@ -340,6 +345,20 @@ public class TappayActivity extends AppCompatActivity {
         String cardDescription = paymentDataJO.get("paymentMethodData").getAsJsonObject()
                 .get("description").getAsString();
         tvCardInfo.setText(cardDescription);
+        tvResult.setText("請確認付款");
+
+        //畫面捲到最下面
+        // 點擊後，頁面轉至最下層
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                int off = linearLayout.getMeasuredHeight() - scrollView.getHeight();
+                if (off > 0) {
+                    scrollView.scrollTo(0, off);
+                }
+            }
+        };
+        handler.post(runnable);
     }
 
     private void getPrimeFromTapPay(PaymentData paymentData) {
