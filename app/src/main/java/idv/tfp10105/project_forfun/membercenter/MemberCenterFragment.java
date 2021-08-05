@@ -163,9 +163,19 @@ public class MemberCenterFragment extends Fragment {
     }
     public boolean checkAccess(){
         if(role==3){
-            Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(tvLogOut)
-                    .navigate(R.id.signinInFragment);
+            AlertDialog.Builder logOutDialog = new AlertDialog.Builder(activity);
+//            logOutDialog.setTitle(R.string.log_out);  //設置標題
+//            logOutDialog.setIcon(R.mipmap.ic_launcher_round); //標題前面那個小圖示
+            logOutDialog.setMessage("請先登入會員"); //提示訊息
+            logOutDialog.setPositiveButton(R.string.sure,null);
+            //設定對話框顏色
+            Window window=logOutDialog.show().getWindow();
+            Button btSure=window.findViewById(android.R.id.button1);
+            Button btCancel=window.findViewById(android.R.id.button2);
+            btSure.setTextColor(getResources().getColor(R.color.black));
+//            Toast.makeText(activity, "請登入會員", Toast.LENGTH_SHORT).show();
+//            Navigation.findNavController(tvLogOut)
+//                    .navigate(R.id.signinInFragment);
 //            Navigation.findNavController(tvLogOut).popBackStack(R.id.memberCenterFragment,true);
             return false;
         }
