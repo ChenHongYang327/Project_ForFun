@@ -3,68 +3,69 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="410dp"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/main_color">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/comment_bt_membetHead"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/post_memberhead" />
 
-            <com.mikhaellopez.circularimageview.CircularImageView
-                android:id="@+id/comment_bt_membetHead"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:srcCompat="@drawable/post_memberhead" />
+        <ImageButton
+            android:id="@+id/comment_bt_report"
+            android:layout_width="32dp"
+            android:layout_height="22dp"
+            android:background="@drawable/shap"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/comment_text"
+            app:srcCompat="@drawable/bt_more_comment" />
 
-            <LinearLayout
-                android:layout_width="370dp"
-                android:layout_height="60dp"
-                android:orientation="vertical">
+        <ImageButton
+            android:id="@+id/comment_bt_more"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@drawable/shap"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/comment_bt_report"
+            app:srcCompat="@drawable/bt_report_comment" />
 
-                <TextView
-                    android:id="@+id/comment_memberName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="name" />
-
-                <TextView
-                    android:id="@+id/comment_text"
-                    android:layout_width="300dp"
-                    android:layout_height="match_parent"
-                    android:foregroundGravity="center_vertical|center"
-                    android:gravity="center_horizontal"
-                    android:hint="comment"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/comment_memberName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
+            android:hint="name"
+            app:layout_constraintBottom_toTopOf="@+id/comment_text"
+            app:layout_constraintStart_toEndOf="@+id/comment_bt_membetHead"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center_vertical|center"
+            android:gravity="center_horizontal"
+            android:hint="comment"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/linearLayout">
-
-            <ImageButton
-                android:id="@+id/comment_bt_report"
-                android:layout_width="32dp"
-                android:layout_height="22dp"
-                android:background="@drawable/shap"
-                app:srcCompat="@drawable/bt_more_comment" />
-
-            <ImageButton
-                android:id="@+id/comment_bt_more"
-                android:layout_width="20dp"
-                android:layout_height="10dp"
-                android:background="@drawable/shap"
-                app:srcCompat="@drawable/bt_report_comment" />
-        </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.429"
+            app:layout_constraintStart_toEndOf="@+id/comment_bt_membetHead"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

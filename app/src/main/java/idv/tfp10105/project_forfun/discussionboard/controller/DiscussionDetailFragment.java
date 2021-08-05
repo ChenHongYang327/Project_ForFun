@@ -51,6 +51,7 @@ import idv.tfp10105.project_forfun.common.RemoteAccess;
 import idv.tfp10105.project_forfun.common.bean.Comment;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
+import idv.tfp10105.project_forfun.discussionboard.ItemDecoration;
 
 
 public class DiscussionDetailFragment extends Fragment {
@@ -146,6 +147,7 @@ public class DiscussionDetailFragment extends Fragment {
 
     private void handleRecyclerView() {
         rvDetail.setLayoutManager(new LinearLayoutManager(activity));
+        rvDetail.addItemDecoration(new ItemDecoration(10, activity));
     }
 
     //連線資料庫取資料
@@ -404,38 +406,47 @@ public class DiscussionDetailFragment extends Fragment {
             holder.comment_text.setText(comment.getCommentMsg());
             holder.comment_memberName.setText(member.getNameL() + member.getNameF());
             downloadImage(holder.comment_bt_membetHead, member.getHeadshot());
-            holder.comment_bt_report.setOnClickListener(v -> {
 
-                int role = sharedPreferences.getInt("role", -1);
-                if (role == 3) {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-                    dialog.setTitle("無法檢舉");
-                    dialog.setMessage("請先註冊為房客");
-                    dialog.setPositiveButton("確定", null);
+            if (memberId == comment.getMemberId()) {
 
-                    Window window = dialog.show().getWindow();
-                    // 修改按鈕顏色
-                    Button btnOK = window.findViewById(android.R.id.button1);
-                    btnOK.setTextColor(getResources().getColor(R.color.black));
+                holder.comment_bt_report.setEnabled(false);
+            } else {
+                holder.comment_bt_report.setOnClickListener(v -> {
 
-                    return;
-                } else {
+                    int role = sharedPreferences.getInt("role", -1);
+                    if (role == 3) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                        dialog.setTitle("無法檢舉");
+                        dialog.setMessage("請先註冊為房客");
+                        dialog.setPositiveButton("確定", null);
 
-                    Bundle bundle = new Bundle();
-                    // 檢舉者
-                    bundle.putInt("WHISTLEBLOWER_ID", memberId);
-                    //被檢舉者
-                    bundle.putInt("REPORTED_ID", comment.getMemberId());
-                    //檢舉貼文
-                    bundle.putInt("CHATROOM_ID", comment.getCommentId());
-                    //檢舉項目
-                    bundle.putInt("ITEM", 1);
+                        Window window = dialog.show().getWindow();
+                        // 修改按鈕顏色
+                        Button btnOK = window.findViewById(android.R.id.button1);
+                        btnOK.setTextColor(getResources().getColor(R.color.black));
 
-                    Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+                        return;
+                    } else {
 
-                }
+                        Bundle bundle = new Bundle();
+                        // 檢舉者
+                        bundle.putInt("WHISTLEBLOWER_ID", memberId);
+                        //被檢舉者
+                        bundle.putInt("REPORTED_ID", comment.getMemberId());
+                        //檢舉貼文
+                        bundle.putInt("CHATROOM_ID", comment.getCommentId());
+                        //檢舉項目
+                        bundle.putInt("ITEM", 1);
 
-            });
+                        Navigation.findNavController(v).navigate(R.id.reportFragment, bundle);
+
+                    }
+
+                });
+
+            }
+
+
 
             holder.comment_bt_more.setOnClickListener(v -> {
 
@@ -456,6 +467,21 @@ public class DiscussionDetailFragment extends Fragment {
                 } else {
                     PopupMenu popupComment = new PopupMenu(activity, v, Gravity.END);
                     popupComment.inflate(R.menu.comment_popup_menu);
+
+                    if (memberId == comment.getMemberId()) {
+
+                        Log.d("posterId", ":" + post.getPosterId());
+                        Log.d("memberId", ":" + memberId);
+
+                        popupComment.getMenu().getItem(0).setVisible(true);
+                        popupComment.getMenu().getItem(1).setVisible(true);
+
+                    } else {
+                        popupComment.getMenu().getItem(0).setVisible(false);
+                        popupComment.getMenu().getItem(1).setVisible(false);
+                       ;
+                    }
+
                     popupComment.setOnMenuItemClickListener(item -> {
                         int itemId = item.getItemId();
                         //新增
