@@ -370,7 +370,8 @@ public class MemberCenterPersonalInformationFragment extends Fragment {
                             return;
                         }
                         member.setCitizen(picUri);
-                        upNewGP = false;
+                        //後面會復原
+//                        upNewGP = false;
                     } else {
                         Toast.makeText(activity, "未更新良民證照片", Toast.LENGTH_SHORT).show();
                         return;
