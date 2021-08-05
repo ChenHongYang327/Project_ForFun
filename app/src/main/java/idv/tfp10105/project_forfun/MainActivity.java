@@ -117,18 +117,21 @@ public class MainActivity extends AppCompatActivity {
             //navController監聽器
             //設置actionbar title及顯示狀態
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                //標題
+                //設定標題
                 toolbar.setTitle(Objects.requireNonNull(navController.getCurrentDestination()).getLabel());
-                //顯示bottomNav的頁面(未完成五個主頁面)
+
+                //顯示bottomNav的頁面(
                 if (navController.getCurrentDestination().getId() == R.id.homeFragment ||
                         navController.getCurrentDestination().getId() == R.id.memberCenterFragment ||
                         navController.getCurrentDestination().getId() == R.id.discussionBoardFragment ||
-                        navController.getCurrentDestination().getId() == R.id.publishFragment
+                        navController.getCurrentDestination().getId() == R.id.publishFragment||
+                        navController.getCurrentDestination().getId() == R.id.chatRoomFragment
                 ) {
                     bottomNavigationView.setVisibility(View.VISIBLE);
                 } else {
                     bottomNavigationView.setVisibility(View.GONE);
                 }
+
                 //隱藏actionbar的頁面
                 if (navController.getCurrentDestination().getId() == R.id.signinInFragment ||
                         navController.getCurrentDestination().getId() == R.id.registIntroductionFragment ||
@@ -138,20 +141,28 @@ public class MainActivity extends AppCompatActivity {
                     getSupportActionBar().hide();
                 }
                 //客服頁面
-                else if (navController.getCurrentDestination().getId() == R.id.customerServiceFragment) {
-                    if (sharedPreferences.getInt("memberId", -1) == -1) {
-                        getSupportActionBar().hide();
-                    } else {
-                        getSupportActionBar().show();
-                    }
-                } else {
+//                else if (navController.getCurrentDestination().getId() == R.id.customerServiceFragment) {
+//                    int memberId=sharedPreferences.getInt(" memberId", -1);
+//                    if (memberId== -1) {
+//                        getSupportActionBar().hide();
+//                    }
+//                    else {
+//                        Toast.makeText(this, "123", Toast.LENGTH_SHORT).show();
+//                        getSupportActionBar().show();
+//                    }
+//                }
+                else {
                     getSupportActionBar().show();
                 }
-                //設定顯示返回鍵
-                if (navController.getCurrentDestination().getId() == R.id.notificationFragment) {
+
+                //設定顯示返回鍵及通知按鈕
+                //通知頁面
+                if (navController.getCurrentDestination().getId() == R.id.notificationFragment||
+                        navController.getCurrentDestination().getId() == R.id.customerServiceFragment) {
+                    getSupportActionBar().show();
                     btBell.setVisibility(View.INVISIBLE);//隱藏通知按鈕
                     tvNotification.setVisibility(View.INVISIBLE);//隱藏通知數量
-                    ivCircle.setVisibility(View.INVISIBLE);
+                    ivCircle.setVisibility(View.INVISIBLE); //隱藏通知紅圈
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);//顯示返回鍵
 
                 } else if (navController.getCurrentDestination().getId() == R.id.meberCenterPersonalInformationFragment ||
@@ -162,23 +173,21 @@ public class MainActivity extends AppCompatActivity {
                         navController.getCurrentDestination().getId() == R.id.ocrHO_Publishing ||
                         navController.getCurrentDestination().getId() == R.id.publishDetailFragment ||
                         navController.getCurrentDestination().getId() == R.id.appointmentFragment ||
-                        navController.getCurrentDestination().getId() == R.id.personalSnapshotFragment) {
+                        navController.getCurrentDestination().getId() == R.id.personalSnapshotFragment||
+                        navController.getCurrentDestination().getId() == R.id.chatMessageFragment||
+                        navController.getCurrentDestination().getId() == R.id.discussionDetailFragment||
+                        navController.getCurrentDestination().getId() == R.id.orderconfirm_houseSnapshot||
+                        navController.getCurrentDestination().getId() == R.id.orderconfirm_agreement
+                ) {
                     btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                } else {
-                    //客服頁面
-                    if (navController.getCurrentDestination().getId() == R.id.customerServiceFragment) {
-                        //非遊客狀態
-                        if (sharedPreferences.getInt("memberId", -1) != -1) {
-                            btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
-                            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                            return;
-                        }
-                    }
-                        btBell.setVisibility(View.VISIBLE);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true); //顯示返回鍵
+                }
+                //不需加返回鍵
+                else {
+                        btBell.setVisibility(View.VISIBLE); // 顯示鈴鐺
                         if (notify != 0) {
-                            tvNotification.setVisibility(View.VISIBLE);
-                            ivCircle.setVisibility(View.VISIBLE);
+                            tvNotification.setVisibility(View.VISIBLE); //顯示通知數量
+                            ivCircle.setVisibility(View.VISIBLE); //顯示通知紅圈
 
                         }
                         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
