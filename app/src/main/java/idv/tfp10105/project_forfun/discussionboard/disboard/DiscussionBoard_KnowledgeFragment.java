@@ -242,7 +242,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "members : " + members, Toast.LENGTH_SHORT).show();
 
         return members;
     }
@@ -266,7 +266,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
 
     private void showPosts(List<Posthome> posthomeList) {
         if (posthomeList == null || posthomeList.isEmpty()) {
-            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
         KnowAdapter knowAdapter = (KnowAdapter) rv_know.getAdapter();

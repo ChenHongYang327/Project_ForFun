@@ -109,7 +109,7 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
 
     private void showPosts(List<Post> posts) {
         if (posts == null || posts.isEmpty())  {
-            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
         SeekListAdapter seekListAdapter = (SeekListAdapter) rv_rentseekinglist.getAdapter();

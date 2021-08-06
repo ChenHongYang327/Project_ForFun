@@ -338,7 +338,7 @@ public class DiscussionUpdateFragment extends Fragment {
 
 
     private void downloadImage(final String imagePath) {
-        final int ONE_MEGABYTE = 1024 * 1024;
+        final int ONE_MEGABYTE = 1024 * 1024 * 10;
         StorageReference imageRef = storage.getReference().child(imagePath);
         //最多能暫存記憶體的量
         if (imagePath == null || imagePath == "0") {

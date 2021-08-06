@@ -285,7 +285,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
     private void showPosts(List<Posthome> posthomeList) {
 
         if (posthomeList == null || posthomeList.isEmpty()) {
-            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
         SeekAdapter seekAdapter = (SeekAdapter) rv_seeking.getAdapter();

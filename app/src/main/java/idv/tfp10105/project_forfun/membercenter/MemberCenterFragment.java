@@ -4,21 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.JsonObject;
@@ -93,14 +90,16 @@ public class MemberCenterFragment extends Fragment {
 
         tvOrderList.setOnClickListener(v->{
             if(checkAccess()) {
-                if(role==1){
+//                if(role==1){
                     Navigation.findNavController(v)
                             .navigate(R.id.orderconfirm_mainfragment);
-                }
-                else if(role==2) {
-                    Navigation.findNavController(v)
-                            .navigate(R.id.orderconfirm_mainfragment_ho);
-                }
+//                }
+//                else if(role==2) {
+//                    Navigation.findNavController(v)
+//                            .navigate(R.id.orderconfirm_mainfragment);
+//                    Navigation.findNavController(v)
+//                            .navigate(R.id.orderconfirm_mainfragment_ho);
+//                }
             }
         });
 

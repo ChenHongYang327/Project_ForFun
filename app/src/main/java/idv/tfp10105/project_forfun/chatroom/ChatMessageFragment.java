@@ -143,6 +143,7 @@ public class ChatMessageFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Toast.makeText(activity, "onDestroy()", Toast.LENGTH_SHORT).show();
         ChatMessageFragment.handler = null;
     }
 
@@ -211,9 +212,9 @@ public class ChatMessageFragment extends Fragment {
                     count = Integer.parseInt(result);
                     //筆數為0
                     if (count == 0) {
-                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
                         chatRoomMessages = getChatRoomMessage();
                         chatRoomMessageAdapter.updateData(chatRoomMessages);

@@ -259,9 +259,9 @@ public class DiscussionInsertFragment extends Fragment {
                 count = Integer.parseInt(result);
                 //筆數為0
                 if (count == 0) {
-                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
 
                     //傳板塊資料回去
                     bundle = new Bundle();
@@ -344,7 +344,7 @@ public class DiscussionInsertFragment extends Fragment {
     }
 
     private void downloadImage(String imagePath) {
-        final int ONE_MEGABYTE = 1024 * 1024;
+        final int ONE_MEGABYTE = 1024 * 1024 * 10;
         StorageReference imageRef = storage.getReference().child(imagePath);
         //最多能暫存記憶體的量
         imageRef.getBytes(ONE_MEGABYTE)
