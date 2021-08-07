@@ -58,6 +58,7 @@ public class ChatRoomFragment extends Fragment {
     private int memberId;
     private Member member;
     private Boolean choseMember;
+    private TextView chatRoomText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,12 +66,6 @@ public class ChatRoomFragment extends Fragment {
         activity = getActivity();
         storage = FirebaseStorage.getInstance();
 
-//        sharedPreferf = activity.getSharedPreferences("selectUser", Context.MODE_PRIVATE);
-//        selectUserId = sharedPreferf.getInt("selectUserId", -1);
-//        selectUserName = sharedPreferf.getString("selectUserName", "");
-//        selectUserHeadShot = sharedPreferf.getString("selectUserHeadShot", "");
-//        selectmember = sharedPreferf.getString("selectmember", "");
-//        member = new Gson().fromJson(selectmember, Member.class);
 
 
         sharedPreferences = activity.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
@@ -97,7 +92,7 @@ public class ChatRoomFragment extends Fragment {
             dialog.setPositiveButton("確定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Navigation.findNavController(view).navigate(R.id.signinInFragment);
+                    Navigation.findNavController(view).navigate(R.id.memberCenterFragment);
                 }
             });
 
@@ -107,7 +102,7 @@ public class ChatRoomFragment extends Fragment {
             btnOK.setTextColor(getResources().getColor(R.color.black));
             return;
         }
-
+        chatRoomText = view.findViewById(R.id.chatRoomText);
         rv_chat = view.findViewById(R.id.rv_chat);
         chatRooms = getChatRooms();
         showChatRooms(chatRooms);
@@ -141,7 +136,8 @@ public class ChatRoomFragment extends Fragment {
     // 抓資料
     private void showChatRooms(List<ChatRoom> chatRooms) {
         if (chatRooms == null || chatRooms.isEmpty()) {
-            Toast.makeText(activity, "沒有聊天記錄", Toast.LENGTH_SHORT).show();
+            chatRoomText.setVisibility(View.VISIBLE);
+            rv_chat.setVisibility(View.INVISIBLE);
         }
         //取得Adapter
         ChatRoomAdapter chatRoomAdapter = (ChatRoomAdapter) rv_chat.getAdapter();

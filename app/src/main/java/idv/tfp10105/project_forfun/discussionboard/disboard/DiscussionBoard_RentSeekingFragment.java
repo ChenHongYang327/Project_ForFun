@@ -489,11 +489,14 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                                     SeekAdapter.this.notifyDataSetChanged();
 
                                     // 外面posts也必須移除選取的post
-                                    for (Posthome posthome : posthomeList) {
-                                        if (posthome.getPost() == post) {
-                                            posthomeList.remove(posthome);
-                                        }
-                                    }
+                                    int index = 0;
+                                  for (int i = 0; i < posthomeList.size(); i++) {
+                                      if (posthomeList.get(i).getPost() == post) {
+                                          index = i;
+                                          break;
+                                      }
+                                  }
+                                    posthomeList.remove(index);
                                     DiscussionBoard_RentSeekingFragment.this.posts.remove(post);
 
 //                                storage.getReference().child(post.getPostImg()).delete()

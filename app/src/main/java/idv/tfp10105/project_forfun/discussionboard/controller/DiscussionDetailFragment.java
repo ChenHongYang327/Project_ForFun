@@ -223,11 +223,11 @@ public class DiscussionDetailFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void handleBtMore() {
         detailBtMore.setOnClickListener(v -> {
-            // 遊客不可收藏
+            // 遊客不可操作
             int role = sharedPreferences.getInt("role", -1);
             if (role == 3) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-                dialog.setTitle("無法檢舉");
+                dialog.setTitle("無法操作");
                 dialog.setMessage("請先註冊為房客");
                 dialog.setPositiveButton("確定", null);
                 Window window = dialog.show().getWindow();
@@ -416,7 +416,7 @@ public class DiscussionDetailFragment extends Fragment {
                     int role = sharedPreferences.getInt("role", -1);
                     if (role == 3) {
                         AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-                        dialog.setTitle("無法檢舉");
+                        dialog.setTitle("無法操作");
                         dialog.setMessage("請先註冊為房客");
                         dialog.setPositiveButton("確定", null);
 
@@ -454,7 +454,7 @@ public class DiscussionDetailFragment extends Fragment {
                 int role = sharedPreferences.getInt("role", -1);
                 if (role == 3) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-                    dialog.setTitle("無法檢舉");
+                    dialog.setTitle("無法操作");
                     dialog.setMessage("請先註冊為房客");
                     dialog.setPositiveButton("確定", null);
 

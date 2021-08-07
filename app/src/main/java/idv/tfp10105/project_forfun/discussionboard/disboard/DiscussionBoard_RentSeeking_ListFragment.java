@@ -48,6 +48,7 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private int memberId;
     private String name, headshot, boardId;
+    private TextView historyRentSeekText;
 
 
     @Override
@@ -68,6 +69,7 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discussion_board__rent_seeking__list, container, false);
+        historyRentSeekText = view.findViewById(R.id.historyRentSeekText);
         rv_rentseekinglist = view.findViewById(R.id.rv_rentseekinglist);
         return view;
     }
@@ -110,6 +112,8 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
     private void showPosts(List<Post> posts) {
         if (posts == null || posts.isEmpty())  {
 //            Toast.makeText(activity, "沒有貼文", Toast.LENGTH_SHORT).show();
+            historyRentSeekText.setVisibility(View.VISIBLE);
+            rv_rentseekinglist.setVisibility(View.INVISIBLE);
         }
         //取得Adapter
         SeekListAdapter seekListAdapter = (SeekListAdapter) rv_rentseekinglist.getAdapter();

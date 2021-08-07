@@ -33,7 +33,7 @@
                     style="@style/ChatReceiveStyle"
                     android:layout_width="180dp"
                     android:background="@drawable/chatmassage_other"
-                    android:gravity="center_horizontal"
+                    android:gravity="center_horizontal|center_vertical"
                     android:hint="我是左邊的消息" />
 
                 <TextView
@@ -82,7 +82,7 @@
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/chatmassage_self"
-                    android:gravity="center_horizontal"
+                    android:gravity="center_horizontal|center_vertical"
                     android:hint="我是右邊的消息" />
 
             </LinearLayout>

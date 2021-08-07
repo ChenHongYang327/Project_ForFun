@@ -468,14 +468,15 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
                                             RentAdapter.this.notifyDataSetChanged();
 
                                             // 外面spots也必須移除選取的post
-                                            for (Posthome posthome : posthomeList) {
-                                                if (posthome.getPost() == post) {
-                                                    posthomeList.remove(posthome);
+                                            int index = 0;
+                                            for (int i = 0; i < posthomeList.size(); i++) {
+                                                if (posthomeList.get(i).getPost() == post) {
+                                                    index = i;
+                                                    break;
                                                 }
                                             }
+                                            posthomeList.remove(index);
                                             DiscussionBoard_RentHouseFragment.this.posts.remove(post);
-
-
 
 //                                           storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {

@@ -462,13 +462,17 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
                                 } else {
                                     posts.remove(post);
                                     KnowAdapter.this.notifyDataSetChanged();
-                                    // 外面spots也必須移除選取的spot
-                                    for (Posthome posthome : posthomeList) {
-                                        if (posthome.getPost() == post) {
-                                            posthomeList.remove(posthome);
+                                    // 外面posts也必須移除選取的post
+                                    int index = 0;
+                                    for (int i = 0; i < posthomeList.size(); i++) {
+                                        if (posthomeList.get(i).getPost() == post) {
+                                            index = i;
+                                            break;
                                         }
                                     }
+                                    posthomeList.remove(index);
                                     DiscussionBoard_KnowledgeFragment.this.posts.remove(post);
+
 //                                storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {
