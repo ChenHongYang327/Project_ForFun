@@ -356,7 +356,8 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp">
 
                 <ImageView
                     android:id="@+id/ivRgIdPicB"
@@ -370,8 +371,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="#390B0101"
-                    android:textColor="#FFFFFF"
-                    android:text="請點選此處新增圖片" />
+                    android:text="請點選此處新增圖片"
+                    android:textColor="#FFFFFF" />
 
             </FrameLayout>
 
