@@ -174,14 +174,20 @@ public class RegisterFragment extends Fragment {
     private void handleClick() {
         // 快速填寫假資料
         rgTitle.setOnClickListener(v->{
-            etRgNameL.setText("林");
-            etRgNameF.setText("驊");
+            if(sBundle.equals("Landlord")) {
+                etRgNameL.setText("王");
+                etRgNameF.setText("大明");
+            }
+            else{
+                etRgNameL.setText("王");
+                etRgNameF.setText("小明");
+            }
             rbRgMan.setChecked(true);
             etRgId.setText("A123456789");
             etRgAddress.setText("台北市中山區南京東路三段219號5樓");
             etRgBirthday.setText("1991/01/24");
-            etRgPhone.setText("0912345678");
-            etRgMail.setText("test@email.com");
+//            etRgPhone.setText("0912345678");
+//            etRgMail.setText("test@email.com");
             uploadHeadshot=true;
             uploadIdPicB=true;
             uploadIdPicF=true;

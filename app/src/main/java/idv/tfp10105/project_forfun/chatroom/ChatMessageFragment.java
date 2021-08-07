@@ -143,7 +143,6 @@ public class ChatMessageFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(activity, "onDestroy()", Toast.LENGTH_SHORT).show();
         ChatMessageFragment.handler = null;
     }
 
