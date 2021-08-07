@@ -75,7 +75,6 @@ import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.Gender;
 import idv.tfp10105.project_forfun.common.HouseType;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
-import idv.tfp10105.project_forfun.common.bean.Appointment;
 import idv.tfp10105.project_forfun.common.bean.Area;
 import idv.tfp10105.project_forfun.common.bean.City;
 import idv.tfp10105.project_forfun.common.bean.Favorite;
@@ -567,7 +566,10 @@ public class PublishDetailFragment extends Fragment {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
                 dialog.setTitle("無法預約");
                 dialog.setMessage("請先註冊為房客");
-                dialog.setPositiveButton("確定", null);
+                dialog.setPositiveButton("確定", (dialog1, which) -> {
+                    // 跳到註冊頁面
+                    Navigation.findNavController(v).navigate(R.id.registIntroductionFragment);
+                });
 
                 Window window = dialog.show().getWindow();
                 // 修改按鈕顏色

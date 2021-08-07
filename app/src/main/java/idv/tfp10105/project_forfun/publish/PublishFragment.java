@@ -2,7 +2,6 @@ package idv.tfp10105.project_forfun.publish;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -185,7 +184,8 @@ public class PublishFragment extends Fragment {
             dialog.setMessage("請先申請成為房東");
             dialog.setCancelable(false);
             dialog.setPositiveButton("確定", (dialog1, which) -> {
-                Navigation.findNavController(view).popBackStack();
+                // 跳到會員中心
+                Navigation.findNavController(view).navigate(R.id.memberCenterFragment);
             });
             Window window = dialog.show().getWindow();
             // 修改按鈕顏色
