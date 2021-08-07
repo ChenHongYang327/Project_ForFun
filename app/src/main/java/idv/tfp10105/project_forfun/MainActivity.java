@@ -177,7 +177,9 @@ public class MainActivity extends AppCompatActivity {
                         navController.getCurrentDestination().getId() == R.id.chatMessageFragment||
                         navController.getCurrentDestination().getId() == R.id.discussionDetailFragment||
                         navController.getCurrentDestination().getId() == R.id.orderconfirm_houseSnapshot||
-                        navController.getCurrentDestination().getId() == R.id.orderconfirm_agreement
+                        navController.getCurrentDestination().getId() == R.id.orderconfirm_agreement||
+                        navController.getCurrentDestination().getId() == R.id.discussionBoard_RentSeeking_ListFragment||
+                        navController.getCurrentDestination().getId() == R.id.discussionInsertFragment
                 ) {
                     btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true); //顯示返回鍵
