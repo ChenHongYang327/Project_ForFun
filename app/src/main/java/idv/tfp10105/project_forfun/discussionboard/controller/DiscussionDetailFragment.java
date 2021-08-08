@@ -638,7 +638,7 @@ public class DiscussionDetailFragment extends Fragment {
 
 
     private void showImage(final String imagePath) {
-        final int ONE_MEGABYTE = 1024 * 1024;
+        final int ONE_MEGABYTE = 1024 * 1024 * 10;
         StorageReference imageRef = storage.getReference().child(imagePath);
         //最多能暫存記憶體的量
         imageRef.getBytes(ONE_MEGABYTE)

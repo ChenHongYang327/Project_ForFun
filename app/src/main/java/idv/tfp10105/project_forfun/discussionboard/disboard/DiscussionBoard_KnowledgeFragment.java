@@ -517,7 +517,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
 
         // 下載Firebase storage的照片並顯示在ImageView上
         private void showImage(final ImageView imageView, final String path) {
-            final int ONE_MEGABYTE = 1024 * 1024;
+            final int ONE_MEGABYTE = 1024 * 1024 * 10;
             StorageReference imageRef = storage.getReference().child(path);
             imageRef.getBytes(ONE_MEGABYTE)
                     .addOnCompleteListener(task -> {
