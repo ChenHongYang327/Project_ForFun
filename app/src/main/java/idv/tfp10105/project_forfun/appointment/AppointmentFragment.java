@@ -137,6 +137,9 @@ public class AppointmentFragment extends Fragment {
             }
         }
 
+        // 設定無法修改
+        editAppointmentDate.setEnabled(false);
+        editAppointmentTime.setEnabled(false);
 
         setPublishData(publish);
         handleAppointmentPicker();
