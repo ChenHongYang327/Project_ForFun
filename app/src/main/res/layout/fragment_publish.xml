@@ -30,9 +30,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/bt_14050blank"
+                    android:background="@drawable/bt_9044blank"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:text="debug"
+                    android:text="快速輸入"
                     android:textColor="@color/black"
                     app:backgroundTint="?android:attr/panelBackground"
                     app:backgroundTintMode="add" />
