@@ -465,6 +465,7 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
                                             Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
                                         } else {
                                             posts.remove(post);
+                                            members.remove(member2);
                                             RentAdapter.this.notifyDataSetChanged();
 
                                             // 外面spots也必須移除選取的post
@@ -477,7 +478,7 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
                                             }
                                             posthomeList.remove(index);
                                             DiscussionBoard_RentHouseFragment.this.posts.remove(post);
-
+                                            DiscussionBoard_RentHouseFragment.this.members.remove(member2);
 //                                           storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {

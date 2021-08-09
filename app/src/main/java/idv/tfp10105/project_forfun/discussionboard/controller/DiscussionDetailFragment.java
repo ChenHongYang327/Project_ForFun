@@ -48,6 +48,7 @@ import idv.tfp10105.project_forfun.R;
 import idv.tfp10105.project_forfun.common.Common;
 import idv.tfp10105.project_forfun.common.KeyboardUtils;
 import idv.tfp10105.project_forfun.common.RemoteAccess;
+import idv.tfp10105.project_forfun.common.TimeUtil;
 import idv.tfp10105.project_forfun.common.bean.Comment;
 import idv.tfp10105.project_forfun.common.bean.Member;
 import idv.tfp10105.project_forfun.common.bean.Post;
@@ -140,7 +141,7 @@ public class DiscussionDetailFragment extends Fragment {
         }
         detailTitle.setText(post.getPostTitle());
         detailContext.setText(post.getPostContext());
-        detailTime.setText(post.getCreateTime().toString());
+        detailTime.setText(TimeUtil.getChatTimeStr(post.getCreateTime().getTime()));
         downloadImage(detailBtMemberHead, headshot);
         detailMemberName.setText(name);
     }

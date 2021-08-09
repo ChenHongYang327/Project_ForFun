@@ -32,10 +32,10 @@
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
                 app:layout_constraintEnd_toStartOf="@+id/insert_spinner"
-                app:layout_constraintHorizontal_bias="0.75"
+                app:layout_constraintHorizontal_bias="0.835"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/insert_bt_memberHead"
-                app:layout_constraintVertical_bias="0.346"
+                app:layout_constraintVertical_bias="0.0"
                 tools:ignore="MissingConstraints" />
 
             <com.mikhaellopez.circularimageview.CircularImageView
@@ -76,13 +76,13 @@
                 android:id="@+id/insert_bt_image"
                 android:layout_width="305dp"
                 android:layout_height="167dp"
-                android:layout_marginTop="150dp"
+                android:layout_marginTop="16dp"
                 android:src="@drawable/uploadpicture"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.528"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/insert_board" />
+                app:layout_constraintTop_toBottomOf="@+id/insert_et_context" />
 
             <TextView
                 android:id="@+id/txtPublishTitleImage2"
@@ -97,29 +97,30 @@
                 app:layout_constraintEnd_toEndOf="@+id/insert_bt_image"
                 app:layout_constraintStart_toStartOf="@+id/insert_bt_image" />
 
+
             <EditText
                 android:id="@+id/insert_et_title"
-                android:layout_width="wrap_content"
+                android:layout_width="305dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="116dp"
-                android:background="@null"
+                android:layout_marginTop="112dp"
+                android:background="@drawable/chatmassage_other"
                 android:ems="10"
-                android:hint="標題......"
-                android:inputType="textLongMessage|textPersonName"
+                android:hint="請輸入標題......"
+                android:inputType="textLongMessage|textMultiLine|textPersonName"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.324"
+                app:layout_constraintHorizontal_bias="0.528"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="MissingConstraints" />
 
             <EditText
                 android:id="@+id/insert_et_context"
-                android:layout_width="wrap_content"
+                android:layout_width="305dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:background="@null"
+                android:background="@drawable/chatmassage_other"
                 android:ems="10"
                 android:hint="想說些什麼......"
                 android:inputType="textLongMessage|textMultiLine|textPersonName"
@@ -127,10 +128,10 @@
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/insert_bt_image"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.324"
+                app:layout_constraintHorizontal_bias="0.528"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/insert_et_title"
-                app:layout_constraintVertical_bias="0.266" />
+                app:layout_constraintVertical_bias="0.31" />
 
             <ImageButton
                 android:id="@+id/insert_bt_insert"
@@ -151,6 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="儲存"
+                android:textColor="#000000"
                 app:layout_constraintBottom_toBottomOf="@+id/insert_bt_insert"
                 app:layout_constraintEnd_toEndOf="@+id/insert_bt_insert"
                 app:layout_constraintStart_toStartOf="@+id/insert_bt_insert"
@@ -166,24 +168,12 @@
                 android:foreground="@drawable/shap"
                 app:layout_constraintBottom_toTopOf="@+id/insert_et_title"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.826"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/insert_bt_insert"
-                app:layout_constraintVertical_bias="0.428"
+                app:layout_constraintVertical_bias="0.236"
                 tools:ignore="MissingConstraints" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="59dp"
-                android:text="標題："
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/insert_et_title"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/insert_bt_memberHead"
-                app:layout_constraintVertical_bias="0.011" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
