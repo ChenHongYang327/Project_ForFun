@@ -74,6 +74,7 @@
                     android:id="@+id/tv_ocrItrmRV_con1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/bt_ocrItrmRV_con1"
                     app:layout_constraintEnd_toEndOf="@+id/bt_ocrItrmRV_con1"
                     app:layout_constraintStart_toStartOf="@+id/bt_ocrItrmRV_con1"

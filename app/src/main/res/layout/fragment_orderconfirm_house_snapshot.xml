@@ -156,6 +156,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="李先生"
+                    android:textColor="@color/black"
                     android:textSize="20sp" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -182,6 +183,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="聯絡房東"
+                        android:textColor="@color/black"
                         android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="@+id/bt_HSShot_Conn"
                         app:layout_constraintEnd_toEndOf="@+id/bt_HSShot_Conn"
