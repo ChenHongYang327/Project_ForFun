@@ -381,7 +381,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
             String jsonImg = RemoteAccess.getJsonData(url, jsonObject.toString());
 
             //設定點擊事件
-            holder.disPostImg.setOnClickListener(v -> {
+            holder.itemView.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putString("name", member2.getNameL() + member2.getNameF());
                 bundle.putString("headshot", member2.getHeadshot());
@@ -531,7 +531,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
                                     "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                             imageView.setImageResource(R.drawable.no_image);
                             Log.e(TAG, message);
-                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                         }
                     });
         }

@@ -77,6 +77,7 @@ public class DiscussionInsertFragment extends Fragment {
     private String name, headshot;
     private Bundle bundle;
     private Integer memberId;
+    private BottomSheetDialog bottomSheetDialog;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -179,7 +180,7 @@ public class DiscussionInsertFragment extends Fragment {
     private void handleInsert_bt_picture() {
 
         //初始化BottomSheet
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
+        bottomSheetDialog = new BottomSheetDialog(activity);
         //連結的介面
         View view = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet, null);
         //自定義的三個按鈕
@@ -314,6 +315,7 @@ public class DiscussionInsertFragment extends Fragment {
                 uploadImage(resultUri);
             }
         }
+        bottomSheetDialog.dismiss();
     }
 
     private String uploadImage(Uri resultUri) {
@@ -337,7 +339,7 @@ public class DiscussionInsertFragment extends Fragment {
                     } else {
                         String message = task.getException() == null ? "上傳失敗" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
         return imagePath;
@@ -358,7 +360,7 @@ public class DiscussionInsertFragment extends Fragment {
                         String message  = task.getException() == null ? "下載失敗" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
                         insert_bt_picture.setImageResource(R.drawable.no_image);
-                        Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -378,7 +380,7 @@ public class DiscussionInsertFragment extends Fragment {
                                 "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
                         Log.e(TAG, message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

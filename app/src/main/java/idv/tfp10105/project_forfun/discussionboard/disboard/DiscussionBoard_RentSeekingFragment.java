@@ -403,7 +403,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
             String jsonImg = RemoteAccess.getJsonData(url, jsonObject.toString());
 
             //設定點擊事件
-            holder.disPostImg.setOnClickListener(v -> {
+            holder.itemView.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putString("name", member2.getNameL() + member2.getNameF());
                 bundle.putString("headshot", member2.getHeadshot());

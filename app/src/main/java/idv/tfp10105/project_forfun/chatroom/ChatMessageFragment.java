@@ -175,7 +175,7 @@ public class ChatMessageFragment extends Fragment {
             chatRoomMessages = new Gson().fromJson(jsonIn.get("messageList").getAsString(), listType);
 
         }else {
-            Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
 
         return chatRoomMessages;
@@ -191,7 +191,7 @@ public class ChatMessageFragment extends Fragment {
             //收起鍵盤
             KeyboardUtils.hideKeyboard(activity);
             if (chatMSG.length() <= 0) {
-                Toast.makeText(activity, "Message is invalid", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(activity, "Message is invalid", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (RemoteAccess.networkCheck(activity)) {
@@ -329,7 +329,7 @@ public class ChatMessageFragment extends Fragment {
                                 "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
                         Log.e(TAG, message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

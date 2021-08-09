@@ -67,6 +67,7 @@ public class DiscussionUpdateFragment extends Fragment {
     private Post post;
     private boolean pictureTaken = false;
     private String name, headshot;
+    private BottomSheetDialog bottomSheetDialog;
 
 
     ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
@@ -147,7 +148,7 @@ public class DiscussionUpdateFragment extends Fragment {
     private void handleUpdate_bt_picture() {
 
         //初始化BottomSheet
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
+        bottomSheetDialog = new BottomSheetDialog(activity);
         //連結的介面
         View view = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet, null);
         //自定義的三個按鈕
@@ -334,6 +335,7 @@ public class DiscussionUpdateFragment extends Fragment {
                 }
             }
         }
+        bottomSheetDialog.dismiss();
     }
 
 

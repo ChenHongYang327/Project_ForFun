@@ -203,7 +203,7 @@ public class DiscussionDetailFragment extends Fragment {
 
     private void showComment(List<Comment> comments, List<Member> members) {
         if (comments == null || comments.isEmpty()) {
-            Toast.makeText(activity, "尚未有留言", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, "尚未有留言", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
         commentAdapter = new CommentAdapter(activity, comments, getMembers());
@@ -488,6 +488,7 @@ public class DiscussionDetailFragment extends Fragment {
                         //新增
                         if (itemId == R.id.updateComment) {
                             final EditText et = new EditText(activity);
+                            et.setText(comment.getCommentMsg());
                             AlertDialog.Builder alert = new AlertDialog.Builder(activity).setTitle("請更新留言");
                             alert.setView(et);
                             alert.setPositiveButton("確定", new DialogInterface.OnClickListener() {
@@ -633,7 +634,7 @@ public class DiscussionDetailFragment extends Fragment {
         } else {
             Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
     }
 
@@ -653,7 +654,7 @@ public class DiscussionDetailFragment extends Fragment {
                         String message = task.getException() == null ? "下載失敗" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
                         detailImageView.setImageResource(R.drawable.no_image);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -673,7 +674,7 @@ public class DiscussionDetailFragment extends Fragment {
                                 "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
                         Log.e(TAG, message);
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
