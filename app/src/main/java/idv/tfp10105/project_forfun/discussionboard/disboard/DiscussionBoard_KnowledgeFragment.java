@@ -461,6 +461,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
                                     Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
                                 } else {
                                     posts.remove(post);
+                                    members.remove(member2);
                                     KnowAdapter.this.notifyDataSetChanged();
                                     // 外面posts也必須移除選取的post
                                     int index = 0;
@@ -472,7 +473,7 @@ public class DiscussionBoard_KnowledgeFragment extends Fragment {
                                     }
                                     posthomeList.remove(index);
                                     DiscussionBoard_KnowledgeFragment.this.posts.remove(post);
-
+                                    DiscussionBoard_KnowledgeFragment.this.members.remove(member2);
 //                                storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {
