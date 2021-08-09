@@ -25,17 +25,26 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button
+                <!--                <Button-->
+                <!--                    android:id="@+id/btnPublishDebug"-->
+                <!--                    android:layout_width="60dp"-->
+                <!--                    android:layout_height="30dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:background="@drawable/bt_9044blank"-->
+                <!--                    android:foreground="?android:attr/selectableItemBackground"-->
+                <!--                    android:text="範例輸入"-->
+                <!--                    android:textColor="@color/black"-->
+                <!--                    android:textSize="8sp"-->
+                <!--                    app:backgroundTint="?android:attr/panelBackground"-->
+                <!--                    app:backgroundTintMode="add" />-->
+
+                <TextView
                     android:id="@+id/btnPublishDebug"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/bt_9044blank"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:text="快速輸入"
-                    android:textColor="@color/black"
-                    app:backgroundTint="?android:attr/panelBackground"
-                    app:backgroundTintMode="add" />
+                    android:layout_weight="1"
+                    android:alpha="0.5"
+                    android:text="範例輸入" />
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -108,7 +117,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_gravity="center_horizontal"
-                    app:srcCompat="@drawable/uploadpicture"/>
+                    app:srcCompat="@drawable/uploadpicture" />
 
                 <TextView
                     android:id="@+id/txtPublishInfo1"
@@ -131,7 +140,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_gravity="center_horizontal"
-                    app:srcCompat="@drawable/uploadpicture"/>
+                    app:srcCompat="@drawable/uploadpicture" />
 
                 <TextView
                     android:id="@+id/txtPublishInfo2"
@@ -154,7 +163,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_gravity="center_horizontal"
-                    app:srcCompat="@drawable/uploadpicture"/>
+                    app:srcCompat="@drawable/uploadpicture" />
 
                 <TextView
                     android:id="@+id/txtPublishInfo3"

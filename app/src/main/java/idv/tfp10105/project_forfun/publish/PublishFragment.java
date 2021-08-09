@@ -256,7 +256,7 @@ public class PublishFragment extends Fragment {
         btnPublishSubmit = view.findViewById(R.id.btnPublishSubmit);
         handleButton();
 
-        Button btnDebug = view.findViewById(R.id.btnPublishDebug);
+        TextView btnDebug = view.findViewById(R.id.btnPublishDebug);
         btnDebug.setOnClickListener(v -> {
             editPublishTitle.setText("大坪數高級公寓");
             editPublishInfo.setText("搶手貨，不租可惜\n鄰近捷運站，交通便利");
