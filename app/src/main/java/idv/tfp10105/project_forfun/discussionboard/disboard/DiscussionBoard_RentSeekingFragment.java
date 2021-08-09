@@ -486,6 +486,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                                     Toast.makeText(activity, "刪除失敗", Toast.LENGTH_SHORT).show();
                                 } else {
                                     posts.remove(post);
+                                    members.remove(member2);
                                     SeekAdapter.this.notifyDataSetChanged();
 
                                     // 外面posts也必須移除選取的post
@@ -498,7 +499,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                                   }
                                     posthomeList.remove(index);
                                     DiscussionBoard_RentSeekingFragment.this.posts.remove(post);
-
+                                    DiscussionBoard_RentSeekingFragment.this.members.remove(member2);
 //                                storage.getReference().child(post.getPostImg()).delete()
 //                                        .addOnCompleteListener(task -> {
 //                                            if (task.isSuccessful()) {
@@ -547,6 +548,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                 bundle.putString("name", member2.getNameL() + member2.getNameF());
                 bundle.putString("headshot", member2.getHeadshot());
                 bundle.putString("boardId", post.getBoardId());
+
                 Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_discussionBoard_RentSeeking_ListFragment, bundle);
             });
         }

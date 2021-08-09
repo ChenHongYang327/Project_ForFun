@@ -47,7 +47,7 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
     private List<Post> posts;
     private SharedPreferences sharedPreferences;
     private int memberId;
-    private String name, headshot, boardId;
+    private String name, headshot, boardId, signin_name, signin_headshot;
     private TextView historyRentSeekText;
 
 
@@ -62,6 +62,8 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
         name = getArguments() != null ? getArguments().getString("name") : null;
         headshot = getArguments() != null ? getArguments().getString("headshot") : null;
         boardId = getArguments() != null ? getArguments().getString("boardId") : null;
+        signin_name = sharedPreferences.getString("name", "");
+        signin_headshot = sharedPreferences.getString("headshot", "");
 
     }
 
@@ -169,10 +171,10 @@ public class DiscussionBoard_RentSeeking_ListFragment extends Fragment {
             holder.rentSeekingPostTitle.setText(post2.getPostTitle());
             holder.rentSeekingPostContext.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
-                bundle.putString("name", name);
-                bundle.putString("headshot", headshot);
+                bundle.putString("name", signin_name);
+                bundle.putString("headshot", signin_headshot);
                 bundle.putString("boardId", boardId);
-                bundle.putSerializable("post", post);
+                bundle.putSerializable("post", post2);
                 Navigation.findNavController(v).navigate(R.id.discussionDetailFragment,bundle);
             });
         }
