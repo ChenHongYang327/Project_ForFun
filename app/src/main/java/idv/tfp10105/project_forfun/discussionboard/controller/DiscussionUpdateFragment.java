@@ -352,7 +352,7 @@ public class DiscussionUpdateFragment extends Fragment {
                             Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
                             update_bt_imageView.setImageBitmap(bitmap);
                         } else {
-                            String message = task.getException() == null ? "Download fail" : task.getException().getMessage();
+                            String message = task.getException() == null ? "下載失敗" : task.getException().getMessage();
                             Log.e(TAG, "message: " + message);
                             update_bt_imageView.setImageResource(R.drawable.no_image);
                             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
@@ -373,7 +373,7 @@ public class DiscussionUpdateFragment extends Fragment {
                         imageView.setImageBitmap(bitmap);
                     } else {
                         String message = task.getException() == null ?
-                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                                "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
                         Log.e(TAG, message);
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();

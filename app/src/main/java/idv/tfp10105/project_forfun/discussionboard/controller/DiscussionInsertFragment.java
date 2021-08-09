@@ -335,7 +335,7 @@ public class DiscussionInsertFragment extends Fragment {
                         downloadImage(imagePath);
 
                     } else {
-                        String message = task.getException() == null ? "Upload fail" : task.getException().getMessage();
+                        String message = task.getException() == null ? "上傳失敗" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                     }
@@ -355,7 +355,7 @@ public class DiscussionInsertFragment extends Fragment {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
                         insert_bt_picture.setImageBitmap(bitmap);
                     } else {
-                        String message  = task.getException() == null ? "Download fail" : task.getException().getMessage();
+                        String message  = task.getException() == null ? "下載失敗" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
                         insert_bt_picture.setImageResource(R.drawable.no_image);
                         Toast.makeText(activity, message , Toast.LENGTH_SHORT).show();
@@ -375,7 +375,7 @@ public class DiscussionInsertFragment extends Fragment {
                         imageView.setImageBitmap(bitmap);
                     } else {
                         String message = task.getException() == null ?
-                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                                "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
                         Log.e(TAG, message);
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();

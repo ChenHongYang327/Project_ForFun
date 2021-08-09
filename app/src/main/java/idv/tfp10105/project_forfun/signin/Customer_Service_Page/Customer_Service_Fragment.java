@@ -111,14 +111,14 @@ public class Customer_Service_Fragment extends Fragment {
                 Log.d("HI",jsonIn);
                 JsonObject jObject = new Gson().fromJson(jsonIn, JsonObject.class);
                 if (jObject.get("status").getAsBoolean()) {
-                    Toast.makeText(activity, "Inserted Successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
                     Navigation.findNavController(v).popBackStack();
                 } else {
-                    Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                 }
 
             } else {
-                Toast.makeText(activity, "textNoNetwork", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "連線失敗", Toast.LENGTH_SHORT).show();
             }
         });
 

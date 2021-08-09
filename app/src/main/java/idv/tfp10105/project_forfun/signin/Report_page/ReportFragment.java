@@ -181,13 +181,13 @@ public class ReportFragment extends Fragment {
                        Log.d("HI", jsonIn);
                        JsonObject jObject = new Gson().fromJson(jsonIn, JsonObject.class);
                        if (jObject.get("status").getAsBoolean()) {
-                           Toast.makeText(activity, "Inserted Successfully", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
                            Navigation.findNavController(v).popBackStack();
                        } else {
-                           Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                        }
                    }else {
-                           Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                        }
 
                 break;
@@ -210,13 +210,13 @@ public class ReportFragment extends Fragment {
                         String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
                         JsonObject jObject = new Gson().fromJson(jsonIn, JsonObject.class);
                         if (jObject.get("status").getAsBoolean()) {
-                            Toast.makeText(activity, "Inserted Successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
                             Navigation.findNavController(v).popBackStack();
                         } else {
-                            Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                         }
                     }else {
-                        Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                     }
                     break;
 
@@ -238,20 +238,20 @@ public class ReportFragment extends Fragment {
                         String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
                         JsonObject jObject = new Gson().fromJson(jsonIn, JsonObject.class);
                         if (jObject.get("status").getAsBoolean()) {
-                            Toast.makeText(activity, "Inserted Successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "新增成功", Toast.LENGTH_SHORT).show();
                             Navigation.findNavController(v).popBackStack();
                         } else {
-                            Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                         }
                     }else {
-                        Toast.makeText(activity, "Inserted Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "新增失敗", Toast.LENGTH_SHORT).show();
                     }
 
                     break;
 
 
                 default:
-                    Toast.makeText(activity, "textNoNetwork", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                     Navigation.findNavController(v).popBackStack();
                 break;
 

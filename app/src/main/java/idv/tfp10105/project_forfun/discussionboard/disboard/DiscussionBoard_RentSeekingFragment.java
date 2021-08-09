@@ -568,7 +568,7 @@ public class DiscussionBoard_RentSeekingFragment extends Fragment {
                         imageView.setImageBitmap(bitmap);
                     } else {
                         String message = task.getException() == null ?
-                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                                "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
 //                        Log.e(TAG, message);
 //                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();

@@ -169,7 +169,7 @@ public class DiscussionDetailFragment extends Fragment {
             //解析後端傳回資料
             comments = new Gson().fromJson(jsonIn.get("commentList").getAsString(), listType);
         } else {
-            Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
 //        Toast.makeText(activity, "comments : " + comments, Toast.LENGTH_SHORT).show();
         return comments;
@@ -582,7 +582,7 @@ public class DiscussionDetailFragment extends Fragment {
                 detail_et_comment.setText("");
                 KeyboardUtils.hideKeyboard(activity);
                 if (commentMgs.length() <= 0) {
-                    Toast.makeText(activity, "Comment is invalid", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "留言失敗", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (RemoteAccess.networkCheck(activity)) {
@@ -631,7 +631,7 @@ public class DiscussionDetailFragment extends Fragment {
             //解析後端傳回資料
             posts = new Gson().fromJson(jsonIn, listType);
         } else {
-            Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
         }
         Toast.makeText(activity, "posts : " + posts, Toast.LENGTH_SHORT).show();
         return posts;
@@ -650,7 +650,7 @@ public class DiscussionDetailFragment extends Fragment {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
                         detailImageView.setImageBitmap(bitmap);
                     } else {
-                        String message = task.getException() == null ? "Download fail" : task.getException().getMessage();
+                        String message = task.getException() == null ? "下載失敗" : task.getException().getMessage();
                         Log.e(TAG, "message: " + message);
                         detailImageView.setImageResource(R.drawable.no_image);
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
@@ -670,7 +670,7 @@ public class DiscussionDetailFragment extends Fragment {
                         imageView.setImageBitmap(bitmap);
                     } else {
                         String message = task.getException() == null ?
-                                "Image download Failed" + ": " + path : task.getException().getMessage() + ": " + path;
+                                "下載失敗" + ": " + path : task.getException().getMessage() + ": " + path;
                         imageView.setImageResource(R.drawable.no_image);
                         Log.e(TAG, message);
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
