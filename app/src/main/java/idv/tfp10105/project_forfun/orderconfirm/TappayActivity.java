@@ -61,8 +61,9 @@ public class TappayActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences, shardToMainActivity;
     private FirebaseStorage storage;
     private Gson gson = new Gson();
-    private String TAPPATACCOUNY; //付款總額
-    private String notes, getImgPath;
+    private static String TAPPATACCOUNY; //付款總額
+    private static String notes;
+    private String getImgPath;
     private Bitmap bitmapPic;
     private int payObjID;
     private Boolean isorder = false, isotherPay = false;
@@ -462,10 +463,10 @@ public class TappayActivity extends AppCompatActivity {
         paymentJO.addProperty("partner_key", partnerKey);
         paymentJO.addProperty("prime", prime);
         paymentJO.addProperty("merchant_id", merchantId);
-        paymentJO.addProperty("amount", 10);
+        paymentJO.addProperty("amount", TAPPATACCOUNY);
         paymentJO.addProperty("currency", "TWD");
         paymentJO.addProperty("order_number", "SN0001");
-        paymentJO.addProperty("details", "茶葉蛋1顆");
+        paymentJO.addProperty("details", notes);
 
         //自己輸入的，目的把一些資訊抓下來，幫使用者少填一些東西
         JsonObject cardHolderJO = new JsonObject();
