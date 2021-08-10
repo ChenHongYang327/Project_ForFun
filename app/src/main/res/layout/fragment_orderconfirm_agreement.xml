@@ -201,6 +201,13 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:id="@+id/textView26"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="承租人應以善良管理人之注意，保管租賃物，租賃物有生產力者，並應保持其生產力。承租人違反前項義務，致租賃物毀損、滅失者，負損害賠償責任。但依約定之方法或依物之性質而定之方法為使用、收益，致有變更或毀者，不在此限。"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/textView23"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -219,13 +226,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="第 432 條："
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/textView26"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="承租人應以善良管理人之注意，保管租賃物，租賃物有生產力者，並應保持其生產力。承租人違反前項義務，致租賃物毀損、滅失者，負損害賠償責任。但依約定之方法或依物之性質而定之方法為使用、收益，致有變更或毀者，不在此限。"
                 android:textSize="12sp" />
 
             <TextView
@@ -279,7 +279,7 @@
                     android:id="@+id/imgview_ocrAgreement_HOCanvas"
                     android:layout_width="170dp"
                     android:layout_height="100dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="32dp"
                     android:src="@drawable/post_background"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -303,7 +303,7 @@
                     android:id="@+id/imgview_ocrAgreement_Canvas"
                     android:layout_width="170dp"
                     android:layout_height="100dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="32dp"
                     android:src="@drawable/post_background"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -383,6 +383,29 @@
                     app:layout_constraintEnd_toEndOf="@+id/bt_ocrAgreement_confirm"
                     app:layout_constraintStart_toStartOf="@+id/bt_ocrAgreement_confirm"
                     app:layout_constraintTop_toTopOf="@+id/bt_ocrAgreement_confirm" />
+
+                <TextView
+                    android:id="@+id/textView69"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="7dp"
+                    android:text="房東簽名處："
+                    app:layout_constraintBottom_toTopOf="@+id/imgview_ocrAgreement_HOCanvas"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView70"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="7dp"
+                    android:text="房客簽名處："
+                    app:layout_constraintBottom_toTopOf="@+id/imgview_ocrAgreement_HOCanvas"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:layout_editor_absoluteX="136dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
