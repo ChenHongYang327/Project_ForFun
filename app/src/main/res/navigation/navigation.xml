@@ -161,7 +161,7 @@
     <fragment
         android:id="@+id/discussionUpdateFragment"
         android:name="idv.tfp10105.project_forfun.discussionboard.controller.DiscussionUpdateFragment"
-        android:label="討論區" />
+        android:label="修改貼文" />
     <fragment
         android:id="@+id/publishDetailFragment"
         android:name="idv.tfp10105.project_forfun.publish.PublishDetailFragment"
