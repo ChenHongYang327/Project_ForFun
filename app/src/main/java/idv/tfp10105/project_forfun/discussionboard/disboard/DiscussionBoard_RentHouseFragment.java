@@ -497,7 +497,19 @@ public class DiscussionBoard_RentHouseFragment extends Fragment {
                                     }
                                     //檢舉
                                 } else if (itemId == R.id.report) {
-                                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment);
+
+                                    Bundle bundle = new Bundle();
+                                    // 檢舉者
+                                    bundle.putInt("WHISTLEBLOWER_ID", memberId);
+                                    Log.d(TAG, "ss12345: " + memberId );
+                                    //被檢舉者
+                                    bundle.putInt("REPORTED_ID", post.getPosterId());
+                                    //檢舉貼文
+                                    bundle.putInt("POST_ID", post.getPostId());
+                                    //檢舉項目
+                                    bundle.putInt("ITEM", 0);
+
+                                    Navigation.findNavController(v).navigate(R.id.action_discussionBoardFragment_to_reportFragment,bundle);
                                 } else {
                                     Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
                                 }
