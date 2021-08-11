@@ -127,6 +127,8 @@
                 android:ems="10"
                 android:hint="留言"
                 android:inputType="textPersonName"
+                android:maxLength="15"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.343"
