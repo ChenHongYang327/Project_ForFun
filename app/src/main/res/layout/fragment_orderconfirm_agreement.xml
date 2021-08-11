@@ -403,9 +403,9 @@
                     android:layout_marginBottom="7dp"
                     android:text="房客簽名處："
                     app:layout_constraintBottom_toTopOf="@+id/imgview_ocrAgreement_HOCanvas"
+                    app:layout_constraintStart_toStartOf="@+id/imgview_ocrAgreement_Canvas"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
-                    tools:layout_editor_absoluteX="136dp" />
+                    app:layout_constraintVertical_bias="0.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
