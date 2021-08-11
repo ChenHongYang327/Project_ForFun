@@ -144,6 +144,14 @@ public class DiscussionDetailFragment extends Fragment {
         detailTime.setText(TimeUtil.getChatTimeStr(post.getCreateTime().getTime()));
         downloadImage(detailBtMemberHead, headshot);
         detailMemberName.setText(name);
+
+        detailBtMemberHead.setOnClickListener(v -> {
+            Member memberPersonal = getMemberByOwnerId(post.getPosterId());
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("SelectUser", memberPersonal);
+            Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle);
+
+        });
     }
 
     private void handleRecyclerView() {
@@ -219,6 +227,23 @@ public class DiscussionDetailFragment extends Fragment {
 //            //重新執行RecyclerView 三方法
 //            commentAdapter.notifyDataSetChanged();
 
+    }
+
+    private Member getMemberByOwnerId(int ownerId) {
+        Member membershot = null;
+
+        if (RemoteAccess.networkCheck(activity)) {
+            String url = Common.URL + "/memberCenterPersonalInformation";
+            JsonObject request = new JsonObject();
+            request.addProperty("action", "getMember");
+            request.addProperty("member_id", ownerId);
+
+            String jsonResule = RemoteAccess.getJsonData(url, new Gson().toJson(request));
+
+            membershot = new Gson().fromJson(jsonResule, Member.class);
+        }
+
+        return membershot;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -407,6 +432,14 @@ public class DiscussionDetailFragment extends Fragment {
             holder.comment_text.setText(comment.getCommentMsg());
             holder.comment_memberName.setText(member.getNameL() + member.getNameF());
             downloadImage(holder.comment_bt_membetHead, member.getHeadshot());
+
+            holder.comment_bt_membetHead.setOnClickListener(v -> {
+                Member memberPersonal = getMemberByOwnerId(comment.getMemberId());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("SelectUser", memberPersonal);
+                Navigation.findNavController(v).navigate(R.id.personalSnapshotFragment, bundle);
+
+            });
 
             if (memberId == comment.getMemberId()) {
 
