@@ -205,6 +205,7 @@ public class ReportFragment extends Fragment {
                     jsonObject.addProperty("MESSAGE", detailedStatus);//反應內容
                     jsonObject.addProperty("REPORT_CLASS", spinner.getSelectedItemPosition());//檢舉類別
                     jsonObject.addProperty("CHATROOM_ID", chatroomId);//檢舉項目
+                    jsonObject.addProperty("ITEM", item);//檢舉項目
 
 
                         String jsonIn = RemoteAccess.getJsonData(url, jsonObject.toString());
