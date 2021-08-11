@@ -1,7 +1,6 @@
 package idv.tfp10105.project_forfun;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
@@ -33,10 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -179,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
                         navController.getCurrentDestination().getId() == R.id.orderconfirm_houseSnapshot||
                         navController.getCurrentDestination().getId() == R.id.orderconfirm_agreement||
                         navController.getCurrentDestination().getId() == R.id.discussionBoard_RentSeeking_ListFragment||
-                        navController.getCurrentDestination().getId() == R.id.discussionInsertFragment
+                        navController.getCurrentDestination().getId() == R.id.discussionInsertFragment ||
+                        navController.getCurrentDestination().getId() == R.id.discussionUpdateFragment
                 ) {
                     btBell.setVisibility(View.VISIBLE);// 顯示通知按鈕
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true); //顯示返回鍵
