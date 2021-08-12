@@ -231,7 +231,7 @@ public class ChatMessageFragment extends Fragment {
     private  void showChatRoomMessage(List<ChatRoomMessage> chatRoomMessages) {
         Log.d(TAG2,"chatRoomMessages : " + chatRoomMessages.size());
         if (chatRoomMessages == null || chatRoomMessages.isEmpty()) {
-            Toast.makeText(activity, "沒有訊息", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, "沒有訊息", Toast.LENGTH_SHORT).show();
         }
         //取得Adapter
         chatRoomMessageAdapter = new ChatRoomMessageAdapter(activity, getChatRoomMessage());

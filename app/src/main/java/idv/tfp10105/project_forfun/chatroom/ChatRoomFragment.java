@@ -303,7 +303,7 @@ public class ChatRoomFragment extends Fragment {
                 }
 
             } else {
-                Toast.makeText(activity, "no network connection available", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show();
             }
 
 
