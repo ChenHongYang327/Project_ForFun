@@ -46,7 +46,7 @@
     <string-array name="ReportFragment_Spinner">
         <item>冒充他人</item>
         <item>謾罵他人</item>
-        <item>不當檢舉</item>
+        <item>不當留言</item>
         <item>內容誇大</item>
         <item>態度惡劣</item>
 
