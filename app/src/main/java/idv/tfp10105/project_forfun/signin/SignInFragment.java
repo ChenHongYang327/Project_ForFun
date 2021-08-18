@@ -186,8 +186,6 @@ public class SignInFragment extends Fragment {
             tvCode.setVisibility(View.VISIBLE);
             etVerificationCode.setVisibility(View.VISIBLE);
             tvResendCode.setVisibility(View.VISIBLE);
-            btSignIn.getBackground().mutate().setAlpha(255);
-            btSignIn.setEnabled(true);
             requestVerificationCode("+886" + phone);
         });
         //重新發送
@@ -503,9 +501,12 @@ public class SignInFragment extends Fragment {
          */
         @Override
         public void onCodeSent(@NonNull String id, @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            Log.d("顯示驗證碼錯誤", "onCodeSent: " + id);
+            Log.d("顯示驗證碼Id", "onCodeSent: " + id);
             verificationId = id;
             resendToken = token;
+            btSignIn.getBackground().mutate().setAlpha(255);
+            btSignIn.setEnabled(true);
+
         }
 
     };
